@@ -1,0 +1,65 @@
+# قائمة المكتبات المطلوبة لمشروع منصة المانجا
+# List of required libraries for the Manga Platform project
+
+# ===== المكتبات الأساسية (Core Libraries) =====
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.3
+Werkzeug==2.3.7
+SQLAlchemy==2.0.23
+
+# ===== قاعدة البيانات (Database) =====
+psycopg2-binary==2.9.7
+
+# ===== خادم الويب (Web Server) =====
+gunicorn==21.2.0
+
+# ===== معالجة الصور والملفات (Image & File Processing) =====
+Pillow==10.0.1
+python-magic==0.4.27
+
+# ===== استخراج المحتوى والطلبات (Web Scraping & HTTP) =====
+requests==2.31.0
+beautifulsoup4==4.12.2
+fake-useragent==1.4.0
+trafilatura==1.6.4
+
+# ===== ملفات الأرشيف (Archive Processing) =====
+stream-unzip==0.0.73
+zipfile-deflate64==0.2.0
+
+# ===== التخزين السحابي (Cloud Storage) =====
+cloudinary==1.36.0
+
+# ===== الدفع الإلكتروني (Payment Processing) =====
+stripe==7.7.0
+paypalrestsdk==1.13.3
+PyJWT==2.8.0
+
+# ===== المصادقة والأمان (Authentication & Security) =====
+oauthlib==3.2.2
+Flask-Dance==7.0.0
+
+# ===== التحقق والأدوات (Validation & Utilities) =====
+email-validator==2.1.0
+schedule==1.2.0
+psutil==5.9.6
+
+# ===== أدوات إضافية (Additional Utilities) =====
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.3
+click==8.1.7
+blinker==1.7.0
+greenlet==3.0.1
+typing_extensions==4.8.0
+
+# ===== أوامر التثبيت (Installation Commands) =====
+# pip install -r dependencies.txt
+# أو تثبيت كل مكتبة منفردة:
+# pip install Flask Flask-SQLAlchemy Flask-Login Werkzeug SQLAlchemy
+# pip install psycopg2-binary gunicorn Pillow python-magic
+# pip install requests beautifulsoup4 fake-useragent trafilatura
+# pip install stream-unzip zipfile-deflate64 cloudinary
+# pip install stripe paypalrestsdk PyJWT oauthlib Flask-Dance
+# pip install email-validator schedule psutil

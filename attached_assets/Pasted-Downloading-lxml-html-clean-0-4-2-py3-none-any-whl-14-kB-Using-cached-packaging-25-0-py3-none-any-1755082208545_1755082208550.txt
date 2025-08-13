@@ -1,0 +1,46 @@
+Downloading lxml_html_clean-0.4.2-py3-none-any.whl (14 kB)
+Using cached packaging-25.0-py3-none-any.whl (66 kB)
+Downloading pycparser-2.22-py3-none-any.whl (117 kB)
+Downloading tzdata-2025.2-py2.py3-none-any.whl (347 kB)
+Downloading urlobject-3.0.0-py3-none-any.whl (16 kB)
+Building wheels for collected packages: zipfile-deflate64
+  Building wheel for zipfile-deflate64 (pyproject.toml) ... error
+  error: subprocess-exited-with-error
+
+  × Building wheel for zipfile-deflate64 (pyproject.toml) did not run successfully.
+  │ exit code: 1
+  ╰─> [23 lines of output]
+      C:\Users\ahmed\AppData\Local\Temp\pip-build-env-zqvo9o_9\overlay\Lib\site-packages\setuptools\dist.py:759: SetuptoolsDeprecationWarning: License classifiers are deprecated.
+      !!
+
+              ********************************************************************************
+              Please consider removing the following classifiers in favor of a SPDX license expression:
+
+              License :: OSI Approved :: Apache Software License
+
+              See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.
+              ********************************************************************************
+
+      !!
+        self._finalize_license_expression()
+      running bdist_wheel
+      running build
+      running build_py
+      creating build\lib.win-amd64-cpython-313\zipfile_deflate64
+      copying zipfile_deflate64\_patcher.py -> build\lib.win-amd64-cpython-313\zipfile_deflate64
+      copying zipfile_deflate64\_zipfile.py -> build\lib.win-amd64-cpython-313\zipfile_deflate64
+      copying zipfile_deflate64\__init__.py -> build\lib.win-amd64-cpython-313\zipfile_deflate64
+      running build_ext
+      building 'zipfile_deflate64.deflate64' extension
+      error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+      [end of output]
+
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for zipfile-deflate64
+Failed to build zipfile-deflate64
+
+[notice] A new release of pip is available: 25.1.1 -> 25.2
+[notice] To update, run: python.exe -m pip install --upgrade pip
+ERROR: Failed to build installable wheels for some pyproject.toml based projects (zipfile-deflate64)
+
+(venv) C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4>

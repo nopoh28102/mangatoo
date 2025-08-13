@@ -1,0 +1,800 @@
+
+[2025-08-13 11:57:11 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 14:57:12
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 14:57:12
+INFO:root:Database tables created successfully
+Aug 13 14:57:12
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 14:57:12
+INFO:root:Database tables created successfully
+Aug 13 14:57:12
+INFO:root:Admin user already exists
+Aug 13 14:57:12
+INFO:root:Admin user already exists
+Aug 13 14:57:22
+[Timeout ERROR] Leapcell proxy tried port Some(8080), but no response.
+Aug 13 14:57:22
+Please check your service is listening on port Some(8080).
+Aug 13 14:57:22
+Also verify it did not time out after 9800 ms.
+Aug 13 14:57:22
+[ERROR] Leapcell reverse proxy failed to reach your service at http port 8080:
+Aug 13 14:57:22
+[Connection Failed] Could not connect to the application server at http://127.0.0.1:8080/kaithheathcheck.
+Aug 13 14:57:24
++ gunicorn --bind 0.0.0.0:8000 main:app
+Aug 13 14:57:24
+[2025-08-13 11:57:22 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 14:57:24
+[2025-08-13 11:57:22 +0000] [25] [INFO] Listening at: http://0.0.0.0:8000 (25)
+Aug 13 14:57:24
+[2025-08-13 11:57:22 +0000] [25] [INFO] Using worker: sync
+Aug 13 14:57:24
+[2025-08-13 11:57:22 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 14:57:24
+[2025-08-13 11:57:23 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 14:57:24
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 14:57:24
+INFO:root:Database tables created successfully
+Aug 13 14:57:24
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 14:57:24
+INFO:root:Database tables created successfully
+Aug 13 14:57:24
+INFO:root:Admin user already exists
+Aug 13 14:57:24
+INFO:root:Admin user already exists
+Aug 13 14:57:34
+[Timeout ERROR] Leapcell proxy tried port Some(8080), but no response.
+Aug 13 14:57:34
+Please check your service is listening on port Some(8080).
+Aug 13 14:57:34
+Also verify it did not time out after 9800 ms.
+Aug 13 14:57:34
+[ERROR] Leapcell reverse proxy failed to reach your service at http port 8080:
+Aug 13 14:57:34
+[Connection Failed] Could not connect to the application server at http://127.0.0.1:8080/kaithheathcheck.
+Aug 13 14:59:11
+[ERROR] Leapcell reverse proxy failed to reach your service at http port 8080:
+Aug 13 14:59:11
+[Connection Failed] Could not connect to the application server at http://127.0.0.1:8080/.
+Aug 13 14:59:13
+[ERROR] Leapcell reverse proxy failed to reach your service at http port 8080:
+Aug 13 14:59:13
+[Connection Failed] Could not connect to the application server at http://127.0.0.1:8080/favicon.ico.
+Aug 13 15:07:32
++ gunicorn --bind 0.0.0.0:5000 main:app
+Aug 13 15:07:34
+[2025-08-13 12:07:32 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 15:07:34
+[2025-08-13 12:07:32 +0000] [25] [INFO] Listening at: http://0.0.0.0:5000 (25)
+Aug 13 15:07:34
+[2025-08-13 12:07:32 +0000] [25] [INFO] Using worker: sync
+Aug 13 15:07:34
+[2025-08-13 12:07:32 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 15:07:34
+[2025-08-13 12:07:32 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 15:07:38
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:38
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:38
+INFO:root:Database tables created successfully
+Aug 13 15:07:38
+INFO:root:Database tables created successfully
+Aug 13 15:07:38
+INFO:root:Admin user already exists
+Aug 13 15:07:38
+INFO:root:Admin user already exists
+Aug 13 15:07:42
++ gunicorn --bind 0.0.0.0:5000 main:app
+Aug 13 15:07:42
+[2025-08-13 12:07:32 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 15:07:42
+[2025-08-13 12:07:32 +0000] [25] [INFO] Listening at: http://0.0.0.0:5000 (25)
+Aug 13 15:07:42
+[2025-08-13 12:07:32 +0000] [25] [INFO] Using worker: sync
+Aug 13 15:07:42
+[2025-08-13 12:07:32 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 15:07:42
+[2025-08-13 12:07:32 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 15:07:42
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:42
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:42
+INFO:root:Database tables created successfully
+Aug 13 15:07:42
+INFO:root:Database tables created successfully
+Aug 13 15:07:42
+INFO:root:Admin user already exists
+Aug 13 15:07:42
+INFO:root:Admin user already exists
+Aug 13 15:07:42
+[Timeout ERROR] Leapcell proxy tried port Some(5000), but no response.
+Aug 13 15:07:42
+Please check your service is listening on port Some(5000).
+Aug 13 15:07:42
+Also verify it did not time out after 9800 ms.
+Aug 13 15:07:42
++ gunicorn --bind 0.0.0.0:5000 main:app
+Aug 13 15:07:42
+[2025-08-13 12:07:40 +0000] [26] [INFO] Starting gunicorn 23.0.0
+Aug 13 15:07:42
+[2025-08-13 12:07:40 +0000] [26] [INFO] Listening at: http://0.0.0.0:5000 (26)
+Aug 13 15:07:42
+[2025-08-13 12:07:40 +0000] [26] [INFO] Using worker: sync
+Aug 13 15:07:42
+[2025-08-13 12:07:40 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 15:07:42
+[2025-08-13 12:07:40 +0000] [28] [INFO] Booting worker with pid: 28
+Aug 13 15:07:42
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:42
+INFO:root:Database tables created successfully
+Aug 13 15:07:42
+INFO:root:Admin user already exists
+Aug 13 15:07:42
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:07:42
+INFO:root:Database tables created successfully
+Aug 13 15:07:42
+INFO:root:Admin user already exists
+Aug 13 15:07:43
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:43
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:43
+[parameters: ('http://127.0.0.1:5000', '2025-08-13 12:07:43.171025', 1)]
+Aug 13 15:07:43
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:43
+127.0.0.1 - - [13/Aug/2025:12:07:43 +0000] "GET /kaithhealthcheck HTTP/1.1" 404 207 "-" "-" 10227
+Aug 13 15:07:43
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:43
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:43
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:43.178453', 1)]
+Aug 13 15:07:43
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:43
+ERROR:app:Exception on / [GET]
+Aug 13 15:07:43
+Traceback (most recent call last):
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:07:43
+    response = self.full_dispatch_request()
+Aug 13 15:07:43
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:07:43
+    rv = self.handle_user_exception(e)
+Aug 13 15:07:43
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:07:43
+    rv = self.dispatch_request()
+Aug 13 15:07:43
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:07:43
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:07:43
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/app/routes.py", line 205, in index
+Aug 13 15:07:43
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:07:43
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:07:43
+    return self._iter().all()  # type: ignore
+Aug 13 15:07:43
+           ^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:07:43
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:07:43
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:07:43
+    return self._execute_internal(
+Aug 13 15:07:43
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:07:43
+    conn = self._connection_for_bind(bind)
+Aug 13 15:07:43
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:07:43
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:07:43
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:43
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:07:43
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:07:43
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:07:43
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:07:43
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:43
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:43
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:43.178453', 1)]
+Aug 13 15:07:43
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:07:43
+127.0.0.1 - - [13/Aug/2025:12:07:43 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 309207
+Aug 13 15:07:44
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:44
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:44
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:44.035706', 1)]
+Aug 13 15:07:44
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:44
+127.0.0.1 - - [13/Aug/2025:12:07:44 +0000] "GET /kaithheathcheck HTTP/1.1" 404 207 "-" "leapcell-warmup" 3017
+Aug 13 15:07:44
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:44
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:44
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:44.060647', 1)]
+Aug 13 15:07:44
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:44
+127.0.0.1 - - [13/Aug/2025:12:07:44 +0000] "GET /favicon.ico HTTP/1.1" 404 207 "https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 8666
+Aug 13 15:07:46
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:46
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:46
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:46.028248', 1)]
+Aug 13 15:07:46
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:46
+127.0.0.1 - - [13/Aug/2025:12:07:46 +0000] "GET /kaithheathcheck HTTP/1.1" 404 207 "-" "leapcell-warmup" 3814
+Aug 13 15:07:54
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:54
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:54
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:54.878275', 1)]
+Aug 13 15:07:54
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:54
+ERROR:app:Exception on / [GET]
+Aug 13 15:07:54
+Traceback (most recent call last):
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:07:54
+    response = self.full_dispatch_request()
+Aug 13 15:07:54
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:07:54
+    rv = self.handle_user_exception(e)
+Aug 13 15:07:54
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:07:54
+    rv = self.dispatch_request()
+Aug 13 15:07:54
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:07:54
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:07:54
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/app/routes.py", line 205, in index
+Aug 13 15:07:54
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:07:54
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:07:54
+    return self._iter().all()  # type: ignore
+Aug 13 15:07:54
+           ^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:07:54
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:07:54
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:07:54
+    return self._execute_internal(
+Aug 13 15:07:54
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:07:54
+    conn = self._connection_for_bind(bind)
+Aug 13 15:07:54
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:07:54
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:07:54
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:54
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:07:54
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:07:54
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:07:54
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:07:54
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:54
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:54
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:54.878275', 1)]
+Aug 13 15:07:54
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:07:54
+127.0.0.1 - - [13/Aug/2025:12:07:54 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 5056
+Aug 13 15:07:56
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:56
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:56
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:56.028110', 1)]
+Aug 13 15:07:56
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:56
+127.0.0.1 - - [13/Aug/2025:12:07:56 +0000] "GET /kaithheathcheck HTTP/1.1" 404 207 "-" "leapcell-warmup" 3905
+Aug 13 15:07:57
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:57
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:57
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:57.363477', 1)]
+Aug 13 15:07:57
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:57
+ERROR:app:Exception on / [GET]
+Aug 13 15:07:57
+Traceback (most recent call last):
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:07:57
+    response = self.full_dispatch_request()
+Aug 13 15:07:57
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:07:57
+    rv = self.handle_user_exception(e)
+Aug 13 15:07:57
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:07:57
+    rv = self.dispatch_request()
+Aug 13 15:07:57
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:07:57
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:07:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/app/routes.py", line 205, in index
+Aug 13 15:07:57
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:07:57
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:07:57
+    return self._iter().all()  # type: ignore
+Aug 13 15:07:57
+           ^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:07:57
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:07:57
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:07:57
+    return self._execute_internal(
+Aug 13 15:07:57
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:07:57
+    conn = self._connection_for_bind(bind)
+Aug 13 15:07:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:07:57
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:07:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:57
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:07:57
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:07:57
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:07:57
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:07:57
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:57
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:57
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:57.363477', 1)]
+Aug 13 15:07:57
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:07:57
+127.0.0.1 - - [13/Aug/2025:12:07:57 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 4379
+Aug 13 15:07:58
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:58
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:58
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:58.032927', 1)]
+Aug 13 15:07:58
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:58
+127.0.0.1 - - [13/Aug/2025:12:07:58 +0000] "GET /kaithheathcheck HTTP/1.1" 404 207 "-" "leapcell-warmup" 3197
+Aug 13 15:07:58
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:58
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:58
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:58.595718', 1)]
+Aug 13 15:07:58
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:07:58
+ERROR:app:Exception on / [GET]
+Aug 13 15:07:58
+Traceback (most recent call last):
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:07:58
+    response = self.full_dispatch_request()
+Aug 13 15:07:58
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:07:58
+    rv = self.handle_user_exception(e)
+Aug 13 15:07:58
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:07:58
+    rv = self.dispatch_request()
+Aug 13 15:07:58
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:07:58
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:07:58
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/app/routes.py", line 205, in index
+Aug 13 15:07:58
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:07:58
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:07:58
+    return self._iter().all()  # type: ignore
+Aug 13 15:07:58
+           ^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:07:58
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:07:58
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:07:58
+    return self._execute_internal(
+Aug 13 15:07:58
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:07:58
+    conn = self._connection_for_bind(bind)
+Aug 13 15:07:58
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:07:58
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:07:58
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:07:58
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:07:58
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:07:58
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:07:58
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:07:58
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:07:58
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:07:58
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:07:58.595718', 1)]
+Aug 13 15:07:58
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:07:58
+127.0.0.1 - - [13/Aug/2025:12:07:58 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 4646
+Aug 13 15:08:12
++ gunicorn --bind 0.0.0.0:5000 main:app
+Aug 13 15:08:12
+[2025-08-13 12:08:10 +0000] [24] [INFO] Starting gunicorn 23.0.0
+Aug 13 15:08:12
+[2025-08-13 12:08:10 +0000] [24] [INFO] Listening at: http://0.0.0.0:5000 (24)
+Aug 13 15:08:12
+[2025-08-13 12:08:10 +0000] [24] [INFO] Using worker: sync
+Aug 13 15:08:12
+[2025-08-13 12:08:10 +0000] [25] [INFO] Booting worker with pid: 25
+Aug 13 15:08:12
+[2025-08-13 12:08:10 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 15:08:12
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:08:12
+INFO:root:✅ Cloudinary models imported successfully
+Aug 13 15:08:12
+INFO:root:Database tables created successfully
+Aug 13 15:08:12
+INFO:root:Database tables created successfully
+Aug 13 15:08:12
+INFO:root:Admin user already exists
+Aug 13 15:08:12
+INFO:root:Admin user already exists
+Aug 13 15:08:12
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:08:12
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:08:12
+[parameters: ('http://127.0.0.1:5000', '2025-08-13 12:08:12.768117', 1)]
+Aug 13 15:08:12
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:08:12
+127.0.0.1 - - [13/Aug/2025:12:08:12 +0000] "GET /kaithhealthcheck HTTP/1.1" 404 207 "-" "-" 9464
+Aug 13 15:08:12
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:08:12
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:08:12
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:08:12.777625', 1)]
+Aug 13 15:08:12
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:08:12
+127.0.0.1 - - [13/Aug/2025:12:08:12 +0000] "GET /kaithheathcheck HTTP/1.1" 404 207 "-" "leapcell-warmup" 3368
+Aug 13 15:08:12
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:08:12
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:08:12
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:08:12.799805', 1)]
+Aug 13 15:08:12
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:08:12
+ERROR:app:Exception on / [GET]
+Aug 13 15:08:12
+Traceback (most recent call last):
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:08:12
+    response = self.full_dispatch_request()
+Aug 13 15:08:12
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:08:12
+    rv = self.handle_user_exception(e)
+Aug 13 15:08:12
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:08:12
+    rv = self.dispatch_request()
+Aug 13 15:08:12
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:08:12
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:08:12
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/app/routes.py", line 205, in index
+Aug 13 15:08:12
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:08:12
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:08:12
+    return self._iter().all()  # type: ignore
+Aug 13 15:08:12
+           ^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:08:12
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:08:12
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:08:12
+    return self._execute_internal(
+Aug 13 15:08:12
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:08:12
+    conn = self._connection_for_bind(bind)
+Aug 13 15:08:12
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:08:12
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:08:12
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:08:12
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:08:12
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:08:12
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:08:12
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:08:12
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:08:12
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:08:12
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:08:12.799805', 1)]
+Aug 13 15:08:12
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:08:12
+127.0.0.1 - - [13/Aug/2025:12:08:12 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36" 18858
+Aug 13 15:09:45
+DEBUG:root:Could not auto-update site_url: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:09:45
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:09:45
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:09:45.594476', 1)]
+Aug 13 15:09:45
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+Aug 13 15:09:45
+ERROR:app:Exception on / [GET]
+Aug 13 15:09:45
+Traceback (most recent call last):
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+Aug 13 15:09:45
+    response = self.full_dispatch_request()
+Aug 13 15:09:45
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 919, in full_dispatch_request
+Aug 13 15:09:45
+    rv = self.handle_user_exception(e)
+Aug 13 15:09:45
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+Aug 13 15:09:45
+    rv = self.dispatch_request()
+Aug 13 15:09:45
+         ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+Aug 13 15:09:45
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+Aug 13 15:09:45
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/app/routes.py", line 205, in index
+Aug 13 15:09:45
+    latest_manga = Manga.query.order_by(Manga.created_at.desc()).limit(8).all()
+Aug 13 15:09:45
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2704, in all
+Aug 13 15:09:45
+    return self._iter().all()  # type: ignore
+Aug 13 15:09:45
+           ^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2857, in _iter
+Aug 13 15:09:45
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+Aug 13 15:09:45
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2365, in execute
+Aug 13 15:09:45
+    return self._execute_internal(
+Aug 13 15:09:45
+           ^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2241, in _execute_internal
+Aug 13 15:09:45
+    conn = self._connection_for_bind(bind)
+Aug 13 15:09:45
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2110, in _connection_for_bind
+Aug 13 15:09:45
+    return trans._connection_for_bind(engine, execution_options)
+Aug 13 15:09:45
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 15:09:45
+  File "<string>", line 2, in _connection_for_bind
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/state_changes.py", line 101, in _go
+Aug 13 15:09:45
+    self._raise_for_prerequisite_state(fn.__name__, current_state)
+Aug 13 15:09:45
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 973, in _raise_for_prerequisite_state
+Aug 13 15:09:45
+    raise sa_exc.PendingRollbackError(
+Aug 13 15:09:45
+sqlalchemy.exc.PendingRollbackError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (sqlite3.OperationalError) attempt to write a readonly database
+Aug 13 15:09:45
+[SQL: UPDATE site_settings SET value=?, updated_at=? WHERE site_settings.id = ?]
+Aug 13 15:09:45
+[parameters: ('https://mangatoo-mahmoudnabihsaleh2109-tnzy5ex2.leapcell.dev', '2025-08-13 12:09:45.594476', 1)]
+Aug 13 15:09:45
+(Background on this error at: https://sqlalche.me/e/20/e3q8) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+Aug 13 15:09:45
+127.0.0.1 - - [13/Aug/2025:12:09:45 +0000] "GET / HTTP/1.1" 500 265 "-" "Mozilla/5.

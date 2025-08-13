@@ -1,0 +1,105 @@
+عند رفع مانجا جديد  فى  صفحة   /admin/upload-new  
+
+
+
+
+وظهر فى الكونسول 
+
+  INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+[2025-08-11 20:48:56 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:56 +0000] [182] [INFO] Handling signal: winch
+INFO:root:Admin user already exists
+[2025-08-11 20:48:56 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:56 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:56 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+[2025-08-11 20:48:57 +0000] [182] [INFO] Handling signal: winch
+DEBUG:htmldate.validators:minimum date setting: 1995-01-01 00:00:00
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+🧪 اختبار الكشط من: https://olympustaff.com/series/return-from-the-depths/32
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /series/return-from-the-depths/32 HTTP/1.1" 200 None
+🚀 بدء رفع الصور إلى Cloudinary لفصل 1.0
+🕸️ تنزيل 10 صورة مكشوطة وحفظها مؤقتاً
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/82738e304153e6dcdc038a3fb020d9db.webp HTTP/1.1" 200 637344
+INFO:root:⬇️ Downloaded page 1/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/007550343b8ff25f7f69ee0c624d9460.webp HTTP/1.1" 200 573970
+INFO:root:⬇️ Downloaded page 2/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/73b217a6228288c1c2fe747785f2b1b9.webp HTTP/1.1" 200 564682
+INFO:root:⬇️ Downloaded page 3/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/fdc8b0da86c4134c57ef2bf438b10fe2.webp HTTP/1.1" 200 503374
+INFO:root:⬇️ Downloaded page 4/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/772e84116c332fa86ea367aec9dfcc57.webp HTTP/1.1" 200 359396
+INFO:root:⬇️ Downloaded page 5/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/62cf9b7ee1c356f0045b4e45a0c57793.webp HTTP/1.1" 200 404856
+INFO:root:⬇️ Downloaded page 6/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/d09eb665cd157b2ee5aec97289ebdaf2.webp HTTP/1.1" 200 540526
+INFO:root:⬇️ Downloaded page 7/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/91d751816963bd7eb71e1b3b21d99bdc.webp HTTP/1.1" 200 477618
+INFO:root:⬇️ Downloaded page 8/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/d77b481c63bd5bdac066f2d1e4592617.webp HTTP/1.1" 200 465892
+INFO:root:⬇️ Downloaded page 9/10
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/d0fc15b0da63c5afc95d02295b475d6a.webp HTTP/1.1" 200 251776
+INFO:root:⬇️ Downloaded page 10/10
+INFO:root:🕸️ Downloaded 10 images to temporary storage: manga_4_chapter_8_1754945452
+INFO:root:🚀 Starting background upload for manga 4, chapter 8
+INFO:root:📥 Added 10 images to upload queue for manga 4, chapter 8
+✅ تم رفع 10 صورة مكشوطة إلى Cloudinary بنجاح
+✅ تم حفظ 10 صورة مؤقتاً وبدء رفعها في الخلفية
+📌 سيتم رفع الصور إلى Cloudinary تلقائياً في الخلفية وحذف الملفات المؤقتة بعد الانتهاء
+📌 الفصل سيصبح متاحاً للقراءة تلقائياً بعد انتهاء رفع الصور في الخلفية
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.cloudinary.com:443
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 1: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 2: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 3: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 4: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 5: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 6: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 7: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 8: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 9: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+ERROR:root:❌ Error uploading page 10: 'file_size' is an invalid keyword argument for PageImage
+INFO:root:💾 Database updated with 0 uploaded images
+INFO:root:📖 Chapter 8 marked as available with 0 pages
+INFO:root:🗑️ Cleaned up temporary folder: manga_4_chapter_8_1754945452
+INFO:root:🎉 Background upload completed: 0/10 images uploaded successfully
+INFO:root:🎯 Background upload queue completed

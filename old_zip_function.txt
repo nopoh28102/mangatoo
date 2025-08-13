@@ -1,0 +1,284 @@
+@app.route('/admin/extract-zip-preview', methods=['POST'])
+@login_required
+def admin_extract_zip_preview():
+    """Extract ZIP file and return preview data"""
+    if not (current_user.is_admin or current_user.is_publisher):
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+    
+    try:
+        # Check content length first to avoid loading large files into memory
+        content_length = request.content_length or 0
+        max_size = 50 * 1024 * 1024  # 50MB limit - increased for larger manga archives
+        
+        if content_length > max_size:
+            return jsonify({
+                'success': False, 
+                'error': f'File too large. Maximum size is 50MB, got {content_length / (1024*1024):.1f}MB'
+            })
+        
+        # Handle potential request size errors early
+        try:
+            # Test if we can safely access request files
+            if not request.files or 'chapter_zip' not in request.files:
+                return jsonify({'success': False, 'error': 'No ZIP file in request'})
+            
+            zip_file = request.files['chapter_zip']
+            if not zip_file or not zip_file.filename or zip_file.filename.strip() == '':
+                return jsonify({'success': False, 'error': 'No ZIP file selected'})
+                
+        except Exception as file_access_error:
+            # This catches werkzeug/gunicorn timeout errors during file parsing
+            error_message = str(file_access_error)
+            if "SystemExit" in error_message or "timeout" in error_message.lower():
+                return jsonify({
+                    'success': False, 
+                    'error': 'Upload timeout - file may be too large or connection too slow. Try a smaller file or faster connection.'
+                })
+            else:
+                return jsonify({
+                    'success': False, 
+                    'error': f'Upload error: {error_message}'
+                })
+            
+        import tempfile
+        import base64
+        from PIL import Image
+        import io
+        from stream_unzip import stream_unzip
+        
+        # Create temporary directory for extraction
+        temp_dir = tempfile.mkdtemp()
+        extracted_images = []
+        
+        try:
+            # Save ZIP temporarily using smaller chunks and progress tracking
+            zip_path = os.path.join(temp_dir, 'upload.zip')
+            
+            chunk_size = 4096  # Smaller chunks for better performance
+            total_written = 0
+            print(f"💾 Saving ZIP file in chunks...")
+            
+            with open(zip_path, 'wb') as f:
+                while True:
+                    try:
+                        chunk = zip_file.read(chunk_size)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        total_written += len(chunk)
+                        
+                        # Progress logging every 1MB
+                        if total_written % (1024 * 1024) == 0:
+                            print(f"📊 Written {total_written / (1024*1024):.1f}MB...")
+                            
+                    except Exception as chunk_error:
+                        print(f"❌ Error reading chunk at {total_written} bytes: {chunk_error}")
+                        raise chunk_error
+            
+            print(f"✅ ZIP file saved successfully: {total_written / (1024*1024):.1f}MB")
+            
+            # Extract and process images using stream-unzip
+            print(f"🔄 Starting ZIP extraction for {zip_file.filename} ({content_length / (1024*1024):.1f}MB)")
+            
+            with open(zip_path, 'rb') as zip_file_data:
+                image_file_data = []
+                processed_files = 0
+                max_files_to_process = 25  # Further reduced for gunicorn timeout limits
+                
+                # Stream through ZIP file entries
+                for file_name, file_size, unzipped_chunks in stream_unzip(zip_file_data):
+                    # Stop processing if we've hit the limit
+                    if processed_files >= max_files_to_process:
+                        print(f"Reached maximum file limit ({max_files_to_process}), stopping processing")
+                        break
+                        
+                    # Filter image files only
+                    if (file_name.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp')) 
+                        and not file_name.startswith('__MACOSX/') 
+                        and not file_name.startswith('.')
+                        and not file_name.endswith('/')):  # Exclude directories
+                        
+                        # Skip files larger than 10MB (increased limit)
+                        if file_size > 10 * 1024 * 1024:
+                            print(f"Skipping large file: {file_name} ({file_size / (1024*1024):.1f}MB)")
+                            continue
+                        
+                        # Collect file data from chunks efficiently
+                        try:
+                            file_data = b''.join(unzipped_chunks)
+                            
+                            # Quick validation that this is actually image data
+                            if len(file_data) < 100:  # Skip tiny files
+                                continue
+                                
+                            image_file_data.append({
+                                'name': file_name,
+                                'data': file_data,
+                                'size': file_size
+                            })
+                            processed_files += 1
+                            
+                        except Exception as chunk_error:
+                            print(f"Error processing chunks for {file_name}: {chunk_error}")
+                            continue
+                
+                # Sort naturally
+                def natural_sort_key(text):
+                    return [int(c) if c.isdigit() else c.lower() for c in re.split(r'(\d+)', text)]
+                
+                image_file_data.sort(key=lambda x: natural_sort_key(x['name']))
+                
+                # Limit number of images to prevent timeout - but process fewer for preview
+                max_images = 30
+                if len(image_file_data) > max_images:
+                    image_file_data = image_file_data[:max_images]
+                
+                processed_count = 0
+                max_preview_images = 10  # Only create thumbnails for first 10 images to reduce processing time
+                
+                for i, file_info in enumerate(image_file_data, 1):
+                    try:
+                        filename = file_info['name']
+                        image_data = file_info['data']
+                        file_size = file_info['size']
+                        
+                        # For files beyond the preview limit, just store basic info without thumbnail
+                        if processed_count >= max_preview_images:
+                            # Get file size
+                            file_size_bytes = len(image_data)
+                            size_str = f"{file_size_bytes / 1024:.1f} KB" if file_size_bytes < 1024*1024 else f"{file_size_bytes / (1024*1024):.1f} MB"
+                            
+                            # Save file temporarily
+                            safe_filename = f"page_{i:03d}{os.path.splitext(filename)[1]}"
+                            temp_filepath = os.path.join(temp_dir, safe_filename)
+                            with open(temp_filepath, 'wb') as f:
+                                f.write(image_data)
+                            
+                            extracted_images.append({
+                                'filename': safe_filename,
+                                'original_filename': filename,
+                                'preview_url': 'data:image/svg+xml;base64,' + base64.b64encode(
+                                    f'<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="#f0f0f0"/><text x="60" y="60" font-family="Arial" font-size="12" text-anchor="middle" fill="#666">صورة {i}</text></svg>'.encode()
+                                ).decode(),
+                                'size': size_str,
+                                'temp_path': temp_filepath,
+                                'page_number': i
+                            })
+                            processed_count += 1
+                            continue
+                            
+                        # Validate image and create thumbnail for preview images only
+                        try:
+                            with Image.open(io.BytesIO(image_data)) as img:
+                                # Convert to RGB if needed
+                                if img.mode in ('RGBA', 'LA', 'P'):
+                                    img = img.convert('RGB')
+                                    
+                                # Create smaller thumbnail for preview to reduce memory usage
+                                thumbnail_size = (100, 100)  # Smaller thumbnail for faster processing
+                                img.thumbnail(thumbnail_size, Image.Resampling.LANCZOS)
+                                
+                                # Convert to base64 for preview
+                                thumb_buffer = io.BytesIO()
+                                img.save(thumb_buffer, format='JPEG', quality=50, optimize=True)  # Lower quality for faster processing
+                                thumb_base64 = base64.b64encode(thumb_buffer.getvalue()).decode()
+                                
+                        except Exception as img_error:
+                            print(f"Invalid image {filename}: {img_error}")
+                            continue
+                            
+                        # Get file size
+                        file_size_bytes = len(image_data)
+                        size_str = f"{file_size_bytes / 1024:.1f} KB" if file_size_bytes < 1024*1024 else f"{file_size_bytes / (1024*1024):.1f} MB"
+                        
+                        # Save original file temporarily for later upload
+                        safe_filename = f"page_{i:03d}{os.path.splitext(filename)[1]}"
+                        temp_filepath = os.path.join(temp_dir, safe_filename)
+                        with open(temp_filepath, 'wb') as f:
+                            f.write(image_data)
+                        
+                        extracted_images.append({
+                            'filename': safe_filename,
+                            'original_filename': filename,
+                            'preview_url': f'data:image/jpeg;base64,{thumb_base64}',
+                            'size': size_str,
+                            'temp_path': temp_filepath,
+                            'page_number': i
+                        })
+                        
+                        processed_count += 1
+                        # Prevent timeout by limiting processing count
+                        if processed_count >= 25:  # Process max 25 images
+                            break
+                            
+                    except Exception as e:
+                        print(f"Error processing {filename}: {e}")
+                        continue
+                        
+            # Clean up ZIP file
+            if os.path.exists(zip_path):
+                os.remove(zip_path)
+                
+            if not extracted_images:
+                # Cleanup temp directory
+                import shutil
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                return jsonify({'success': False, 'error': 'No valid images found in ZIP file'})
+                
+            # Store temp directory path in session for later use
+            session['zip_temp_dir'] = temp_dir
+            session['extracted_images_count'] = len(extracted_images)
+            
+            # Log processing statistics
+            print(f"✅ ZIP processing completed: {len(extracted_images)} images processed from {zip_file.filename}")
+            
+            return jsonify({
+                'success': True,
+                'images': extracted_images,
+                'total': len(extracted_images),
+                'message': f'تم استخراج {len(extracted_images)} صورة من الأرشيف بنجاح'
+            })
+                
+        except Exception as zip_error:
+            # Handle stream-unzip specific errors or general ZIP errors
+            error_msg = str(zip_error)
+            if "zip" in error_msg.lower() or "archive" in error_msg.lower():
+                error_response = 'Invalid ZIP file or corrupted archive'
+            else:
+                error_response = f'Error reading ZIP file: {error_msg}'
+                
+            # Cleanup on error
+            import shutil
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            return jsonify({'success': False, 'error': error_response})
+            
+        except Exception as e:
+            # Cleanup on error
+            import shutil
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir, ignore_errors=True)
+            return jsonify({'success': False, 'error': f'Error extracting ZIP: {str(e)}'})
+            
+    except Exception as e:
+        error_message = str(e)
+        print(f"❌ ZIP extraction error: {error_message}")
+        
+        # Handle specific error types for better user experience
+        if any(keyword in error_message.lower() for keyword in ['timeout', 'systemexit', 'abort', 'connection', 'worker']):
+            return jsonify({
+                'success': False, 
+                'error': 'Upload timeout - the server cannot process this large file. Please try a smaller ZIP file (under 10MB) or upload images individually.'
+            })
+        elif 'memory' in error_message.lower() or 'size' in error_message.lower():
+            return jsonify({
+                'success': False, 
+                'error': 'File too large for processing - please try a smaller ZIP file or use individual image upload'
+            })
+        else:
+            return jsonify({
+                'success': False, 
+                'error': f'Server error: {error_message}'
+            })
+
+

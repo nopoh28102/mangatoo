@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}خطط الاشتراك المميز - منصة المانجا{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">خطط الاشتراك المميز</h1>
+        <p class="lead text-muted">اختر الخطة المناسبة لك واستمتع بمزايا حصرية</p>
+        
+        <!-- Admin Create Plan Button -->
+        {% if current_user.is_authenticated and current_user.is_admin %}
+        <div class="mt-4">
+            <a href="{{ url_for('admin_add_payment_plan') }}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>
+                <span data-lang="en">Create New Plan</span>
+                <span data-lang="ar">إنشاء خطة جديدة</span>
+            </a>
+            <a href="{{ url_for('admin_payment_plans') }}" class="btn btn-outline-primary ms-2">
+                <i class="fas fa-cog me-2"></i>
+                <span data-lang="en">Manage Plans</span>
+                <span data-lang="ar">إدارة الخطط</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Include Currency Selector -->
+    {% include 'premium/currency_selector.html' %}
+    
+    <!-- Include Payment Methods Info -->
+    {% include 'premium/payment_methods_info.html' %}
+
+    <!-- Current Subscription Status -->
+    {% if current_user.is_authenticated and current_user.premium_until and current_user.premium_until > now %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-success text-center">
+                <h5><i class="fas fa-crown me-2"></i>أنت مشترك مميز حالياً!</h5>
+                <p class="mb-0">اشتراكك نشط حتى: {{ current_user.premium_until.strftime('%d/%m/%Y') }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <!-- Free Plan -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 border-secondary">
+                <div class="card-header bg-light text-center">
+                    <h4 class="card-title">مجاني</h4>
+                    <h2 class="text-primary">$0<small class="text-muted">/شهر</small></h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>قراءة المانجا المجانية</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>نظام العلامات المرجعية</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>تتبع تقدم القراءة</li>
+                        <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>المانجا المميزة</li>
+                        <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>قراءة بدون إعلانات</li>
+                        <li class="mb-2"><i class="fas fa-times text-danger me-2"></i>تحميل للقراءة دون اتصال</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-grid">
+                        {% if not current_user.is_authenticated or not current_user.premium_until or current_user.premium_until <= now %}
+                        <span class="btn btn-outline-secondary disabled">الخطة الحالية</span>
+                        {% else %}
+                        <span class="btn btn-outline-secondary disabled">خطة احتياطية</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Premium Plans from Database -->
+        {% for plan in plans %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 {% if loop.first %}border-primary shadow{% else %}border-success{% endif %}">
+                <div class="card-header {% if loop.first %}bg-primary text-white{% else %}bg-success text-white{% endif %} text-center">
+                    <h4 class="card-title">{{ plan.name_ar or plan.name }}</h4>
+                    <h2 class="text-white"><span data-price="{{ plan.price }}">${{ "%.2f"|format(plan.price) }}</span><small class="text-light">/{{ plan.duration_months }} شهر</small></h2>
+                    {% if loop.first %}
+                    <span class="badge bg-warning">الأكثر شعبية</span>
+                    {% elif plan.duration_months >= 12 %}
+                    <span class="badge bg-warning">وفر أكثر</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% if plan.features %}
+                            {% for feature in plan.features %}
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i>{{ feature }}</li>
+                            {% endfor %}
+                        {% else %}
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>جميع المزايا المجانية</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>المانجا المميزة</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>قراءة بدون إعلانات</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>وصول مبكر للفصول</li>
+                        <li class="mb-2"><i class="fas fa-check text-success me-2"></i>دعم فني مميز</li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-grid">
+                        {% if current_user.is_authenticated %}
+                            {% if payment_gateways %}
+                            <div class="btn-group-vertical" role="group">
+                                {% for gateway in payment_gateways %}
+                                    {% if gateway.is_active %}
+                                    <form action="{{ url_for('create_payment') }}" method="POST" class="mb-2">
+                                        <input type="hidden" name="plan_id" value="{{ plan.id }}">
+                                        <input type="hidden" name="gateway_id" value="{{ gateway.id }}">
+                                        <input type="hidden" name="currency" value="USD">
+                                        <button type="submit" class="btn {% if loop.first %}btn-primary{% else %}btn-success{% endif %} btn-lg w-100" data-gateway-type="{{ gateway.gateway_type }}">
+                                            {% if gateway.icon_class %}
+                                            <i class="{{ gateway.icon_class }} me-2"></i>
+                                            {% elif gateway.gateway_type == 'paypal' %}
+                                            <i class="fab fa-paypal me-2"></i>
+                                            {% elif gateway.gateway_type == 'stripe' %}
+                                            <i class="fab fa-cc-stripe me-2"></i>
+                                            {% elif gateway.gateway_type == 'visa_direct' %}
+                                            <i class="fab fa-cc-visa me-2"></i>
+                                            {% elif gateway.gateway_type == 'mastercard' %}
+                                            <i class="fab fa-cc-mastercard me-2"></i>
+                                            {% elif gateway.gateway_type == 'apple_pay' %}
+                                            <i class="fab fa-apple-pay me-2"></i>
+                                            {% elif gateway.gateway_type == 'google_pay' %}
+                                            <i class="fab fa-google-pay me-2"></i>
+                                            {% elif gateway.gateway_type == 'bank_transfer' %}
+                                            <i class="fas fa-university me-2"></i>
+                                            {% elif gateway.gateway_type == 'paymob' %}
+                                            <i class="fas fa-credit-card me-2"></i>
+                                            {% elif gateway.gateway_type == 'razorpay' %}
+                                            <i class="fas fa-bolt me-2"></i>
+                                            {% elif gateway.gateway_type == 'fawry' %}
+                                            <i class="fas fa-store me-2"></i>
+                                            {% elif gateway.gateway_type == 'paytabs' %}
+                                            <i class="fas fa-credit-card me-2"></i>
+                                            {% else %}
+                                            <i class="fas fa-credit-card me-2"></i>
+                                            {% endif %}
+                                            {{ gateway.display_name_ar or gateway.display_name or gateway.name }}
+                                            {% if gateway.processing_fee and gateway.processing_fee > 0 %}
+                                            <small class="d-block">رسوم: {{ gateway.processing_fee }}%</small>
+                                            {% endif %}
+
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <button type="button" class="btn btn-secondary btn-lg" disabled>
+                                وسائل الدفع غير متاحة
+                            </button>
+                            {% endif %}
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn {% if loop.first %}btn-primary{% else %}btn-success{% endif %} btn-lg">
+                            سجل دخول للاشتراك
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% if not plans %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info">
+                <h5>لا توجد خطط اشتراك متاحة حالياً</h5>
+                <p class="mb-0">يرجى المحاولة لاحقاً أو التواصل مع الدعم الفني</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="text-center mb-4">الأسئلة الشائعة</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq1">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                            كيف يمكنني إلغاء اشتراكي؟
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            يمكنك إلغاء اشتراكك في أي وقت من خلال لوحة التحكم الخاصة بك أو عبر PayPal مباشرة. لن يتم تحصيل أي رسوم إضافية بعد الإلغاء.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq2">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                            هل البيانات آمنة؟
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            نعم، جميع المدفوعات تتم عبر بوابات دفع آمنة ومعتمدة ولا نحتفظ ببيانات بطاقتك الائتمانية. بياناتك الشخصية محمية بأعلى معايير الأمان مع تشفير SSL.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq3">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                            ماذا يحدث بعد انتهاء الاشتراك؟
+                        </button>
+                    </h2>
+                    <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            ستعود لاستخدام الخطة المجانية تلقائياً. ستحتفظ بجميع علاماتك المرجعية وتاريخ القراءة، لكن ستفقد الوصول للمحتوى المميز.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Track plan selection events
+    const planButtons = document.querySelectorAll('form[action*="create_payment"] button');
+    planButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const planId = this.closest('form').querySelector('input[name="plan_id"]').value;
+            const gatewayId = this.closest('form').querySelector('input[name="gateway_id"]').value;
+            console.log('User selected plan:', planId, 'with gateway:', gatewayId);
+            
+            // Show loading state
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري التحويل...';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر Razorpay - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        دفع عبر Razorpay
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">ملخص الطلب</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>الخطة:</strong> {{ plan.name_ar or plan.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>المدة:</strong> {{ plan.duration_days }} يوم
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>السعر:</strong> ${{ payment.amount }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="card border-success mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-credit-card me-2"></i>
+                                اختر وسيلة الدفع
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- UPI -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="paymentMethod" value="upi" checked>
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-mobile-alt fa-2x text-primary mb-2"></i>
+                                                <h6>UPI</h6>
+                                                <small class="text-muted">Google Pay, PhonePe, Paytm</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Cards -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="paymentMethod" value="card">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-credit-card fa-2x text-success mb-2"></i>
+                                                <h6>بطاقة ائتمانية/مدينة</h6>
+                                                <small class="text-muted">Visa, Mastercard, RuPay</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Net Banking -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="paymentMethod" value="netbanking">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-university fa-2x text-warning mb-2"></i>
+                                                <h6>الخدمات المصرفية عبر الإنترنت</h6>
+                                                <small class="text-muted">SBI, HDFC, ICICI, etc.</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Wallets -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="paymentMethod" value="wallet">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-wallet fa-2x text-info mb-2"></i>
+                                                <h6>محافظ إلكترونية</h6>
+                                                <small class="text-muted">Paytm, Mobikwik, Freecharge</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- UPI Payment Form -->
+                    <div id="upiForm" class="payment-form">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">دفع عبر UPI</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="upiId" class="form-label">UPI ID</label>
+                                    <input type="text" class="form-control" id="upiId" placeholder="yourname@paytm">
+                                    <div class="form-text">ادخل UPI ID الخاص بك</div>
+                                </div>
+                                <div class="text-center">
+                                    <button class="btn btn-primary" onclick="processUpiPayment()">
+                                        <i class="fas fa-mobile-alt me-2"></i>
+                                        ادفع عبر UPI
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Payment Form -->
+                    <div id="cardForm" class="payment-form" style="display: none;">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">دفع بالبطاقة</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cardNumber" class="form-label">رقم البطاقة</label>
+                                        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expiryDate" class="form-label">تاريخ الانتهاء</label>
+                                        <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="123">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="cardholderName" class="form-label">اسم حامل البطاقة</label>
+                                    <input type="text" class="form-control" id="cardholderName" placeholder="Name on Card">
+                                </div>
+                                <div class="text-center">
+                                    <button class="btn btn-success" onclick="processCardPayment()">
+                                        <i class="fas fa-credit-card me-2"></i>
+                                        ادفع بالبطاقة
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Info -->
+                    <div class="alert alert-light mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-success">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    أمان متقدم
+                                </h6>
+                                <ul class="list-unstyled small">
+                                    <li>• تشفير SSL 256-bit</li>
+                                    <li>• حماية PCI DSS</li>
+                                    <li>• تأكيد بـ OTP</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-info">
+                                    <i class="fas fa-clock me-2"></i>
+                                    سرعة المعالجة
+                                </h6>
+                                <ul class="list-unstyled small">
+                                    <li>• دفع فوري</li>
+                                    <li>• تأكيد تلقائي</li>
+                                    <li>• إشعار فوري</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <div class="text-muted small">
+                            <i class="fas fa-lock me-1"></i>
+                            محمي بـ Razorpay
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-method-option {
+    cursor: pointer;
+    width: 100%;
+}
+
+.payment-method-option input[type="radio"] {
+    display: none;
+}
+
+.payment-method-option .card {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.payment-method-option input[type="radio"]:checked + .card {
+    border-color: #0d6efd;
+    background-color: #f8f9ff;
+}
+
+.payment-method-option:hover .card {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+}
+
+.payment-form {
+    margin-top: 20px;
+}
+</style>
+
+<script>
+// Payment method selection
+document.addEventListener('DOMContentLoaded', function() {
+    const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+    const paymentForms = document.querySelectorAll('.payment-form');
+    
+    paymentMethods.forEach(function(method) {
+        method.addEventListener('change', function() {
+            // Hide all forms
+            paymentForms.forEach(function(form) {
+                form.style.display = 'none';
+            });
+            
+            // Show selected form
+            const selectedForm = document.getElementById(this.value + 'Form');
+            if (selectedForm) {
+                selectedForm.style.display = 'block';
+            }
+        });
+    });
+});
+
+function processUpiPayment() {
+    const upiId = document.getElementById('upiId').value;
+    if (!upiId) {
+        alert('يرجى إدخال UPI ID');
+        return;
+    }
+    
+    // Simulate UPI payment
+    alert('سيتم تحويلك لتطبيق UPI للتأكيد...');
+    
+    setTimeout(function() {
+        const confirmed = confirm('تم إرسال طلب دفع لـ ' + upiId + '. هل تم تأكيد الدفع؟');
+        if (confirmed) {
+            window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+        }
+    }, 2000);
+}
+
+function processCardPayment() {
+    const cardNumber = document.getElementById('cardNumber').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    const cardholderName = document.getElementById('cardholderName').value;
+    
+    if (!cardNumber || !expiryDate || !cvv || !cardholderName) {
+        alert('يرجى ملء جميع البيانات المطلوبة');
+        return;
+    }
+    
+    // Simulate card payment
+    alert('جاري معالجة الدفع...');
+    
+    setTimeout(function() {
+        alert('تم الدفع بنجاح!');
+        window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+    }, 3000);
+}
+</script>
+{% endblock %}

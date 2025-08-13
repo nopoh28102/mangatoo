@@ -1,0 +1,2110 @@
+{
+  "timestamp": "2025-08-10T21:27:37.997421",
+  "project_structure": {
+    "total_files": 275,
+    "directories": [
+      "./templates",
+      "./static",
+      "./attached_assets",
+      "./backups",
+      "./templates/admin",
+      "./templates/auth",
+      "./templates/publisher",
+      "./templates/premium",
+      "./templates/user",
+      "./templates/manga",
+      "./templates/components",
+      "./static/css",
+      "./static/js",
+      "./static/uploads",
+      "./static/img",
+      "./static/uploads/manga",
+      "./static/uploads/covers",
+      "./static/uploads/comments",
+      "./static/uploads/avatars",
+      "./static/uploads/manga/1",
+      "./static/uploads/manga/2",
+      "./static/uploads/manga/1/1",
+      "./static/uploads/manga/2/2",
+      "./backups/backup_20250810_212322"
+    ],
+    "file_types": {
+      ".py": 34,
+      ".toml": 2,
+      ".lock": 1,
+      ".txt": 12,
+      ".db": 2,
+      ".json": 2,
+      ".md": 2,
+      ".html": 72,
+      ".css": 2,
+      ".js": 3,
+      ".webp": 21,
+      ".jpg": 3,
+      ".svg": 1,
+      ".png": 118
+    },
+    "large_files": [
+      {
+        "path": "./static/uploads/covers/3929483832063663823.jpg",
+        "size_mb": 1.31
+      }
+    ],
+    "empty_files": [
+      "./final_analysis.txt"
+    ]
+  },
+  "database_analysis": {
+    "tables": {
+      "user": {
+        "row_count": 5,
+        "columns": 18,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "username",
+            "type": "VARCHAR(64)",
+            "not_null": true
+          },
+          {
+            "name": "email",
+            "type": "VARCHAR(120)",
+            "not_null": true
+          },
+          {
+            "name": "password_hash",
+            "type": "VARCHAR(256)",
+            "not_null": true
+          },
+          {
+            "name": "is_admin",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_publisher",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_translator",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "premium_until",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "profile_picture",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "avatar_url",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "bio",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "bio_ar",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "country",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "language_preference",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "notification_settings",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "last_seen",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "account_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          }
+        ],
+        "indexes": 3,
+        "foreign_keys": 0
+      },
+      "category": {
+        "row_count": 21,
+        "columns": 8,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "name_ar",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "description_ar",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "slug",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 2,
+        "foreign_keys": 0
+      },
+      "payment_plan": {
+        "row_count": 3,
+        "columns": 8,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "name_ar",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "price",
+            "type": "FLOAT",
+            "not_null": true
+          },
+          {
+            "name": "duration_months",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "features",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 0
+      },
+      "payment_gateway": {
+        "row_count": 2,
+        "columns": 24,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "name",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "display_name",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "display_name_ar",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "gateway_type",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_sandbox",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "config_data",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "logo_url",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "icon_class",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "description_ar",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "supported_currencies",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "processing_fee",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "min_amount",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "max_amount",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "display_order",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "supported_countries",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "requires_verification",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "supports_recurring",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "processing_time",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "processing_time_ar",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 0
+      },
+      "site_setting": {
+        "row_count": 5,
+        "columns": 10,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "key",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "data_type",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "category",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "description_ar",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "is_public",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 0
+      },
+      "scraping_settings": {
+        "row_count": 0,
+        "columns": 6,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "key",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "value",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 0
+      },
+      "manga": {
+        "row_count": 3,
+        "columns": 24,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "title",
+            "type": "VARCHAR(200)",
+            "not_null": true
+          },
+          {
+            "name": "title_ar",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "slug",
+            "type": "VARCHAR(250)",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "description_ar",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "author",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "artist",
+            "type": "VARCHAR(100)",
+            "not_null": false
+          },
+          {
+            "name": "cover_image",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "type",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "language",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "views",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "is_premium",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_featured",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_published",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "publication_schedule",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "publisher_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "original_language",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "tags",
+            "type": "JSON",
+            "not_null": false
+          },
+          {
+            "name": "age_rating",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "license_type",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 3,
+        "foreign_keys": 1
+      },
+      "publisher_request": {
+        "row_count": 0,
+        "columns": 9,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "portfolio_url",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "sample_work",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "admin_notes",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "reviewed_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "notification": {
+        "row_count": 0,
+        "columns": 8,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "type",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "title",
+            "type": "VARCHAR(200)",
+            "not_null": true
+          },
+          {
+            "name": "message",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "link",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "is_read",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "announcement": {
+        "row_count": 0,
+        "columns": 13,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "title",
+            "type": "VARCHAR(200)",
+            "not_null": true
+          },
+          {
+            "name": "title_ar",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "content_ar",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "type",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_featured",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "target_audience",
+            "type": "VARCHAR(50)",
+            "not_null": false
+          },
+          {
+            "name": "display_until",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "created_by",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "advertisement": {
+        "row_count": 0,
+        "columns": 18,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "title",
+            "type": "VARCHAR(200)",
+            "not_null": true
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "ad_type",
+            "type": "VARCHAR(20)",
+            "not_null": true
+          },
+          {
+            "name": "placement",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "image_url",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "target_url",
+            "type": "VARCHAR(500)",
+            "not_null": false
+          },
+          {
+            "name": "open_new_tab",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "priority",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "impressions",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "clicks",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "start_date",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "end_date",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "created_by",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "translation": {
+        "row_count": 0,
+        "columns": 11,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "content_type",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "content_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "language",
+            "type": "VARCHAR(10)",
+            "not_null": true
+          },
+          {
+            "name": "original_text",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "translated_text",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "translator_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "quality_score",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 1
+      },
+      "report": {
+        "row_count": 0,
+        "columns": 10,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "content_type",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "content_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "reason",
+            "type": "VARCHAR(100)",
+            "not_null": true
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "admin_notes",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "resolved_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "payment": {
+        "row_count": 0,
+        "columns": 15,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "plan_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "gateway_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "amount",
+            "type": "FLOAT",
+            "not_null": true
+          },
+          {
+            "name": "currency",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "gateway_payment_id",
+            "type": "VARCHAR(255)",
+            "not_null": false
+          },
+          {
+            "name": "gateway_transaction_id",
+            "type": "VARCHAR(255)",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "completed_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "expires_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "refunded_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "refund_reason",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "gateway_response",
+            "type": "TEXT",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 3
+      },
+      "manga_category": {
+        "row_count": 7,
+        "columns": 2,
+        "column_details": [
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "category_id",
+            "type": "INTEGER",
+            "not_null": true
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 2
+      },
+      "chapter": {
+        "row_count": 7,
+        "columns": 20,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_number",
+            "type": "FLOAT",
+            "not_null": true
+          },
+          {
+            "name": "title",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "title_ar",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "slug",
+            "type": "VARCHAR(300)",
+            "not_null": false
+          },
+          {
+            "name": "pages",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "is_premium",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "publisher_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "release_date",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "early_access_date",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "is_locked",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_approved",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "approved_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "approved_by",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "rejection_reason",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "reviewed_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "reviewed_by",
+            "type": "INTEGER",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 4
+      },
+      "bookmark": {
+        "row_count": 0,
+        "columns": 4,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 2,
+        "foreign_keys": 2
+      },
+      "manga_reaction": {
+        "row_count": 0,
+        "columns": 5,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "reaction_type",
+            "type": "VARCHAR(20)",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 2
+      },
+      "rating": {
+        "row_count": 0,
+        "columns": 7,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "rating",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "review",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 2,
+        "foreign_keys": 2
+      },
+      "subscription": {
+        "row_count": 0,
+        "columns": 6,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "notify_new_chapters",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "notify_comments",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 2
+      },
+      "manga_analytics": {
+        "row_count": 0,
+        "columns": 9,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "date",
+            "type": "DATE",
+            "not_null": true
+          },
+          {
+            "name": "views",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "unique_visitors",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "reading_time",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "bookmarks_added",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "ratings_added",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "comments_added",
+            "type": "INTEGER",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 1
+      },
+      "user_subscription": {
+        "row_count": 0,
+        "columns": 10,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "plan_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "payment_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "start_date",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "end_date",
+            "type": "DATETIME",
+            "not_null": true
+          },
+          {
+            "name": "auto_renew",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 3
+      },
+      "auto_scraping_source": {
+        "row_count": 0,
+        "columns": 13,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "website_type",
+            "type": "VARCHAR(50)",
+            "not_null": true
+          },
+          {
+            "name": "source_url",
+            "type": "VARCHAR(500)",
+            "not_null": true
+          },
+          {
+            "name": "last_chapter_scraped",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "last_check",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "check_interval",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "is_active",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "auto_publish",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "quality_check",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "notification_enabled",
+            "type": "BOOLEAN",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "page_image": {
+        "row_count": 10,
+        "columns": 6,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "page_number",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "image_path",
+            "type": "VARCHAR(300)",
+            "not_null": true
+          },
+          {
+            "name": "image_width",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "image_height",
+            "type": "INTEGER",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "reading_progress": {
+        "row_count": 1,
+        "columns": 6,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "page_number",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 3
+      },
+      "comment": {
+        "row_count": 10,
+        "columns": 10,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "content",
+            "type": "TEXT",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "updated_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "is_approved",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "is_edited",
+            "type": "BOOLEAN",
+            "not_null": false
+          },
+          {
+            "name": "parent_id",
+            "type": "INTEGER",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 4
+      },
+      "translation_request": {
+        "row_count": 0,
+        "columns": 12,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "manga_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "from_language",
+            "type": "VARCHAR(10)",
+            "not_null": true
+          },
+          {
+            "name": "to_language",
+            "type": "VARCHAR(10)",
+            "not_null": true
+          },
+          {
+            "name": "translator_id",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "priority",
+            "type": "VARCHAR(10)",
+            "not_null": false
+          },
+          {
+            "name": "deadline",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "reward",
+            "type": "FLOAT",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "completed_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 3
+      },
+      "scraping_log": {
+        "row_count": 0,
+        "columns": 8,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "source_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "check_time",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": true
+          },
+          {
+            "name": "chapters_found",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "chapters_scraped",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "error_message",
+            "type": "TEXT",
+            "not_null": false
+          },
+          {
+            "name": "execution_time",
+            "type": "FLOAT",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "scraping_queue": {
+        "row_count": 0,
+        "columns": 12,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "source_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "chapter_number",
+            "type": "FLOAT",
+            "not_null": true
+          },
+          {
+            "name": "chapter_url",
+            "type": "VARCHAR(500)",
+            "not_null": true
+          },
+          {
+            "name": "chapter_title",
+            "type": "VARCHAR(200)",
+            "not_null": false
+          },
+          {
+            "name": "priority",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(20)",
+            "not_null": false
+          },
+          {
+            "name": "attempts",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "max_attempts",
+            "type": "INTEGER",
+            "not_null": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "processed_at",
+            "type": "DATETIME",
+            "not_null": false
+          },
+          {
+            "name": "error_message",
+            "type": "TEXT",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 1
+      },
+      "comment_reaction": {
+        "row_count": 21,
+        "columns": 5,
+        "column_details": [
+          {
+            "name": "id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "user_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "comment_id",
+            "type": "INTEGER",
+            "not_null": true
+          },
+          {
+            "name": "reaction_type",
+            "type": "VARCHAR(20)",
+            "not_null": true
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "not_null": false
+          }
+        ],
+        "indexes": 1,
+        "foreign_keys": 2
+      },
+      "sqlite_stat1": {
+        "row_count": 11,
+        "columns": 3,
+        "column_details": [
+          {
+            "name": "tbl",
+            "type": "",
+            "not_null": false
+          },
+          {
+            "name": "idx",
+            "type": "",
+            "not_null": false
+          },
+          {
+            "name": "stat",
+            "type": "",
+            "not_null": false
+          }
+        ],
+        "indexes": 0,
+        "foreign_keys": 0
+      }
+    },
+    "total_records": 106,
+    "indexes": [],
+    "foreign_keys": [],
+    "largest_tables": [
+      {
+        "table": "category",
+        "count": 21
+      },
+      {
+        "table": "comment_reaction",
+        "count": 21
+      },
+      {
+        "table": "sqlite_stat1",
+        "count": 11
+      },
+      {
+        "table": "page_image",
+        "count": 10
+      },
+      {
+        "table": "comment",
+        "count": 10
+      },
+      {
+        "table": "manga_category",
+        "count": 7
+      },
+      {
+        "table": "chapter",
+        "count": 7
+      },
+      {
+        "table": "user",
+        "count": 5
+      },
+      {
+        "table": "site_setting",
+        "count": 5
+      },
+      {
+        "table": "payment_plan",
+        "count": 3
+      },
+      {
+        "table": "manga",
+        "count": 3
+      },
+      {
+        "table": "payment_gateway",
+        "count": 2
+      },
+      {
+        "table": "reading_progress",
+        "count": 1
+      }
+    ]
+  },
+  "code_metrics": {
+    "python_files": 34,
+    "total_lines": 21399,
+    "functions": 480,
+    "classes": 68,
+    "routes": 306,
+    "imports": {
+      "os": 20,
+      "time": 7,
+      "tempfile": 4,
+      "shutil": 3,
+      "datetime": 11,
+      "typing": 1,
+      "threading": 1,
+      "schedule": 1,
+      "flask": 8,
+      "app": 20,
+      "models": 14,
+      "scraper_utils": 3,
+      "utils": 4,
+      "urllib.parse": 4,
+      "requests": 6,
+      "bs4": 4,
+      "re": 8,
+      "zipfile": 5,
+      "werkzeug.utils": 5,
+      "PIL": 6,
+      "trafilatura": 1,
+      "werkzeug.security": 5,
+      "random": 4,
+      "hashlib": 1,
+      "json": 6,
+      "logging": 8,
+      "flask_sqlalchemy": 2,
+      "sqlalchemy.orm": 2,
+      "werkzeug.middleware.proxy_fix": 2,
+      "flask_login": 6,
+      "routes  # noqa: F401": 2,
+      "collections": 2,
+      "sqlalchemy": 9,
+      "enum": 2,
+      "sys": 2,
+      "sqlite3": 2,
+      "subprocess": 1,
+      "pathlib": 1,
+      "functools": 2,
+      "utils_payment": 2,
+      "sitemap": 2,
+      "paypalrestsdk": 2
+    },
+    "complexity_issues": [
+      {
+        "file": "./routes.py",
+        "issue": "Large file",
+        "lines": 6640
+      },
+      {
+        "file": "./backups/backup_20250810_212322/routes.py",
+        "issue": "Large file",
+        "lines": 6630
+      }
+    ]
+  },
+  "dependencies": {
+    "python_packages": [
+      "email-validator>=2.2.0",
+      "flask-login>=0.6.3",
+      "flask>=3.1.1",
+      "flask-sqlalchemy>=3.1.1",
+      "gunicorn>=23.0.0",
+      "pillow>=11.3.0",
+      "sqlalchemy>=2.0.42",
+      "werkzeug>=3.1.3",
+      "paypalrestsdk>=1.13.3",
+      "requests>=2.32.4",
+      "trafilatura>=2.0.0",
+      "selenium>=4.34.2",
+      "python-magic>=0.4.27",
+      "beautifulsoup4>=4.13.4",
+      "schedule>=1.2.2",
+      "stripe>=12.4.0",
+      "flask-dance>=7.1.0",
+      "oauthlib>=3.3.1",
+      "pyjwt>=2.10.1",
+      "fake-useragent>=2.2.0",
+      "zipfile-deflate64>=0.2.0",
+      "psutil>=7.0.0"
+    ],
+    "outdated_packages": [],
+    "security_vulnerabilities": []
+  },
+  "security_analysis": {
+    "issues": [],
+    "best_practices": [
+      "Use environment variables for secrets",
+      "Enable CSRF protection",
+      "Use HTTPS in production",
+      "Validate all user inputs",
+      "Implement rate limiting"
+    ],
+    "recommendations": []
+  },
+  "performance_metrics": {
+    "database_queries": 779,
+    "large_files": [],
+    "optimization_opportunities": [
+      "Complex joins in ./auto_scraper.py",
+      "Potential N+1 query in ./auto_scraper.py",
+      "Complex joins in ./utils.py",
+      "Complex joins in ./scraper_utils.py",
+      "Complex joins in ./scraping_handler.py",
+      "Potential N+1 query in ./populate_database.py",
+      "Potential N+1 query in ./update_database.py",
+      "Complex joins in ./enhanced_scraper.py",
+      "Complex joins in ./simple_manga_scraper.py",
+      "Complex joins in ./sitemap.py",
+      "Complex joins in ./repair_missing_pages.py",
+      "Complex joins in ./app.py",
+      "Complex joins in ./duplicate_analysis.py",
+      "Complex joins in ./route_conflict_analysis.py",
+      "Potential N+1 query in ./utils_manga_category.py",
+      "Potential N+1 query in ./models.py",
+      "Complex joins in ./project_analyzer.py",
+      "Potential N+1 query in ./project_analyzer.py",
+      "Complex joins in ./update_system.py",
+      "Complex joins in ./routes.py",
+      "Potential N+1 query in ./routes.py",
+      "Complex joins in ./backups/backup_20250810_212322/app.py",
+      "Potential N+1 query in ./backups/backup_20250810_212322/models.py",
+      "Complex joins in ./backups/backup_20250810_212322/routes.py",
+      "Potential N+1 query in ./backups/backup_20250810_212322/routes.py",
+      "Complex joins in ./backups/backup_20250810_212322/utils.py"
+    ]
+  },
+  "recommendations": {
+    "immediate_actions": [
+      "Update all dependencies to latest versions",
+      "Run comprehensive tests",
+      "Review and update documentation"
+    ],
+    "performance_improvements": [],
+    "security_enhancements": [],
+    "code_quality": []
+  }
+}

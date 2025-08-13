@@ -1,0 +1,624 @@
+{% extends "base.html" %}
+
+{% block title %}{{ manga.title }} - Chapter {{ chapter.chapter_number }} - Manga Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Advertisement styles */
+    .advertisement {
+        background: #2c2c2c;
+        border: 1px solid #444;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .advertisement:hover {
+        background: #333;
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+    .advertisement img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+    }
+    .advertisement .ad-label {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 123, 255, 0.8);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+    .advertisement a {
+        color: inherit;
+        text-decoration: none;
+    }
+    .advertisement.side-ad {
+        position: fixed;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 200px;
+        z-index: 1000;
+    }
+    .advertisement.between-pages {
+        background: linear-gradient(45deg, #2c2c2c, #1a1a1a);
+        border: 2px solid #007bff;
+        animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+    }
+    @media (max-width: 768px) {
+        .advertisement.side-ad {
+            position: static;
+            width: 100%;
+            transform: none;
+            margin: 10px 0;
+        }
+    }
+    body { background: #000; color: #fff; }
+    .navbar { background: rgba(0,0,0,0.9) !important; }
+    .reader-container { min-height: 100vh; }
+    .page-image { 
+        max-width: 100%; 
+        height: auto; 
+        display: block; 
+        margin: 0 auto;
+        box-shadow: 0 4px 20px rgba(255,255,255,0.1);
+    }
+    .reader-controls {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.8);
+        padding: 10px 20px;
+        border-radius: 30px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+    .page-counter {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        padding: 8px 16px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+    .chapter-nav {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0,0,0,0.8);
+        border: none;
+        color: white;
+        padding: 15px;
+        border-radius: 50%;
+        font-size: 1.2em;
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    .chapter-nav:hover { background: rgba(0,0,0,0.9); color: #007bff; }
+    .prev-chapter { left: 20px; }
+    .next-chapter { right: 20px; }
+    .fullscreen-toggle {
+        position: fixed;
+        top: 80px;
+        left: 20px;
+        background: rgba(0,0,0,0.8);
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+    .loading-page {
+        height: 400px;
+        background: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        border-radius: 8px;
+    }
+    .comments-section {
+        background: #1a1a1a;
+        padding: 30px 0;
+        margin-top: 50px;
+    }
+    .comment-item {
+        background: #2a2a2a;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    .reading-mode-toggle {
+        position: fixed;
+        top: 120px;
+        left: 20px;
+        background: rgba(0,0,0,0.8);
+        border: none;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+    
+    /* Webtoon Mode Styles */
+    .webtoon-reading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .webtoon-reading .page-wrapper {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0;
+        text-align: center;
+    }
+    
+    .webtoon-reading .page-image {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        margin: 0 auto;
+        display: block;
+        box-shadow: none;
+    }
+    
+    /* Vertical Reading Mode */
+    .vertical-reading .page-wrapper {
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    
+    .vertical-reading .page-image {
+        max-width: 90%;
+        margin: 0 auto;
+    }
+    
+    /* Horizontal Reading Mode */
+    .horizontal-reading .page-wrapper {
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .horizontal-reading .page-image {
+        max-width: 100%;
+        max-height: 90vh;
+        object-fit: contain;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reader-container">
+    <!-- Page Counter -->
+    <div class="page-counter">
+        <span id="current-page">1</span> / <span id="total-pages">{{ pages|length }}</span>
+    </div>
+    
+    <!-- Fullscreen Toggle -->
+    <button class="fullscreen-toggle" id="fullscreen-btn" 
+            title-en="Toggle Fullscreen" title-ar="ملء الشاشة">
+        <i class="fas fa-expand"></i>
+    </button>
+    
+    <!-- Reading Mode Toggle -->
+    <button class="reading-mode-toggle" id="reading-mode-btn" 
+            title-en="Toggle Reading Mode" title-ar="تغيير وضع القراءة">
+        <i class="fas fa-columns"></i>
+    </button>
+    
+    <!-- Chapter Navigation -->
+    {% if prev_chapter %}
+        <a href="{{ url_for("read_chapter_by_id", chapter_id=prev_chapter.id) }}" 
+           class="chapter-nav prev-chapter" 
+           title-en="Previous Chapter" title-ar="الفصل السابق">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    {% endif %}
+    
+    {% if next_chapter %}
+        <a href="{{ url_for("read_chapter_by_id", chapter_id=next_chapter.id) }}" 
+           class="chapter-nav next-chapter" title="Next Chapter">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    {% endif %}
+    
+    <!-- Reader Controls -->
+    <div class="reader-controls">
+        <div class="d-flex align-items-center gap-3">
+            {% if manga.slug %}
+            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" 
+            {% else %}
+            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" 
+            {% endif %}
+               class="btn btn-outline-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Back
+            </a>
+            
+            <div class="btn-group">
+                {% if prev_chapter %}
+                    <a href="{{ url_for("read_chapter_by_id", chapter_id=prev_chapter.id) }}" 
+                       class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-step-backward"></i>
+                    </a>
+                {% endif %}
+                
+                <button class="btn btn-outline-light btn-sm" id="prev-page">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <button class="btn btn-outline-light btn-sm" id="next-page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                {% if next_chapter %}
+                    <a href="{{ url_for("read_chapter_by_id", chapter_id=next_chapter.id) }}" 
+                       class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-step-forward"></i>
+                    </a>
+                {% endif %}
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-outline-light btn-sm" id="zoom-in">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="btn btn-outline-light btn-sm" id="zoom-out">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <button class="btn btn-outline-light btn-sm" id="zoom-reset">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Advertisement -->
+    {% if show_ads and advertisements.reader_top %}
+    <div class="container">
+        <div class="advertisement" data-ad-id="{{ advertisements.reader_top.id }}" onclick="handleAdClick({{ advertisements.reader_top.id }}, '{{ advertisements.reader_top.target_url }}', {{ advertisements.reader_top.open_new_tab|lower }})">
+            <div class="ad-label">إعلان</div>
+            {% if advertisements.reader_top.image_url %}
+                <img src="{{ advertisements.reader_top.image_url }}" alt="{{ advertisements.reader_top.title }}">
+            {% endif %}
+            {% if advertisements.reader_top.content %}
+                {{ advertisements.reader_top.content|safe }}
+            {% else %}
+                <h5>{{ advertisements.reader_top.title }}</h5>
+                {% if advertisements.reader_top.description %}
+                    <p>{{ advertisements.reader_top.description }}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Chapter Info -->
+    <div class="container py-4">
+        <div class="text-center mb-4">
+            <h2>{{ manga.title }}</h2>
+            <h4 class="text-muted">
+                Chapter {{ chapter.chapter_number }}
+                {% if chapter.title and chapter.title != "Chapter " + chapter.chapter_number|string %}
+                    - {{ chapter.title }}
+                {% endif %}
+            </h4>
+            {% if chapter.title_ar %}
+                <h5 class="text-muted" dir="rtl">{{ chapter.title_ar }}</h5>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Pages -->
+    <div class="pages-container" id="pages-container">
+        {% for page in pages %}
+            <div class="page-wrapper" data-page="{{ page.page_number }}">
+                <img src="{{ page.image_url if page.image_url else url_for('static', filename='uploads/placeholder.jpg') }}" 
+                     class="page-image" 
+                     alt="Page {{ page.page_number }}"
+                     loading="lazy"
+                     data-page-number="{{ page.page_number }}"
+                     style="display: {{ 'block' if loop.first else 'none' }};">
+            </div>
+            
+            <!-- Advertisement between pages (show after every 3rd page for free users) -->
+            {% if show_ads and advertisements.between_pages and loop.index % 3 == 0 and not loop.last %}
+            <div class="advertisement between-pages" data-ad-id="{{ advertisements.between_pages.id }}" onclick="handleAdClick({{ advertisements.between_pages.id }}, '{{ advertisements.between_pages.target_url }}', {{ advertisements.between_pages.open_new_tab|lower }})">
+                <div class="ad-label">إعلان</div>
+                {% if advertisements.between_pages.image_url %}
+                    <img src="{{ advertisements.between_pages.image_url }}" alt="{{ advertisements.between_pages.title }}">
+                {% endif %}
+                {% if advertisements.between_pages.content %}
+                    {{ advertisements.between_pages.content|safe }}
+                {% else %}
+                    <h5>{{ advertisements.between_pages.title }}</h5>
+                    {% if advertisements.between_pages.description %}
+                        <p>{{ advertisements.between_pages.description }}</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <!-- Loading placeholder for lazy loading -->
+    <div class="loading-page" id="loading-placeholder" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+    
+    <!-- Chapter End Advertisement -->
+    {% if show_ads and advertisements.chapter_end %}
+    <div class="container">
+        <div class="advertisement" data-ad-id="{{ advertisements.chapter_end.id }}" onclick="handleAdClick({{ advertisements.chapter_end.id }}, '{{ advertisements.chapter_end.target_url }}', {{ advertisements.chapter_end.open_new_tab|lower }})">
+            <div class="ad-label">إعلان</div>
+            {% if advertisements.chapter_end.image_url %}
+                <img src="{{ advertisements.chapter_end.image_url }}" alt="{{ advertisements.chapter_end.title }}">
+            {% endif %}
+            {% if advertisements.chapter_end.content %}
+                {{ advertisements.chapter_end.content|safe }}
+            {% else %}
+                <h5>{{ advertisements.chapter_end.title }}</h5>
+                {% if advertisements.chapter_end.description %}
+                    <p>{{ advertisements.chapter_end.description }}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Side Advertisement -->
+{% if show_ads and advertisements.reader_side %}
+<div class="advertisement side-ad" data-ad-id="{{ advertisements.reader_side.id }}" onclick="handleAdClick({{ advertisements.reader_side.id }}, '{{ advertisements.reader_side.target_url }}', {{ advertisements.reader_side.open_new_tab|lower }})">
+    <div class="ad-label">إعلان</div>
+    {% if advertisements.reader_side.image_url %}
+        <img src="{{ advertisements.reader_side.image_url }}" alt="{{ advertisements.reader_side.title }}">
+    {% endif %}
+    {% if advertisements.reader_side.content %}
+        {{ advertisements.reader_side.content|safe }}
+    {% else %}
+        <h5 style="font-size: 14px;">{{ advertisements.reader_side.title }}</h5>
+        {% if advertisements.reader_side.description %}
+            <p style="font-size: 12px;">{{ advertisements.reader_side.description }}</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Comments Section -->
+<div class="comments-section">
+    <div class="container">
+        <h4 class="mb-4">
+            <i class="fas fa-comments me-2"></i>Comments ({{ comments|length }})
+        </h4>
+        
+        {% if current_user.is_authenticated %}
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-body">
+                    <form id="comment-form">
+                        <div class="mb-3">
+                            <textarea class="form-control bg-dark text-white border-secondary" 
+                                      id="comment-content" rows="3" 
+                                      placeholder="Write your comment..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-1"></i>Post Comment
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div id="comments-list">
+            {% for comment in comments %}
+                <div class="comment-item">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0">
+                            <i class="fas fa-user me-2"></i>{{ comment.user.username }}
+                        </h6>
+                        <small class="text-muted">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <p class="mb-0">{{ comment.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        {% if not comments %}
+            <div class="text-center py-5">
+                <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No comments yet</h5>
+                <p class="text-muted">Be the first to comment on this chapter!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bottom Advertisement -->
+{% if show_ads and advertisements.reader_bottom %}
+<div class="container pb-4">
+    <div class="advertisement" data-ad-id="{{ advertisements.reader_bottom.id }}" onclick="handleAdClick({{ advertisements.reader_bottom.id }}, '{{ advertisements.reader_bottom.target_url }}', {{ advertisements.reader_bottom.open_new_tab|lower }})">
+        <div class="ad-label">إعلان</div>
+        {% if advertisements.reader_bottom.image_url %}
+            <img src="{{ advertisements.reader_bottom.image_url }}" alt="{{ advertisements.reader_bottom.title }}">
+        {% endif %}
+        {% if advertisements.reader_bottom.content %}
+            {{ advertisements.reader_bottom.content|safe }}
+        {% else %}
+            <h5>{{ advertisements.reader_bottom.title }}</h5>
+            {% if advertisements.reader_bottom.description %}
+                <p>{{ advertisements.reader_bottom.description }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/reader.js') }}"></script>
+<script>
+// Initialize reader with chapter data
+const readerData = {
+    mangaId: {{ manga.id }},
+    chapterId: {{ chapter.id }},
+    totalPages: {{ pages|length }},
+    currentPage: 1,
+    nextChapterUrl: {% if next_chapter %}"{{ url_for("read_chapter_by_id", chapter_id=next_chapter.id) }}"{% else %}null{% endif %},
+    prevChapterUrl: {% if prev_chapter %}"{{ url_for("read_chapter_by_id", chapter_id=prev_chapter.id) }}"{% else %}null{% endif %},
+    // Webtoon settings from backend
+    enableWebtoonMode: true,
+    webtoonAutoHeight: true,
+    webtoonGapSize: 5,
+    webtoonMaxWidth: 100
+};
+
+// Initialize reader
+window.addEventListener('DOMContentLoaded', function() {
+    initReader(readerData);
+    
+    // Record advertisement impressions
+    {% if show_ads %}
+    recordAdImpressions();
+    {% endif %}
+});
+
+// Comment form handling
+{% if current_user.is_authenticated %}
+document.getElementById('comment-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const content = document.getElementById('comment-content').value.trim();
+    if (!content) return;
+    
+    fetch(`/comment/{{ chapter.id }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Add new comment to the list
+            const commentsList = document.getElementById('comments-list');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment-item';
+            newComment.innerHTML = `
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h6 class="mb-0">
+                        <i class="fas fa-user me-2"></i>${data.comment.username}
+                    </h6>
+                    <small class="text-muted">${data.comment.created_at}</small>
+                </div>
+                <p class="mb-0">${data.comment.content}</p>
+            `;
+            commentsList.insertBefore(newComment, commentsList.firstChild);
+            
+            // Clear form
+            document.getElementById('comment-content').value = '';
+            
+            // Update comment count
+            const commentHeader = document.querySelector('.comments-section h4');
+            const currentCount = parseInt(commentHeader.textContent.match(/\d+/)[0]);
+            commentHeader.innerHTML = `<i class="fas fa-comments me-2"></i>Comments (${currentCount + 1})`;
+        }
+    });
+});
+{% endif %}
+
+// Advertisement handling functions
+{% if show_ads %}
+function recordAdImpressions() {
+    // Record impressions for all visible ads
+    const ads = document.querySelectorAll('.advertisement[data-ad-id]');
+    ads.forEach(ad => {
+        const adId = ad.getAttribute('data-ad-id');
+        if (adId && isElementVisible(ad)) {
+            fetch(`/api/ad/impression/${adId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            }).catch(err => console.log('Failed to record impression:', err));
+        }
+    });
+}
+
+function handleAdClick(adId, targetUrl, openNewTab) {
+    // Record click
+    fetch(`/api/ad/click/${adId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    }).catch(err => console.log('Failed to record click:', err));
+    
+    // Open target URL if provided
+    if (targetUrl) {
+        if (openNewTab) {
+            window.open(targetUrl, '_blank');
+        } else {
+            window.location.href = targetUrl;
+        }
+    }
+}
+
+function isElementVisible(element) {
+    const rect = element.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+}
+
+// Record impressions when ads come into view
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            const adId = entry.target.getAttribute('data-ad-id');
+            if (adId && !entry.target.hasAttribute('data-impression-recorded')) {
+                entry.target.setAttribute('data-impression-recorded', 'true');
+                fetch(`/api/ad/impression/${adId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }).catch(err => console.log('Failed to record impression:', err));
+            }
+        }
+    });
+});
+
+// Observe all advertisement elements
+document.querySelectorAll('.advertisement[data-ad-id]').forEach(ad => {
+    observer.observe(ad);
+});
+{% endif %}
+</script>
+{% endblock %}

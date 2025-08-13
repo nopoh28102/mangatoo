@@ -1,0 +1,95 @@
+import os
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+from tqdm import tqdm
+import time
+import random
+import re
+
+class MangaDownloader:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Referer': 'https://olympustaff.com/'
+        })
+    
+    def download_chapter(self, chapter_url, output_folder="downloads"):
+        try:
+            os.makedirs(output_folder, exist_ok=True)
+            
+            response = self.session.get(chapter_url)
+            response.raise_for_status()
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            chapter_title = self.extract_chapter_title(soup)
+            safe_title = self.sanitize_filename(chapter_title)
+            
+            chapter_folder = os.path.join(output_folder, safe_title)
+            os.makedirs(chapter_folder, exist_ok=True)
+            
+            image_urls = self.extract_image_urls(soup)
+            
+            if not image_urls:
+                print("لم يتم العثور على أي صور في هذا الفصل!")
+                return
+            
+            for i, img_url in enumerate(tqdm(image_urls, desc=f"تنزيل {chapter_title}")):
+                try:
+                    img_response = self.session.get(img_url, stream=True, headers={'Referer': chapter_url})
+                    img_response.raise_for_status()
+                    
+                    img_path = os.path.join(chapter_folder, f"page_{i+1:03d}{self.get_file_extension(img_url)}")
+                    with open(img_path, 'wb') as f:
+                        for chunk in img_response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                    
+                    time.sleep(random.uniform(0.3, 1.0))
+                
+                except Exception as img_error:
+                    print(f"\nخطأ في تنزيل الصورة {i+1}: {img_error}")
+            
+            print(f"\nتم تنزيل الفصل بنجاح في: {chapter_folder}")
+            
+        except Exception as e:
+            print(f"\nحدث خطأ: {e}")
+    
+    def extract_chapter_title(self, soup):
+        title_tag = soup.find('h1', class_='entry-title')
+        if title_tag:
+            return title_tag.text.strip()
+        return "الفصل_غير_معروف"
+    
+    def extract_image_urls(self, soup):
+        images = []
+        img_containers = soup.select('div.entry-content img')
+        
+        for img in img_containers:
+            img_url = img.get('src') or img.get('data-src')
+            if img_url and not img_url.startswith('data:'):
+                if 'olympustaff.com' not in img_url:
+                    img_url = urljoin('https://olympustaff.com/', img_url)
+                images.append(img_url)
+        
+        return images
+    
+    def sanitize_filename(self, filename):
+        return re.sub(r'[\\/*?:"<>|]', "", filename)
+    
+    def get_file_extension(self, url):
+        if '.jpg' in url.lower():
+            return '.jpg'
+        elif '.png' in url.lower():
+            return '.png'
+        elif '.webp' in url.lower():
+            return '.webp'
+        return '.jpg'
+
+if __name__ == "__main__":
+    downloader = MangaDownloader()
+    
+    chapter_url = input("الرجاء إدخال رابط الفصل الذي تريد تنزيله: ")
+    
+    downloader.download_chapter(chapter_url)

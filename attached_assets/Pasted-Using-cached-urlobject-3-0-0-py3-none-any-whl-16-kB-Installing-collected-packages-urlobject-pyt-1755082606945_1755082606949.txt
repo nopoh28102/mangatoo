@@ -1,0 +1,28 @@
+Using cached urlobject-3.0.0-py3-none-any.whl (16 kB)
+Installing collected packages: urlobject, pytz, urllib3, tzdata, typing_extensions, tld, stream-inflate, soupsieve, six, schedule, regex, python-magic, PyJWT, pycryptodome, pycparser, psycopg2-binary, psutil, Pillow, packaging, oauthlib, MarkupSafe, lxml, itsdangerous, idna, greenlet, fake-useragent, dnspython, colorama, charset_normalizer, certifi, blinker, babel, Werkzeug, tzlocal, stream-unzip, SQLAlchemy, requests, python-dateutil, lxml_html_clean, Jinja2, gunicorn, email-validator, courlan, cloudinary, click, cffi, beautifulsoup4, stripe, requests-oauthlib, Flask, dateparser, cryptography, pyopenssl, justext, htmldate, Flask-SQLAlchemy, Flask-Login, Flask-Dance, trafilatura, paypalrestsdk
+Successfully installed Flask-3.1.1 Flask-Dance-7.1.0 Flask-Login-0.6.3 Flask-SQLAlchemy-3.1.1 Jinja2-3.1.6 MarkupSafe-3.0.2 Pillow-11.3.0 PyJWT-2.10.1 SQLAlchemy-2.0.43 Werkzeug-3.1.3 babel-2.17.0 beautifulsoup4-4.13.4 blinker-1.9.0 certifi-2025.8.3 cffi-1.17.1 charset_normalizer-3.4.3 click-8.2.1 cloudinary-1.44.1 colorama-0.4.6 courlan-1.3.2 cryptography-45.0.6 dateparser-1.2.2 dnspython-2.7.0 email-validator-2.2.0 fake-useragent-2.2.0 greenlet-3.2.4 gunicorn-23.0.0 htmldate-1.9.3 idna-3.10 itsdangerous-2.2.0 justext-3.0.2 lxml-5.4.0 lxml_html_clean-0.4.2 oauthlib-3.3.1 packaging-25.0 paypalrestsdk-1.13.3 psutil-7.0.0 psycopg2-binary-2.9.10 pycparser-2.22 pycryptodome-3.23.0 pyopenssl-25.1.0 python-dateutil-2.9.0.post0 python-magic-0.4.27 pytz-2025.2 regex-2025.7.34 requests-2.32.4 requests-oauthlib-2.0.0 schedule-1.2.2 six-1.17.0 soupsieve-2.7 stream-inflate-0.0.42 stream-unzip-0.0.99 stripe-12.4.0 tld-0.13.1 trafilatura-2.0.0 typing_extensions-4.14.1 tzdata-2025.2 tzlocal-5.3.1 urllib3-2.5.0 urlobject-3.0.0
+
+[notice] A new release of pip is available: 25.1.1 -> 25.2
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+(venv) C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4>python main.py
+INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+INFO:root:Admin user already exists
+
+(venv) C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4>python app.py
+INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+Traceback (most recent call last):
+  File "C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4\app.py", line 41, in <module>
+    import models  # noqa: F401
+    ^^^^^^^^^^^^^
+  File "C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4\models.py", line 2, in <module>
+    from app import db
+  File "C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4\app.py", line 57, in <module>
+    from models import User
+ImportError: cannot import name 'User' from 'models' (consider renaming 'C:\\Users\\ahmed\\Downloads\\MangaRealm-4_3\\MangaRealm-4\\models.py' if it has the same name as a library you intended to import)
+
+(venv) C:\Users\ahmed\Downloads\MangaRealm-4_3\MangaRealm-4>

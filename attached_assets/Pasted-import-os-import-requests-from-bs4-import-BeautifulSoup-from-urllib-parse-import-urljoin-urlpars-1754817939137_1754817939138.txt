@@ -1,0 +1,320 @@
+import os
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
+from tqdm import tqdm
+import time
+import random
+import re
+import imghdr
+from fake_useragent import UserAgent
+
+class ArabicMangaDownloader:
+    def __init__(self):
+        self.session = requests.Session()
+        self.ua = UserAgent()
+        self.update_headers()
+        
+        # قوالب لمواقع المانجا العربية الشهيرة
+        self.site_templates = {
+            # مواقع عربية
+            'manga.ae': {
+                'title_selector': 'div.post-title h1',
+                'chapter_title_selector': 'div.post-title h1',
+                'image_selector': 'div.reading-content img',
+                'base_url': 'https://manga.ae',
+                'language': 'arabic'
+            },
+            'manga-arab.com': {
+                'title_selector': 'div.post-title h1',
+                'chapter_title_selector': 'li.active',
+                'image_selector': 'div.text-center img',
+                'base_url': 'https://www.manga-arab.com',
+                'language': 'arabic'
+            },
+            'ar-manga.com': {
+                'title_selector': 'div.post-title h1',
+                'chapter_title_selector': 'ol.breadcrumb li.active',
+                'image_selector': 'div.page-break img',
+                'base_url': 'https://ar-manga.com',
+                'language': 'arabic'
+            },
+            'mangalek.com': {
+                'title_selector': 'div.post-title h1',
+                'chapter_title_selector': 'div.chapter-name h2',
+                'image_selector': 'div.chapter-content img',
+                'base_url': 'https://www.mangalek.com',
+                'language': 'arabic'
+            },
+            'manga-swiat.com': {
+                'title_selector': 'h1.entry-title',
+                'chapter_title_selector': 'h1.entry-title',
+                'image_selector': 'div.entry-content img',
+                'base_url': 'https://manga-swiat.com',
+                'language': 'arabic'
+            },
+            
+            # مواقع دولية (تم الاحتفاظ بها للتوافق)
+            'mangakakalot': {
+                'title_selector': 'div.manga-info-top h1',
+                'chapter_title_selector': 'div.panel-chapter-info-top h1',
+                'image_selector': 'div.container-chapter-reader img',
+                'base_url': 'https://mangakakalot.com',
+                'language': 'english'
+            },
+            'default': {
+                'title_selector': 'h1',
+                'chapter_title_selector': 'h1, h2, h3',
+                'image_selector': 'img',
+                'base_url': None,
+                'language': 'unknown'
+            }
+        }
+    
+    def update_headers(self):
+        self.session.headers.update({
+            'User-Agent': self.ua.random,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'ar,en-US;q=0.7,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1',
+            'Referer': 'https://www.google.com/'
+        })
+    
+    def download_chapter(self, chapter_url, output_folder="downloads"):
+        try:
+            os.makedirs(output_folder, exist_ok=True)
+            
+            # تحديث الرؤوس لطلب جديد
+            self.update_headers()
+            
+            # تحديد قالب الموقع المستخدم
+            site_template = self.detect_site_template(chapter_url)
+            print(f"تم اكتشاف الموقع: {site_template.get('base_url', 'غير معروف')} (لغة: {site_template.get('language', 'غير معروفة')})")
+            
+            # إضافة تأخير عشوائي لتجنب الحظر
+            time.sleep(random.uniform(0.5, 2.0))
+            
+            response = self.session.get(chapter_url)
+            response.raise_for_status()
+            
+            # تحليل المحتوى مع تحديد ترميز الصفحة للغة العربية
+            if site_template.get('language') == 'arabic':
+                response.encoding = 'utf-8'
+            
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            chapter_title = self.extract_chapter_title(soup, site_template)
+            safe_title = self.sanitize_arabic_filename(chapter_title)
+            
+            chapter_folder = os.path.join(output_folder, safe_title)
+            os.makedirs(chapter_folder, exist_ok=True)
+            
+            image_urls = self.extract_image_urls(soup, chapter_url, site_template)
+            
+            if not image_urls:
+                print("⚠️ لم يتم العثور على أي صور في هذا الفصل!")
+                # محاولة طريقة احتياطية لاستخراج الصور
+                image_urls = self.alternative_image_extraction(soup, chapter_url)
+                if image_urls:
+                    print("تم العثور على الصور باستخدام الطريقة الاحتياطية")
+            
+            if not image_urls:
+                print("❌ فشل في العثور على صور في هذا الفصل!")
+                return
+            
+            print(f"⏳ جاري تنزيل {len(image_urls)} صورة...")
+            
+            for i, img_url in enumerate(tqdm(image_urls, desc=f"تنزيل {chapter_title}")):
+                try:
+                    # تغيير وكيل المستخدم بين الصور
+                    if i % 5 == 0:
+                        self.update_headers()
+                    
+                    img_response = self.session.get(img_url, stream=True, headers={
+                        'Referer': chapter_url,
+                        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8'
+                    })
+                    img_response.raise_for_status()
+                    
+                    # تحديد امتداد الملف من محتوى الصورة
+                    extension = self.detect_image_extension(img_response.content)
+                    img_path = os.path.join(chapter_folder, f"صفحة_{i+1:03d}{extension}")
+                    
+                    with open(img_path, 'wb') as f:
+                        for chunk in img_response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                    
+                    # تأخير عشوائي بين الطلبات
+                    time.sleep(random.uniform(0.2, 1.0))
+                
+                except Exception as img_error:
+                    print(f"\n⚠️ خطأ في تنزيل الصورة {i+1}: {img_error}")
+                    continue
+            
+            print(f"\n✅ تم تنزيل الفصل بنجاح في: {os.path.abspath(chapter_folder)}")
+            
+        except Exception as e:
+            print(f"\n❌ حدث خطأ جسيم: {e}")
+    
+    def detect_site_template(self, url):
+        domain = urlparse(url).netloc.lower()
+        
+        for site_name, template in self.site_templates.items():
+            if site_name in domain:
+                return template
+        
+        # إذا كان موقع عربي غير معروف
+        if any(x in domain for x in ['arab', 'ar-', '-ar', 'arabic', 'manga-ar']):
+            arabic_template = self.site_templates['default'].copy()
+            arabic_template['language'] = 'arabic'
+            return arabic_template
+        
+        return self.site_templates['default']
+    
+    def extract_chapter_title(self, soup, site_template):
+        # محاولة استخراج عنوان الفصل أولاً
+        chapter_title = None
+        if site_template['chapter_title_selector']:
+            chapter_title_tag = soup.select_one(site_template['chapter_title_selector'])
+            if chapter_title_tag:
+                chapter_title = chapter_title_tag.text.strip()
+        
+        # إذا لم يتم العثور على عنوان الفصل، جرب عنوان المانجا
+        if not chapter_title and site_template['title_selector']:
+            manga_title_tag = soup.select_one(site_template['title_selector'])
+            if manga_title_tag:
+                chapter_title = manga_title_tag.text.strip()
+        
+        # تنظيف العنوان للغة العربية
+        if site_template.get('language') == 'arabic':
+            if chapter_title:
+                chapter_title = re.sub(r'الفصل\s*\d+', '', chapter_title).strip()
+                chapter_title = re.sub(r'مانجا|مانغا|Manga|منقا', '', chapter_title, flags=re.IGNORECASE).strip()
+        
+        # إذا لم يتم العثور على أي شيء، استخدم اسمًا افتراضيًا
+        if not chapter_title:
+            chapter_title = "الفصل_غير_معروف"
+        
+        return chapter_title
+    
+    def extract_image_urls(self, soup, base_url, site_template):
+        images = []
+        img_containers = soup.select(site_template['image_selector'])
+        
+        base_domain = urlparse(base_url).netloc
+        
+        for img in img_containers:
+            img_url = (img.get('src') or 
+                      img.get('data-src') or 
+                      img.get('data-url') or 
+                      img.get('data-original') or
+                      img.get('data-lazy-src') or
+                      img.get('file'))
+            
+            if img_url and not img_url.startswith('data:'):
+                # إذا كان الرابط نسبيًا، قم بتحويله إلى مطلق
+                if not img_url.startswith(('http://', 'https://')):
+                    base = site_template['base_url'] or f"https://{base_domain}"
+                    img_url = urljoin(base, img_url)
+                
+                # تطبيع عنوان URL
+                img_url = img_url.split('?')[0].split('#')[0]
+                
+                # إضافة إلى القائمة إذا كانت صورة
+                if any(img_url.lower().endswith(ext) for ext in ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.bmp', '.jfif']):
+                    images.append(img_url)
+        
+        return images
+    
+    def alternative_image_extraction(self, soup, base_url):
+        """طريقة احتياطية لاستخراج الصور عندما تفشل الطريقة الأساسية"""
+        images = []
+        
+        # البحث عن نصوص JavaScript التي قد تحتوي على روابط الصور
+        scripts = soup.find_all('script')
+        for script in scripts:
+            if script.string:
+                matches = re.findall(r'(https?://[^\s\'"]+?\.(?:jpg|jpeg|png|webp|gif|bmp))', script.string, re.IGNORECASE)
+                images.extend(matches)
+        
+        # البحث عن عناصر div مع خلفيات صور
+        divs = soup.find_all('div', style=True)
+        for div in divs:
+            match = re.search(r'url\([\'"]?(https?://[^\s\'")]+)', div['style'], re.IGNORECASE)
+            if match:
+                images.append(match.group(1))
+        
+        # إزالة التكرارات
+        images = list(set(images))
+        
+        # تصفية الروابط التي تنتمي لنفس النطاق
+        base_domain = urlparse(base_url).netloc
+        images = [img for img in images if urlparse(img).netloc == base_domain or not urlparse(img).netloc]
+        
+        return images
+    
+    def sanitize_arabic_filename(self, filename):
+        # استبدال المساحات بنقاط سفلية
+        filename = filename.replace(' ', '_')
+        
+        # إزالة الأحرف غير المسموح بها في أسماء الملفات
+        filename = re.sub(r'[\\/*?:"<>|]', "_", filename)
+        
+        # الحفاظ على الأحرف العربية والأرقام وبعض الرموز
+        filename = re.sub(r'[^\w\-_.\u0600-\u06FF]', '', filename)
+        
+        # تقليل الشرطات المتعددة إلى شرطة واحدة
+        filename = re.sub(r'_+', '_', filename)
+        
+        # اقتصار طول الاسم على 150 حرف
+        return filename.strip()[:150]
+    
+    def detect_image_extension(self, image_data):
+        try:
+            extension = imghdr.what(None, h=image_data)
+            if extension == 'jpeg':
+                return '.jpg'
+            elif extension:
+                return f'.{extension}'
+            
+            # محاولة اكتشاف الصور التي قد لا يتعرف عليها imghdr
+            if image_data.startswith(b'\xff\xd8'):
+                return '.jpg'
+            elif image_data.startswith(b'\x89PNG\r\n\x1a\n'):
+                return '.png'
+            elif image_data.startswith(b'GIF87a') or image_data.startswith(b'GIF89a'):
+                return '.gif'
+            elif image_data.startswith(b'RIFF') and image_data[8:12] == b'WEBP':
+                return '.webp'
+            elif image_data.startswith(b'BM'):
+                return '.bmp'
+            
+        except:
+            pass
+        
+        # إذا لم يتم التعرف، افترض أنه jpg
+        return '.jpg'
+
+if __name__ == "__main__":
+    downloader = ArabicMangaDownloader()
+    
+    print("""\
+    ░█████╗░██████╗░░█████╗░██████╗░██╗██╗░░░██╗
+    ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║██║░░░██║
+    ███████║██████╦╝███████║██████╔╝██║██║░░░██║
+    ██╔══██║██╔══██╗██╔══██║██╔══██╗██║██║░░░██║
+    ██║░░██║██████╦╝██║░░██║██║░░██║██║╚██████╔╝
+    ╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═╝░╚═════╝░
+    أداة تنزيل المانجا العربية - الإصدار 2.0
+    """)
+    
+    chapter_url = input("الرجاء إدخال رابط الفصل الذي تريد تنزيله: ").strip()
+    
+    output_folder = input(f"أدخل مجلد الحفظ (اضغط Enter للاستخدام الافتراضي 'downloads'): ").strip()
+    if not output_folder:
+        output_folder = "downloads"
+    
+    downloader.download_chapter(chapter_url, output_folder)

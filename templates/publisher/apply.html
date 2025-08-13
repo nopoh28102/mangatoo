@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Apply to be a Publisher{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <span data-lang="en">Apply to be a Publisher</span>
+                        <span data-lang="ar">التقديم لتصبح ناشراً</span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        <span data-lang="en">Join our global publishing platform and share your manga/manhwa with millions of readers worldwide!</span>
+                        <span data-lang="ar">انضم إلى منصة النشر العالمية واشارك مانجا/مانهوا مع ملايين القراء حول العالم!</span>
+                    </p>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="portfolio_url" class="form-label">
+                                <span data-lang="en">Portfolio URL (Optional)</span>
+                                <span data-lang="ar">رابط ملف الأعمال (اختياري)</span>
+                            </label>
+                            <input type="url" class="form-control" id="portfolio_url" name="portfolio_url" 
+                                   placeholder="https://your-portfolio.com">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <span data-lang="en">Why do you want to be a publisher? <span class="text-danger">*</span></span>
+                                <span data-lang="ar">لماذا تريد أن تكون ناشراً؟ <span class="text-danger">*</span></span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required 
+                                      data-lang="en" placeholder="Tell us about your experience, goals, and what kind of content you plan to publish..."></textarea>
+                            <textarea class="form-control" id="description_ar" name="description" rows="5" required 
+                                      data-lang="ar" placeholder="أخبرنا عن خبرتك وأهدافك ونوع المحتوى الذي تخطط لنشره..." style="display: none;"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sample_work" class="form-label">
+                                <span data-lang="en">Sample Work (Optional)</span>
+                                <span data-lang="ar">نموذج من العمل (اختياري)</span>
+                            </label>
+                            <input type="file" class="form-control" id="sample_work" name="sample_work" 
+                                   accept=".png,.jpg,.jpeg,.pdf,.zip">
+                            <div class="form-text">
+                                <span data-lang="en">Upload a sample of your work (images, PDF, or ZIP archive)</span>
+                                <span data-lang="ar">ارفع نموذجاً من عملك (صور، PDF، أو أرشيف ZIP)</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="agree_terms" required>
+                                <label class="form-check-label" for="agree_terms">
+                                    <span data-lang="en">I agree to the Publisher Terms and Conditions *</span>
+                                    <span data-lang="ar">أوافق على شروط وأحكام الناشر *</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i>
+                                <span data-lang="en">Submit Application</span>
+                                <span data-lang="ar">إرسال الطلب</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h4>
+                        <span data-lang="en">Publisher Benefits</span>
+                        <span data-lang="ar">مزايا الناشر</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled" data-lang="en">
+                                <li><i class="fas fa-check text-success"></i> Upload unlimited manga/manhwa</li>
+                                <li><i class="fas fa-check text-success"></i> Advanced analytics dashboard</li>
+                                <li><i class="fas fa-check text-success"></i> Direct reader engagement</li>
+                                <li><i class="fas fa-check text-success"></i> Revenue sharing opportunities</li>
+                                <li><i class="fas fa-check text-success"></i> Translation request system</li>
+                            </ul>
+                            <ul class="list-unstyled" data-lang="ar" style="display: none;">
+                                <li><i class="fas fa-check text-success"></i> رفع مانجا/مانهوا غير محدود</li>
+                                <li><i class="fas fa-check text-success"></i> لوحة تحكم إحصائيات متقدمة</li>
+                                <li><i class="fas fa-check text-success"></i> تفاعل مباشر مع القراء</li>
+                                <li><i class="fas fa-check text-success"></i> فرص مشاركة الإيرادات</li>
+                                <li><i class="fas fa-check text-success"></i> نظام طلبات الترجمة</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled" data-lang="en">
+                                <li><i class="fas fa-check text-success"></i> Global audience reach</li>
+                                <li><i class="fas fa-check text-success"></i> Multi-language support</li>
+                                <li><i class="fas fa-check text-success"></i> Premium content options</li>
+                                <li><i class="fas fa-check text-success"></i> Marketing support</li>
+                                <li><i class="fas fa-check text-success"></i> Community building tools</li>
+                            </ul>
+                            <ul class="list-unstyled" data-lang="ar" style="display: none;">
+                                <li><i class="fas fa-check text-success"></i> وصول لجمهور عالمي</li>
+                                <li><i class="fas fa-check text-success"></i> دعم متعدد اللغات</li>
+                                <li><i class="fas fa-check text-success"></i> خيارات محتوى مميز</li>
+                                <li><i class="fas fa-check text-success"></i> دعم تسويقي</li>
+                                <li><i class="fas fa-check text-success"></i> أدوات بناء المجتمع</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

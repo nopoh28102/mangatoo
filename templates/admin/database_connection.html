@@ -1,0 +1,334 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إعدادات قاعدة البيانات - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-database me-2"></i>إعدادات قاعدة البيانات</h2>
+    </div>
+
+    <!-- Current Database Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>حالة قاعدة البيانات الحالية</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>نوع قاعدة البيانات:</strong> 
+                                <span class="badge bg-success">{{ db_type }}</span>
+                            </p>
+                            <p><strong>حالة الاتصال:</strong> 
+                                <span class="badge bg-{{ 'success' if db_connected else 'danger' }}">
+                                    {{ 'متصل' if db_connected else 'غير متصل' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>عدد الجداول:</strong> <span class="badge bg-primary">{{ table_count }}</span></p>
+                            <p><strong>آخر فحص:</strong> <small class="text-muted">{{ last_check }}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PostgreSQL Connection Form -->
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fab fa-postgresql me-2 text-primary"></i>ربط قاعدة بيانات PostgreSQL خارجية</h5>
+                </div>
+                <div class="card-body">
+                    <form id="dbConnectionForm" method="POST" action="{{ url_for('admin_update_database_connection') }}">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>تحذير:</strong> تأكد من صحة بيانات الاتصال قبل الحفظ. أي خطأ قد يعطل الموقع!
+                        </div>
+
+                        <!-- Connection Type -->
+                        <div class="mb-3">
+                            <label for="connectionType" class="form-label">نوع الاتصال</label>
+                            <select class="form-select" id="connectionType" name="connection_type" onchange="toggleConnectionForm()">
+                                <option value="separate_fields">بيانات منفصلة (موصى به)</option>
+                                <option value="database_url">URL كامل لقاعدة البيانات</option>
+                            </select>
+                        </div>
+
+                        <!-- Separate Fields Method (Default) -->
+                        <div id="fieldsMethod" class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="host" class="form-label">المضيف (Host) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-server"></i></span>
+                                        <input type="text" class="form-control" id="host" name="host" 
+                                               placeholder="localhost أو IP العنوان" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="port" class="form-label">المنفذ (Port)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-ethernet"></i></span>
+                                        <input type="number" class="form-control" id="port" name="port" 
+                                               placeholder="5432" value="5432">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">اسم المستخدم (Username) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="username" name="username" 
+                                               placeholder="اسم المستخدم" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">كلمة المرور (Password) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="password" name="password" 
+                                               placeholder="كلمة المرور" required>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('password')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="database" class="form-label">اسم قاعدة البيانات (Database) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-database"></i></span>
+                                        <input type="text" class="form-control" id="database" name="database" 
+                                               placeholder="اسم قاعدة البيانات" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="schema" class="form-label">المخطط (Schema)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-sitemap"></i></span>
+                                        <input type="text" class="form-control" id="schema" name="schema" 
+                                               placeholder="public" value="public">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SSL Option for Separate Fields -->
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="sslMode" name="ssl_mode">
+                                <label class="form-check-label" for="sslMode">
+                                    <i class="fas fa-shield-alt me-2"></i>استخدام اتصال SSL آمن
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Database URL Method -->
+                        <div id="urlMethod" class="mb-4" style="display: none;">
+                            <div class="mb-3">
+                                <label for="databaseUrl" class="form-label">رابط قاعدة البيانات (DATABASE_URL)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-link"></i></span>
+                                    <input type="text" class="form-control" id="databaseUrl" name="database_url" 
+                                           placeholder="postgresql://username:password@host:port/database"
+                                           value="{{ current_database_url or '' }}">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('databaseUrl')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    مثال: postgresql://username:password@host:port/database
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-info" onclick="testConnection()">
+                                    <i class="fas fa-plug me-2"></i>اختبار الاتصال
+                                </button>
+                                <button type="button" class="btn btn-warning" onclick="backupCurrentDB()">
+                                    <i class="fas fa-download me-2"></i>نسخ احتياطي
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-undo me-2"></i>إعادة تعيين
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Results -->
+    <div id="testResults" class="row mt-4" style="display: none;">
+        <div class="col-12">
+            <div class="card" id="testResultCard">
+                <div class="card-header">
+                    <h5><i class="fas fa-flask me-2"></i>نتائج اختبار الاتصال</h5>
+                </div>
+                <div class="card-body" id="testResultBody">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle between connection methods
+function toggleConnectionForm() {
+    const connectionType = document.getElementById('connectionType').value;
+    const fieldsMethod = document.getElementById('fieldsMethod');
+    const urlMethod = document.getElementById('urlMethod');
+    
+    if (connectionType === 'separate_fields') {
+        fieldsMethod.style.display = 'block';
+        urlMethod.style.display = 'none';
+        // Make individual fields required
+        setFieldsRequired(true);
+    } else {
+        fieldsMethod.style.display = 'none';
+        urlMethod.style.display = 'block';
+        // Remove required from individual fields
+        setFieldsRequired(false);
+    }
+}
+
+// Set required attribute for individual fields
+function setFieldsRequired(required) {
+    const requiredFields = ['host', 'username', 'password', 'database'];
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (required) {
+                field.setAttribute('required', '');
+            } else {
+                field.removeAttribute('required');
+            }
+        }
+    });
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = field.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+// Test database connection
+function testConnection() {
+    const form = document.getElementById('dbConnectionForm');
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const testBtn = event.target;
+    const originalText = testBtn.innerHTML;
+    testBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الاختبار...';
+    testBtn.disabled = true;
+    
+    fetch('{{ url_for("admin_test_database_connection") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        showTestResults(data);
+    })
+    .catch(error => {
+        showTestResults({
+            success: false,
+            error: 'خطأ في الاتصال: ' + error.message
+        });
+    })
+    .finally(() => {
+        // Restore button state
+        testBtn.innerHTML = originalText;
+        testBtn.disabled = false;
+    });
+}
+
+// Show test results
+function showTestResults(data) {
+    const resultsDiv = document.getElementById('testResults');
+    const resultCard = document.getElementById('testResultCard');
+    const resultBody = document.getElementById('testResultBody');
+    
+    if (data.success) {
+        resultCard.className = 'card border-success';
+        resultBody.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i><strong>نجح الاتصال!</strong>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>نوع قاعدة البيانات:</strong> ${data.db_type}</p>
+                    <p><strong>الإصدار:</strong> ${data.version}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>المضيف:</strong> ${data.host}</p>
+                    <p><strong>المنفذ:</strong> ${data.port}</p>
+                    <p><strong>قاعدة البيانات:</strong> ${data.database}</p>
+                    <p><strong>عدد الجداول:</strong> ${data.tables_count}</p>
+                </div>
+            </div>
+        `;
+    } else {
+        resultCard.className = 'card border-danger';
+        resultBody.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle me-2"></i><strong>فشل الاتصال!</strong>
+                <p class="mb-0 mt-2">${data.error}</p>
+            </div>
+        `;
+    }
+    
+    resultsDiv.style.display = 'block';
+}
+
+// Backup current database
+function backupCurrentDB() {
+    window.location.href = '{{ url_for("admin_backup_database") }}';
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('dbConnectionForm').reset();
+    document.getElementById('testResults').style.display = 'none';
+    toggleConnectionForm();
+}
+
+// Initialize form on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleConnectionForm();
+});
+</script>
+
+{% endblock %}

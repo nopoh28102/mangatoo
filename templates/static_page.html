@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title_ar or page.title }}{% endblock %}
+
+{% if page.meta_description %}
+{% block meta_description %}{{ page.meta_description_ar or page.meta_description }}{% endblock %}
+{% endif %}
+
+{% if page.meta_keywords %}
+{% block meta_keywords %}{{ page.meta_keywords }}{% endblock %}
+{% endif %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Page Header -->
+            <div class="mb-4">
+                <h1 class="display-5 mb-3">
+                    <span data-lang="en">{{ page.title }}</span>
+                    <span data-lang="ar">{{ page.title_ar or page.title }}</span>
+                </h1>
+                
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('index') }}">
+                                <span data-lang="en">Home</span>
+                                <span data-lang="ar">الرئيسية</span>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span data-lang="en">{{ page.title }}</span>
+                            <span data-lang="ar">{{ page.title_ar or page.title }}</span>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Page Content -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="static-page-content">
+                        <div data-lang="en">
+                            {{ page.content|safe }}
+                        </div>
+                        {% if page.content_ar %}
+                        <div data-lang="ar" dir="rtl">
+                            {{ page.content_ar|safe }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Footer -->
+            <div class="mt-4 text-center">
+                <hr>
+                <small class="text-muted">
+                    <span data-lang="en">Last updated:</span>
+                    <span data-lang="ar">آخر تحديث:</span>
+                    {{ page.updated_at.strftime('%B %d, %Y') }}
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.static-page-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.static-page-content h1,
+.static-page-content h2,
+.static-page-content h3,
+.static-page-content h4,
+.static-page-content h5,
+.static-page-content h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.static-page-content h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+}
+
+.static-page-content h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.static-page-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.static-page-content p {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.static-page-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin: 2rem 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.static-page-content img:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.static-page-content blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-style: italic;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.static-page-content blockquote::before {
+    content: '"';
+    font-size: 4rem;
+    color: var(--primary-color);
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    opacity: 0.3;
+}
+
+.static-page-content ul,
+.static-page-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 2rem;
+}
+
+.static-page-content li {
+    margin-bottom: 0.8rem;
+    position: relative;
+}
+
+.static-page-content ul li::marker {
+    color: var(--primary-color);
+}
+
+.static-page-content ol li::marker {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.static-page-content table {
+    width: 100%;
+    margin: 2rem 0;
+    border-collapse: collapse;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.static-page-content table th,
+.static-page-content table td {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    text-align: left;
+}
+
+.static-page-content table th {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.static-page-content table tr:nth-child(even) {
+    background-color: var(--bg-tertiary);
+}
+
+.static-page-content table tr:hover {
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease;
+}
+
+.static-page-content code {
+    background: var(--bg-tertiary);
+    color: var(--primary-color);
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: 'Courier New', monospace;
+    border: 1px solid var(--border-color);
+}
+
+.static-page-content pre {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.static-page-content pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--text-color);
+}
+
+.static-page-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.static-page-content a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+    text-decoration-color: var(--primary-color);
+    text-decoration-thickness: 2px;
+}
+
+.static-page-content strong {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.static-page-content em {
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+/* Enhanced styling for various content elements */
+.static-page-content .highlight {
+    background: linear-gradient(120deg, transparent 0%, var(--primary-color) 0%, var(--primary-color) 100%, transparent 100%);
+    background-size: 100% 0.2em;
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    padding: 0 0.2em;
+}
+
+.static-page-content hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+    margin: 3rem 0;
+}
+
+/* RTL Support */
+[data-lang="ar"] .static-page-content {
+    text-align: right;
+    direction: rtl;
+}
+
+[data-lang="ar"] .static-page-content blockquote {
+    border-left: none;
+    border-right: 4px solid var(--primary-color);
+    padding-right: 1.5rem;
+    padding-left: 1rem;
+}
+
+[data-lang="ar"] .static-page-content blockquote::before {
+    left: auto;
+    right: 20px;
+}
+
+[data-lang="ar"] .static-page-content ul,
+[data-lang="ar"] .static-page-content ol {
+    padding-left: 0;
+    padding-right: 2rem;
+}
+
+[data-lang="ar"] .static-page-content table th,
+[data-lang="ar"] .static-page-content table td {
+    text-align: right;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .static-page-content {
+        font-size: 1rem;
+    }
+    
+    .static-page-content h1 {
+        font-size: 2rem;
+    }
+    
+    .static-page-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .static-page-content img {
+        margin: 1rem 0;
+    }
+    
+    .static-page-content table {
+        font-size: 0.9rem;
+    }
+    
+    .static-page-content pre {
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر PayTabs - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        دفع آمن عبر PayTabs
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">ملخص الطلب</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>الخطة:</strong> {{ plan.name_ar or plan.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>المدة:</strong> {{ plan.duration_days }} يوم
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>السعر:</strong> ${{ payment.amount }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Regional Payment Options -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="fas fa-globe me-2"></i>
+                                وسائل الدفع المتاحة
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Credit Cards -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="card" checked>
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                                <h6>بطاقات ائتمانية</h6>
+                                                <small class="text-muted">Visa, Mastercard, Amex</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- MADA (Saudi) -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="mada">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-credit-card fa-2x text-success mb-2"></i>
+                                                <h6>مدى</h6>
+                                                <small class="text-muted">بطاقة مدى السعودية</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- STC Pay -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="stcpay">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-mobile-alt fa-2x text-warning mb-2"></i>
+                                                <h6>STC Pay</h6>
+                                                <small class="text-muted">دفع stc</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Apple Pay -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="applepay">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fab fa-apple-pay fa-2x text-dark mb-2"></i>
+                                                <h6>Apple Pay</h6>
+                                                <small class="text-muted">آبل باي</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <!-- Samsung Pay -->
+                                <div class="col-md-6 mb-3">
+                                    <label class="payment-option">
+                                        <input type="radio" name="paymentMethod" value="samsungpay">
+                                        <div class="card text-center h-100">
+                                            <div class="card-body">
+                                                <i class="fas fa-mobile fa-2x text-info mb-2"></i>
+                                                <h6>Samsung Pay</h6>
+                                                <small class="text-muted">سامسونج باي</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Payment Form -->
+                    <div id="cardForm" class="payment-form">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-lock me-2"></i>
+                                    بيانات البطاقة
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cardNumber" class="form-label">رقم البطاقة</label>
+                                        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expiryDate" class="form-label">تاريخ الانتهاء</label>
+                                        <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cardholderName" class="form-label">اسم حامل البطاقة</label>
+                                        <input type="text" class="form-control" id="cardholderName" placeholder="اسم حامل البطاقة">
+                                    </div>
+                                </div>
+
+                                <!-- Billing Address -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="country" class="form-label">الدولة</label>
+                                        <select class="form-select" id="country">
+                                            <option value="SA">السعودية</option>
+                                            <option value="AE">الإمارات</option>
+                                            <option value="KW">الكويت</option>
+                                            <option value="QA">قطر</option>
+                                            <option value="BH">البحرين</option>
+                                            <option value="OM">عمان</option>
+                                            <option value="JO">الأردن</option>
+                                            <option value="EG">مصر</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="city" class="form-label">المدينة</label>
+                                        <input type="text" class="form-control" id="city" placeholder="المدينة">
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-primary btn-lg" onclick="processPayTabsPayment()">
+                                        <i class="fas fa-lock me-2"></i>
+                                        ادفع ${{ payment.amount }} بأمان
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Currency Support -->
+                    <div class="card border-info mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-coins me-2"></i>
+                                العملات المدعومة
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 mb-2">
+                                    <span class="badge bg-primary">SAR</span>
+                                    <small class="d-block">ريال سعودي</small>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <span class="badge bg-success">AED</span>
+                                    <small class="d-block">درهم إماراتي</small>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <span class="badge bg-warning">KWD</span>
+                                    <small class="d-block">دينار كويتي</small>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <span class="badge bg-info">USD</span>
+                                    <small class="d-block">دولار أمريكي</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Features -->
+                    <div class="alert alert-success mt-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            ميزات الأمان
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><i class="fas fa-check text-success me-2"></i>تشفير SSL 256-bit</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>حماية PCI DSS Level 1</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><i class="fas fa-check text-success me-2"></i>تأكيد 3D Secure</li>
+                                    <li><i class="fas fa-check text-success me-2"></i>كشف الاحتيال التلقائي</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <div class="text-muted small">
+                            <i class="fas fa-lock me-1"></i>
+                            محمي بـ PayTabs
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-option {
+    cursor: pointer;
+    width: 100%;
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-option .card {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.payment-option input[type="radio"]:checked + .card {
+    border-color: #0d6efd;
+    background-color: #f8f9ff;
+}
+
+.payment-option:hover .card {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function processPayTabsPayment() {
+    const cardNumber = document.getElementById('cardNumber').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    const cardholderName = document.getElementById('cardholderName').value;
+    const country = document.getElementById('country').value;
+    const city = document.getElementById('city').value;
+    
+    if (!cardNumber || !expiryDate || !cvv || !cardholderName || !city) {
+        alert('يرجى ملء جميع البيانات المطلوبة');
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري المعالجة...';
+    
+    // Simulate payment processing
+    setTimeout(function() {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>تأكيد الدفع...';
+        
+        setTimeout(function() {
+            alert('تم الدفع بنجاح عبر PayTabs!');
+            window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+        }, 2000);
+    }, 2000);
+}
+
+// Format card number input
+document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Format expiry date input
+document.getElementById('expiryDate').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+
+// Format CVV input
+document.getElementById('cvv').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

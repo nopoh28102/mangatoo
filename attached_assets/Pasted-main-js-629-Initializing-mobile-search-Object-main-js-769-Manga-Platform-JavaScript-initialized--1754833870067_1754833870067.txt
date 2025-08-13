@@ -1,0 +1,30 @@
+main.js:629 Initializing mobile search... Object
+main.js:769 Manga Platform JavaScript initialized successfully
+main.js:805 Main JavaScript managers initialized successfully
+settings:1949 Modern mobile navbar initialized successfully
+main.js:567 Page loaded in 1783.70ms
+main.js:591 Performance metric - page_load: 1783.6999998092651
+An invalid form control with name='setting_logo_url' is not focusable.
+An invalid form control with name='setting_logo_url' is not focusable.
+An invalid form control with name='setting_logo_url' is not focusable.
+An invalid form control with name='setting_logo_url' is not focusable.
+An invalid form control with name='setting_logo_url' is not focusable.
+An invalid form control with name='setting_logo_url' is not focusable.
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+settings:1 An invalid form control with name='setting_logo_url' is not focusable. <input type=​"url" class=​"form-control" name=​"setting_logo_url" value=​"None">​
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_favicon_url' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.
+An invalid form control with name='setting_hero_background' is not focusable.

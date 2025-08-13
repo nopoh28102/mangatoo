@@ -1,0 +1,54 @@
+<!-- Locked Chapter Info Card -->
+<div class="alert alert-info border-info mb-4">
+    <h5 class="alert-heading">
+        <i class="fas fa-lock me-2"></i>فصول مجدولة للنشر
+    </h5>
+    <p class="mb-3">هناك فصول إضافية متاحة قريباً أو للمشتركين المميزين فقط:</p>
+    
+    {% for chapter in locked_chapters %}
+    <div class="card border-warning mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h6 class="card-title mb-1">
+                        <i class="fas fa-book me-2"></i>
+                        الفصل {{ chapter.chapter_number }}
+                        {% if chapter.title %} - {{ chapter.title }}{% endif %}
+                    </h6>
+                </div>
+                <div class="col-md-6">
+                    {% if chapter.early_access_date %}
+                        <div class="text-warning">
+                            <i class="fas fa-crown me-1"></i>
+                            <small>للمشتركين المميزين في: {{ chapter.early_access_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                    {% endif %}
+                    
+                    {% if chapter.release_date %}
+                        <div class="text-info">
+                            <i class="fas fa-calendar me-1"></i>
+                            <small>النشر العام في: {{ chapter.release_date.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if not current_user.is_authenticated %}
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <a href="{{ url_for('login') }}" class="text-decoration-none">سجل دخولك</a> 
+                        لرؤية إذا كان بإمكانك الوصول إلى هذا الفصل.
+                    </small>
+                </div>
+            {% elif not current_user.is_premium and chapter.early_access_date %}
+                <div class="mt-2">
+                    <a href="{{ url_for('premium_plans') }}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-crown me-1"></i>احصل على الوصول المبكر
+                    </a>
+                    <small class="text-muted ms-2">أو انتظر حتى النشر العام</small>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

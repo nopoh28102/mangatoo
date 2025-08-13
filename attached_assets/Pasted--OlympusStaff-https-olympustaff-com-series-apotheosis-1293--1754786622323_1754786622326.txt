@@ -1,0 +1,110 @@
+🔍 بدء كشط الصور من: OlympusStaff - https://olympustaff.com/series/apotheosis/1293
+جاري كشط الفصل من: https://olympustaff.com/series/apotheosis/1293
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /series/apotheosis/1293 HTTP/1.1" 200 None
+✓ عنوان الفصل: النهاية
+جاري البحث عن الصور في div.entry-content...
+✓ صورة 1: 6cc0e925bd9c708aa4ad6bd2233fac4c.1.jpg
+✓ صورة 2: ad81616e62246ec6ad6038df5df110fd.2.jpg
+✓ صورة 3: c562f43e63ca9556afd6197ea9cd2936.3.jpg
+✓ صورة 4: 9959c0b2b6a80e9dd9c8334361669cf0.4.jpg
+✓ صورة 5: a635cac8f4c904d30f81dedda4df4906.5.jpg
+✓ صورة 6: 8d22916f356835d82a7c85136b1a3137.6.jpg
+✓ صورة 7: b300cf40b7d2ee3721e29457cc858140.7.jpg
+✓ صورة 8: c0736f3d778e3b50bf63eedacbf37a6a.8.jpg
+✓ صورة 9: f38e09a8c52099cec3715496da8faec5.9.jpg
+✓ صورة 10: b9bd51373ca6bf81368b41c53ab00255.10.jpg
+✓ صورة 11: 61bcef3de46bccea805c4e5b2ab1f470.11.jpg
+✓ صورة 12: 9eada750e2434e4e075ce41cf9e368be.12.jpg
+✓ صورة 13: d4047cf69ce3a4ed049d5c8f3955d017.13.jpg
+✓ صورة 14: 5e5f655905bc4e5522cdd840ba8ead96.14.jpg
+✓ صورة 15: 45b22ddb77341e59ab919fd64a11b4ec.15.jpg
+✓ صورة 16: 440bcdd258fe6fdd363bd3f44c592f28.16.jpg
+✓ صورة 17: 810722e09e372b9e812e77f354674890.17.jpg
+✓ صورة 18: 782c4ddf1ae8e5c405c7e84f83b60852.18.jpg
+✓ صورة 19: 67d2396f4fccbd7eff7b4685a1e261bb.19.jpg
+✅ تم العثور على 19 صورة بنجاح
+   صورة 1: 6cc0e925bd9c708aa4ad6bd2233fac4c.1.jpg
+   صورة 2: ad81616e62246ec6ad6038df5df110fd.2.jpg
+   صورة 3: c562f43e63ca9556afd6197ea9cd2936.3.jpg
+   ... و 16 صورة أخرى
+جاري تحميل صورة 1/19: 6cc0e925bd9c708aa4ad6bd2233fac4c.1.jpg
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/6cc0e925bd9c708aa4ad6bd2233fac4c.1.jpg HTTP/1.1" 200 1637558
+✅ نجح التحميل: page_001_6cc0e925bd9c708aa4ad6bd2233fac4c.1.jpg (1637558 bytes)
+جاري تحميل صورة 2/19: ad81616e62246ec6ad6038df5df110fd.2.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/ad81616e62246ec6ad6038df5df110fd.2.jpg HTTP/1.1" 200 989516
+✅ نجح التحميل: page_002_ad81616e62246ec6ad6038df5df110fd.2.jpg (989516 bytes)
+جاري تحميل صورة 3/19: c562f43e63ca9556afd6197ea9cd2936.3.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/c562f43e63ca9556afd6197ea9cd2936.3.jpg HTTP/1.1" 200 1862114
+✅ نجح التحميل: page_003_c562f43e63ca9556afd6197ea9cd2936.3.jpg (1862114 bytes)
+جاري تحميل صورة 4/19: 9959c0b2b6a80e9dd9c8334361669cf0.4.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/9959c0b2b6a80e9dd9c8334361669cf0.4.jpg HTTP/1.1" 200 1453751
+✅ نجح التحميل: page_004_9959c0b2b6a80e9dd9c8334361669cf0.4.jpg (1453751 bytes)
+جاري تحميل صورة 5/19: a635cac8f4c904d30f81dedda4df4906.5.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/a635cac8f4c904d30f81dedda4df4906.5.jpg HTTP/1.1" 200 1402585
+✅ نجح التحميل: page_005_a635cac8f4c904d30f81dedda4df4906.5.jpg (1402585 bytes)
+جاري تحميل صورة 6/19: 8d22916f356835d82a7c85136b1a3137.6.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/8d22916f356835d82a7c85136b1a3137.6.jpg HTTP/1.1" 200 866163
+✅ نجح التحميل: page_006_8d22916f356835d82a7c85136b1a3137.6.jpg (866163 bytes)
+جاري تحميل صورة 7/19: b300cf40b7d2ee3721e29457cc858140.7.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/b300cf40b7d2ee3721e29457cc858140.7.jpg HTTP/1.1" 200 1688853
+✅ نجح التحميل: page_007_b300cf40b7d2ee3721e29457cc858140.7.jpg (1688853 bytes)
+جاري تحميل صورة 8/19: c0736f3d778e3b50bf63eedacbf37a6a.8.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/c0736f3d778e3b50bf63eedacbf37a6a.8.jpg HTTP/1.1" 200 745588
+✅ نجح التحميل: page_008_c0736f3d778e3b50bf63eedacbf37a6a.8.jpg (745588 bytes)
+جاري تحميل صورة 9/19: f38e09a8c52099cec3715496da8faec5.9.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/f38e09a8c52099cec3715496da8faec5.9.jpg HTTP/1.1" 200 1324119
+✅ نجح التحميل: page_009_f38e09a8c52099cec3715496da8faec5.9.jpg (1324119 bytes)
+جاري تحميل صورة 10/19: b9bd51373ca6bf81368b41c53ab00255.10.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/b9bd51373ca6bf81368b41c53ab00255.10.jpg HTTP/1.1" 200 1607911
+✅ نجح التحميل: page_010_b9bd51373ca6bf81368b41c53ab00255.10.jpg (1607911 bytes)
+جاري تحميل صورة 11/19: 61bcef3de46bccea805c4e5b2ab1f470.11.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/61bcef3de46bccea805c4e5b2ab1f470.11.jpg HTTP/1.1" 200 1491781
+✅ نجح التحميل: page_011_61bcef3de46bccea805c4e5b2ab1f470.11.jpg (1491781 bytes)
+جاري تحميل صورة 12/19: 9eada750e2434e4e075ce41cf9e368be.12.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/9eada750e2434e4e075ce41cf9e368be.12.jpg HTTP/1.1" 200 2160739
+✅ نجح التحميل: page_012_9eada750e2434e4e075ce41cf9e368be.12.jpg (2160739 bytes)
+جاري تحميل صورة 13/19: d4047cf69ce3a4ed049d5c8f3955d017.13.jpg
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_98f13/1293/d4047cf69ce3a4ed049d5c8f3955d017.13.jpg HTTP/1.1" 200 1532525
+✅ نجح التحميل: page_013_d4047cf69ce3a4ed049d5c8f3955d017.13.jpg (1532525 bytes)
+[2025-08-10 00:43:14 +0000] [845] [CRITICAL] WORKER TIMEOUT (pid:856)
+[2025-08-10 00:43:14 +0000] [856] [ERROR] Error handling request /admin/test-scrape
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 134, in handle
+    self.handle_request(listener, req, client, addr)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+    respiter = self.wsgi(environ, resp.start_response)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/middleware/proxy_fix.py", line 183, in __call__
+    return self.app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes.py", line 3713, in admin_test_scrape
+    downloaded_images = download_olympustaff_images(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/olympustaff_scraper.py", line 202, in download_olympustaff_images
+    time.sleep(1)  # تأخير بين الصور
+    ^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-08-10 00:43:14 +0000] [856] [INFO] Worker exiting (pid: 856)
+[2025-08-10 00:43:14 +0000] [1091] [INFO] Booting worker with pid: 1091
+INFO:root:Database tables created successfully
+INFO:root:Admin user already exists
+DEBUG:htmldate.validators:minimum date setting: 1995-01-01 00:00:00

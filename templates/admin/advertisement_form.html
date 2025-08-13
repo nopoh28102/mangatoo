@@ -1,0 +1,314 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+{% if advertisement %}تعديل الإعلان{% else %}إضافة إعلان جديد{% endif %} - Manga Platform
+{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-ad me-2"></i>
+                    {% if advertisement %}تعديل الإعلان{% else %}إضافة إعلان جديد{% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="title" class="form-label">عنوان الإعلان *</label>
+                            <input type="text" class="form-control" id="title" name="title" 
+                                   value="{{ advertisement.title if advertisement else '' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="description" class="form-label">وصف الإعلان</label>
+                            <textarea class="form-control" id="description" name="description" rows="3">{{ advertisement.description if advertisement else '' }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="ad_type" class="form-label">نوع الإعلان *</label>
+                            <select class="form-select" id="ad_type" name="ad_type" required onchange="toggleAdTypeFields()">
+                                <option value="">اختر نوع الإعلان</option>
+                                <option value="banner" {% if advertisement and advertisement.ad_type == 'banner' %}selected{% endif %}>بانر</option>
+                                <option value="image" {% if advertisement and advertisement.ad_type == 'image' %}selected{% endif %}>صورة</option>
+                                <option value="text" {% if advertisement and advertisement.ad_type == 'text' %}selected{% endif %}>نص</option>
+                                <option value="video" {% if advertisement and advertisement.ad_type == 'video' %}selected{% endif %}>فيديو</option>
+                                <option value="code" {% if advertisement and advertisement.ad_type == 'code' %}selected{% endif %}>شفرة إعلانية (AdSense/منصات أخرى)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="placement" class="form-label">موقع العرض *</label>
+                            <select class="form-select" id="placement" name="placement" required>
+                                <option value="">اختر موقع العرض</option>
+                                <option value="reader_top" {% if advertisement and advertisement.placement == 'reader_top' %}selected{% endif %}>أعلى صفحة القراءة</option>
+                                <option value="reader_bottom" {% if advertisement and advertisement.placement == 'reader_bottom' %}selected{% endif %}>أسفل صفحة القراءة</option>
+                                <option value="reader_side" {% if advertisement and advertisement.placement == 'reader_side' %}selected{% endif %}>جانب صفحة القراءة</option>
+                                <option value="between_pages" {% if advertisement and advertisement.placement == 'between_pages' %}selected{% endif %}>بين صفحات المانجا</option>
+                                <option value="chapter_end" {% if advertisement and advertisement.placement == 'chapter_end' %}selected{% endif %}>نهاية الفصل</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="target_url" class="form-label">رابط الإعلان</label>
+                            <input type="url" class="form-control" id="target_url" name="target_url" 
+                                   value="{{ advertisement.target_url if advertisement else '' }}" 
+                                   placeholder="https://example.com">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="priority" class="form-label">الأولوية</label>
+                            <input type="number" class="form-control" id="priority" name="priority" 
+                                   value="{{ advertisement.priority if advertisement else '1' }}" 
+                                   min="1" max="10">
+                            <small class="text-muted">1 = أقل أولوية، 10 = أعلى أولوية</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">تاريخ البداية</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" 
+                                   value="{{ advertisement.start_date.strftime('%Y-%m-%d') if advertisement and advertisement.start_date else '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">تاريخ الانتهاء</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" 
+                                   value="{{ advertisement.end_date.strftime('%Y-%m-%d') if advertisement and advertisement.end_date else '' }}">
+                        </div>
+                    </div>
+
+                    <!-- Image Upload Section (for image/banner ads) -->
+                    <div class="row" id="image-section">
+                        <div class="col-md-12 mb-3">
+                            <label for="image" class="form-label">صورة الإعلان</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                            {% if advertisement and advertisement.image_url %}
+                            <div class="mt-2">
+                                <small class="text-muted">الصورة الحالية:</small><br>
+                                <img src="{{ advertisement.image_url }}" alt="{{ advertisement.title }}" 
+                                     class="img-thumbnail" style="max-width: 200px;">
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- HTML Content Section (for text/custom HTML ads) -->
+                    <div class="row" id="html-section">
+                        <div class="col-md-12 mb-3">
+                            <label for="content" class="form-label">محتوى الإعلان (HTML)</label>
+                            <textarea class="form-control" id="content" name="content" rows="5" 
+                                      placeholder="يمكنك إدخال كود HTML للإعلان هنا">{{ advertisement.content if advertisement else '' }}</textarea>
+                            <small class="text-muted">يمكنك استخدام HTML للإعلانات النصية المتقدمة</small>
+                        </div>
+                    </div>
+
+                    <!-- Ad Code Section (for AdSense and other ad platforms) -->
+                    <div class="row" id="ad-code-section" style="display: none;">
+                        <div class="col-md-12 mb-3">
+                            <label for="ad_code" class="form-label">شفرة الإعلان *</label>
+                            <textarea class="form-control" id="ad_code" name="ad_code" rows="8" 
+                                      placeholder="الصق شفرة الإعلان هنا (AdSense، Facebook Ads، إلخ...)">{{ advertisement.content if advertisement and advertisement.ad_type == 'code' else '' }}</textarea>
+                            <small class="text-muted">
+                                <strong>أمثلة على الشفرات المدعومة:</strong><br>
+                                • Google AdSense<br>
+                                • Facebook Audience Network<br>
+                                • Media.net<br>
+                                • أي منصة إعلانية أخرى تعطي كود HTML/JavaScript
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Ad Code Preview -->
+                    <div class="row" id="ad-preview-section" style="display: none;">
+                        <div class="col-md-12 mb-3">
+                            <div class="card bg-secondary text-light">
+                                <div class="card-header">
+                                    <h6 class="mb-0">معاينة الشفرة</h6>
+                                </div>
+                                <div class="card-body">
+                                    <pre id="ad-code-preview" class="mb-0" style="white-space: pre-wrap; font-size: 12px;"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                       {% if not advertisement or advertisement.is_active %}checked{% endif %}>
+                                <label class="form-check-label" for="is_active">
+                                    تفعيل الإعلان
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="open_new_tab" name="open_new_tab" 
+                                       {% if advertisement and advertisement.open_new_tab %}checked{% endif %}>
+                                <label class="form-check-label" for="open_new_tab">
+                                    فتح في تبويب جديد
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_advertisements') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>العودة
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            {% if advertisement %}تحديث الإعلان{% else %}إضافة الإعلان{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>معلومات مهمة
+                </h6>
+            </div>
+            <div class="card-body">
+                <h6>أماكن عرض الإعلانات:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-circle text-primary me-2" style="font-size: 0.5em;"></i><strong>أعلى صفحة القراءة:</strong> يظهر في أعلى صفحة قراءة المانجا</li>
+                    <li><i class="fas fa-circle text-success me-2" style="font-size: 0.5em;"></i><strong>أسفل صفحة القراءة:</strong> يظهر في أسفل صفحة قراءة المانجا</li>
+                    <li><i class="fas fa-circle text-warning me-2" style="font-size: 0.5em;"></i><strong>جانب صفحة القراءة:</strong> يظهر في الجانب أثناء القراءة</li>
+                    <li><i class="fas fa-circle text-info me-2" style="font-size: 0.5em;"></i><strong>بين صفحات المانجا:</strong> يظهر بين صفحات المانجا</li>
+                    <li><i class="fas fa-circle text-danger me-2" style="font-size: 0.5em;"></i><strong>نهاية الفصل:</strong> يظهر في نهاية كل فصل</li>
+                </ul>
+
+                <hr>
+
+                <h6>أنواع الإعلانات:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-image text-primary me-2"></i><strong>بانر:</strong> إعلانات البانر التقليدية</li>
+                    <li><i class="fas fa-picture-o text-success me-2"></i><strong>صورة:</strong> إعلانات مصورة</li>
+                    <li><i class="fas fa-font text-warning me-2"></i><strong>نص:</strong> إعلانات نصية</li>
+                    <li><i class="fas fa-video text-danger me-2"></i><strong>فيديو:</strong> إعلانات فيديو</li>
+                    <li><i class="fab fa-google text-info me-2"></i><strong>شفرة إعلانية:</strong> AdSense ومنصات أخرى</li>
+                </ul>
+
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>تنبيه:</strong> الإعلانات تظهر فقط للمستخدمين في الخطة المجانية
+                </div>
+            </div>
+        </div>
+
+        <!-- AdSense Examples Card -->
+        <div class="card mt-3 border-success" id="adsense-examples" style="display: none;">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0">
+                    <i class="fab fa-google me-2"></i>أمثلة شفرات AdSense
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong>إعلان مستطيل متوسط (300x250):</strong>
+                    <div class="mt-2 p-2 bg-secondary text-light rounded small">
+                        <code style="font-size: 10px; line-height: 1.2;">
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"&gt;&lt;/script&gt;<br>
+&lt;ins class="adsbygoogle"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;style="display:inline-block;width:300px;height:250px"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-ad-client="ca-pub-XXXXXXXXXX"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-ad-slot="XXXXXXXXXX"&gt;&lt;/ins&gt;<br>
+&lt;script&gt;(adsbygoogle = window.adsbygoogle || []).push({});&lt;/script&gt;
+                        </code>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <strong>إعلان مستجيب:</strong>
+                    <div class="mt-2 p-2 bg-secondary text-light rounded small">
+                        <code style="font-size: 10px; line-height: 1.2;">
+&lt;script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"&gt;&lt;/script&gt;<br>
+&lt;ins class="adsbygoogle"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;style="display:block"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-ad-client="ca-pub-XXXXXXXXXX"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-ad-slot="XXXXXXXXXX"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data-ad-format="auto"&gt;&lt;/ins&gt;<br>
+&lt;script&gt;(adsbygoogle = window.adsbygoogle || []).push({});&lt;/script&gt;
+                        </code>
+                    </div>
+                </div>
+
+                <div class="alert alert-info small">
+                    <strong>ملاحظة:</strong> استبدل "ca-pub-XXXXXXXXXX" برقم الناشر الخاص بك من AdSense
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleAdTypeFields() {
+    const adType = document.getElementById('ad_type').value;
+    const imageSection = document.getElementById('image-section');
+    const htmlSection = document.getElementById('html-section');
+    const adCodeSection = document.getElementById('ad-code-section');
+    const adPreviewSection = document.getElementById('ad-preview-section');
+    const adSenseExamples = document.getElementById('adsense-examples');
+    
+    // Hide all sections first
+    imageSection.style.display = 'none';
+    htmlSection.style.display = 'none';
+    adCodeSection.style.display = 'none';
+    adPreviewSection.style.display = 'none';
+    adSenseExamples.style.display = 'none';
+    
+    // Show relevant sections based on ad type
+    switch(adType) {
+        case 'banner':
+        case 'image':
+            imageSection.style.display = 'block';
+            break;
+        case 'text':
+        case 'video':
+            htmlSection.style.display = 'block';
+            break;
+        case 'code':
+            adCodeSection.style.display = 'block';
+            adPreviewSection.style.display = 'block';
+            adSenseExamples.style.display = 'block';
+            break;
+        default:
+            // Show all for empty selection
+            imageSection.style.display = 'block';
+            htmlSection.style.display = 'block';
+            break;
+    }
+}
+
+// Update preview when typing in ad code field
+document.addEventListener('DOMContentLoaded', function() {
+    toggleAdTypeFields(); // Initialize fields based on current selection
+    
+    const adCodeField = document.getElementById('ad_code');
+    const previewField = document.getElementById('ad-code-preview');
+    
+    if (adCodeField && previewField) {
+        adCodeField.addEventListener('input', function() {
+            previewField.textContent = this.value;
+        });
+        
+        // Initialize preview with existing content
+        previewField.textContent = adCodeField.value;
+    }
+});
+</script>
+{% endblock %}

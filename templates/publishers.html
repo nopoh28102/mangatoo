@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}الناشرون - منصة المانجا{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">
+                <i class="fas fa-users me-2"></i>
+                <span data-lang="en">Publishers</span>
+                <span data-lang="ar">الناشرون</span>
+            </h1>
+            
+            <p class="text-muted mb-4">
+                <span data-lang="en">Discover talented publishers who bring amazing manga content to our platform.</span>
+                <span data-lang="ar">اكتشف الناشرين الموهوبين الذين يقدمون محتوى مانجا رائع لمنصتنا.</span>
+            </p>
+        </div>
+    </div>
+    
+    {% if publisher_stats %}
+    <div class="row">
+        {% for stat in publisher_stats %}
+        <div class="col-lg-6 col-xl-4 mb-4">
+            <div class="card h-100 shadow-sm hover-lift">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if stat.publisher.profile_picture %}
+                        <img src="{{ stat.publisher.profile_picture }}" 
+                             class="rounded-circle me-3" 
+                             style="width: 60px; height: 60px; object-fit: cover;"
+                             alt="{{ stat.publisher.username }}">
+                        {% else %}
+                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width: 60px; height: 60px;">
+                            <i class="fas fa-user text-white fa-lg"></i>
+                        </div>
+                        {% endif %}
+                        <div>
+                            <h5 class="mb-1">
+                                <a href="{{ url_for('publisher_profile', publisher_id=stat.publisher.id) }}" 
+                                   class="text-decoration-none">{{ stat.publisher.username }}</a>
+                            </h5>
+                            <small class="text-muted">
+                                <span data-lang="en">Joined {{ stat.join_date.strftime('%B %Y') }}</span>
+                                <span data-lang="ar">انضم في {{ stat.join_date.strftime('%Y/%m') }}</span>
+                            </small>
+                        </div>
+                    </div>
+                    
+                    {% if stat.publisher.bio %}
+                    <p class="text-muted mb-3" style="font-size: 0.9rem;">
+                        <span data-lang="en">{{ stat.publisher.bio[:100] }}{% if stat.publisher.bio|length > 100 %}...{% endif %}</span>
+                        <span data-lang="ar">{{ stat.publisher.bio_ar[:100] if stat.publisher.bio_ar else stat.publisher.bio[:100] }}{% if (stat.publisher.bio_ar or stat.publisher.bio)|length > 100 %}...{% endif %}</span>
+                    </p>
+                    {% endif %}
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-4">
+                            <div class="border rounded p-2">
+                                <h6 class="mb-1 text-primary">{{ stat.total_manga }}</h6>
+                                <small class="text-muted">
+                                    <span data-lang="en">Manga</span>
+                                    <span data-lang="ar">مانجا</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-2">
+                                <h6 class="mb-1 text-success">{{ stat.total_chapters }}</h6>
+                                <small class="text-muted">
+                                    <span data-lang="en">Chapters</span>
+                                    <span data-lang="ar">فصل</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="border rounded p-2">
+                                <h6 class="mb-1 text-info">{{ "{:,}".format(stat.total_views) }}</h6>
+                                <small class="text-muted">
+                                    <span data-lang="en">Views</span>
+                                    <span data-lang="ar">مشاهدة</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if stat.latest_chapter %}
+                    <div class="text-center">
+                        <small class="text-muted">
+                            <span data-lang="en">Latest: {{ stat.latest_chapter.manga.title }} - Ch.{{ stat.latest_chapter.chapter_number }}</span>
+                            <span data-lang="ar">الأحدث: {{ stat.latest_chapter.manga.title_ar or stat.latest_chapter.manga.title }} - ف.{{ stat.latest_chapter.chapter_number }}</span>
+                        </small>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent text-center">
+                    <a href="{{ url_for('publisher_profile', publisher_id=stat.publisher.id) }}" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-user me-1"></i>
+                        <span data-lang="en">View Profile</span>
+                        <span data-lang="ar">عرض الملف الشخصي</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+        <h4 class="text-muted">
+            <span data-lang="en">No Publishers Found</span>
+            <span data-lang="ar">لا توجد ناشرون</span>
+        </h4>
+        <p class="text-muted">
+            <span data-lang="en">There are currently no active publishers on the platform.</span>
+            <span data-lang="ar">لا يوجد حالياً ناشرون نشطون على المنصة.</span>
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.hover-lift {
+    transition: transform 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+}
+
+.card {
+    border: 1px solid #e9ecef;
+}
+
+.card:hover {
+    border-color: #007bff;
+}
+</style>
+{% endblock %}

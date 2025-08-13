@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+
+{% block title %}المكتبة - Library - Manga Platform{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h1>
+                <i class="fas fa-library me-2"></i>
+                <span data-lang="en">Manga Library</span>
+                <span data-lang="ar">مكتبة المانجا</span>
+            </h1>
+            <p class="text-muted">
+                <span data-lang="en">Discover thousands of manga and manhwa series</span>
+                <span data-lang="ar">اكتشف آلاف المانجا والمانهوا</span>
+            </p>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('library') }}" id="filter-form">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">
+                            <span data-lang="en">Search</span>
+                            <span data-lang="ar">البحث</span>
+                        </label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               placeholder-en="Title, author..." placeholder-ar="العنوان، المؤلف..."
+                               value="{{ search }}">
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label for="category" class="form-label">
+                            <span data-lang="en">Category</span>
+                            <span data-lang="ar">التصنيف</span>
+                        </label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">
+                                <span data-lang="en">All Categories</span>
+                                <span data-lang="ar">جميع التصنيفات</span>
+                            </option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" 
+                                        {{ 'selected' if selected_category == category.id|string else '' }}>
+                                    <span data-lang="en">{{ category.name }}</span>
+                                    <span data-lang="ar">{{ category.name_ar or category.name }}</span>
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label for="type" class="form-label">
+                            <span data-lang="en">Type</span>
+                            <span data-lang="ar">النوع</span>
+                        </label>
+                        <select class="form-select" id="type" name="type">
+                            <option value="">
+                                <span data-lang="en">All Types</span>
+                                <span data-lang="ar">جميع الأنواع</span>
+                            </option>
+                            <option value="manga" {{ 'selected' if selected_type == 'manga' else '' }}>Manga</option>
+                            <option value="manhwa" {{ 'selected' if selected_type == 'manhwa' else '' }}>Manhwa</option>
+                            <option value="manhua" {{ 'selected' if selected_type == 'manhua' else '' }}>Manhua</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label for="status" class="form-label">
+                            <span data-lang="en">Status</span>
+                            <span data-lang="ar">الحالة</span>
+                        </label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="">
+                                <span data-lang="en">All Status</span>
+                                <span data-lang="ar">جميع الحالات</span>
+                            </option>
+                            <option value="ongoing" {{ 'selected' if selected_status == 'ongoing' else '' }}>
+                                <span data-lang="en">Ongoing</span>
+                                <span data-lang="ar">مستمر</span>
+                            </option>
+                            <option value="completed" {{ 'selected' if selected_status == 'completed' else '' }}>
+                                <span data-lang="en">Completed</span>
+                                <span data-lang="ar">مكتمل</span>
+                            </option>
+                            <option value="hiatus" {{ 'selected' if selected_status == 'hiatus' else '' }}>
+                                <span data-lang="en">Hiatus</span>
+                                <span data-lang="ar">متوقف</span>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label for="sort" class="form-label">
+                            <span data-lang="en">Sort By</span>
+                            <span data-lang="ar">ترتيب حسب</span>
+                        </label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="latest" {{ 'selected' if selected_sort == 'latest' else '' }}>
+                                <span data-lang="en">Latest</span>
+                                <span data-lang="ar">الأحدث</span>
+                            </option>
+                            <option value="popular" {{ 'selected' if selected_sort == 'popular' else '' }}>
+                                <span data-lang="en">Popular</span>
+                                <span data-lang="ar">الأكثر شعبية</span>
+                            </option>
+                            <option value="rating" {{ 'selected' if selected_sort == 'rating' else '' }}>
+                                <span data-lang="en">Rating</span>
+                                <span data-lang="ar">التقييم</span>
+                            </option>
+                            <option value="alphabetical" {{ 'selected' if selected_sort == 'alphabetical' else '' }}>
+                                <span data-lang="en">A-Z</span>
+                                <span data-lang="ar">أ-ي</span>
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Info -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h5 class="mb-0">
+                {% if manga_list.total %}
+                    <span data-lang="en">
+                        Showing {{ (manga_list.page - 1) * manga_list.per_page + 1 }} - 
+                        {{ ((manga_list.page - 1) * manga_list.per_page + manga_list.items|length) }} 
+                        of {{ manga_list.total }} results
+                    </span>
+                    <span data-lang="ar">
+                        عرض {{ (manga_list.page - 1) * manga_list.per_page + 1 }} - 
+                        {{ ((manga_list.page - 1) * manga_list.per_page + manga_list.items|length) }} 
+                        من {{ manga_list.total }} نتيجة
+                    </span>
+                {% else %}
+                    <span data-lang="en">No results found</span>
+                    <span data-lang="ar">لم يتم العثور على نتائج</span>
+                {% endif %}
+            </h5>
+        </div>
+        
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-secondary active" id="grid-view">
+                <i class="fas fa-th"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary" id="list-view">
+                <i class="fas fa-list"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Manga Grid -->
+    <div id="manga-grid">
+        {% if manga_list.items %}
+            <div class="row" id="manga-container">
+                {% for manga in manga_list.items %}
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4 manga-item">
+                        <div class="manga-card">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                            {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                            {% endif %}
+                                <div class="card shadow-sm h-100">
+                                    <div class="manga-cover-wrapper">
+                                        {% if manga.cover_image %}
+                                            <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" 
+                                                 class="card-img-top manga-cover" alt="{{ manga.title }}"
+                                                 loading="lazy">
+                                        {% else %}
+                                            <div class="manga-cover placeholder-cover d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-book fa-3x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="manga-overlay">
+                                            <div class="manga-stats">
+                                                <span class="badge bg-primary">
+                                                    <i class="fas fa-eye me-1"></i>{{ manga.views }}
+                                                </span>
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-star me-1"></i>{{ "%.1f"|format(manga.average_rating) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <h6 class="card-title text-truncate">{{ manga.title }}</h6>
+                                        {% if manga.title_ar %}
+                                            <p class="card-text text-muted small text-truncate" dir="rtl">{{ manga.title_ar }}</p>
+                                        {% endif %}
+                                        <p class="card-text text-muted small">{{ manga.author or 'Unknown Author' }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">{{ manga.total_chapters }} chapters</small>
+                                            <div>
+                                                <span class="badge bg-secondary">{{ manga.type.title() }}</span>
+                                                <span class="badge bg-{{ 'success' if manga.status == 'completed' else 'primary' if manga.status == 'ongoing' else 'warning' }}">
+                                                    {{ manga.status.title() }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-5x text-muted mb-4"></i>
+                <h3 class="text-muted">No manga found</h3>
+                <p class="text-muted">Try adjusting your search criteria or browse all manga.</p>
+                <a href="{{ url_for('library') }}" class="btn btn-primary">
+                    <i class="fas fa-refresh me-2"></i>Clear Filters
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if manga_list.pages > 1 %}
+        <nav aria-label="Manga pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if manga_list.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('library', page=manga_list.prev_num, 
+                           search=search, category=selected_category, type=selected_type, 
+                           status=selected_status, sort=selected_sort) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for page_num in manga_list.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                    {% if page_num %}
+                        {% if page_num != manga_list.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('library', page=page_num, 
+                                   search=search, category=selected_category, type=selected_type, 
+                                   status=selected_status, sort=selected_sort) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if manga_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('library', page=manga_list.next_num, 
+                           search=search, category=selected_category, type=selected_type, 
+                           status=selected_status, sort=selected_sort) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form on filter change
+    const filterInputs = document.querySelectorAll('#filter-form select, #filter-form input[type="text"]');
+    filterInputs.forEach(input => {
+        if (input.type === 'text') {
+            let timeout;
+            input.addEventListener('input', function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    document.getElementById('filter-form').submit();
+                }, 500);
+            });
+        } else {
+            input.addEventListener('change', function() {
+                document.getElementById('filter-form').submit();
+            });
+        }
+    });
+    
+    // View toggle functionality
+    const gridView = document.getElementById('grid-view');
+    const listView = document.getElementById('list-view');
+    const mangaContainer = document.getElementById('manga-container');
+    
+    listView.addEventListener('click', function() {
+        gridView.classList.remove('active');
+        this.classList.add('active');
+        
+        mangaContainer.className = 'row';
+        const items = mangaContainer.querySelectorAll('.manga-item');
+        items.forEach(item => {
+            item.className = 'col-12 mb-3 manga-item';
+            
+            // Modify card layout for list view
+            const card = item.querySelector('.card');
+            card.classList.remove('h-100');
+            card.innerHTML = card.innerHTML.replace('card-body', 'card-body col-md-8');
+            
+            const cardContent = card.querySelector('.card-body');
+            const coverWrapper = card.querySelector('.manga-cover-wrapper');
+            coverWrapper.className = 'col-md-4';
+            
+            // Restructure for horizontal layout
+            card.className = 'card shadow-sm';
+            card.innerHTML = `
+                <div class="row g-0">
+                    ${coverWrapper.outerHTML}
+                    ${cardContent.outerHTML}
+                </div>
+            `;
+        });
+    });
+    
+    gridView.addEventListener('click', function() {
+        listView.classList.remove('active');
+        this.classList.add('active');
+        
+        // Reload page to reset to grid view
+        window.location.reload();
+    });
+});
+</script>
+{% endblock %}

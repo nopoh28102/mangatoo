@@ -1,0 +1,56 @@
+عند رفع مانجا جديد  فى  صفحة   /admin/upload-new  
+
+
+ظهرلي اشعار   
+
+
+حدث خطأ أثناء رفع المانجا: (sqlite3.IntegrityError) UNIQUE constraint failed: manga.slug [SQL: INSERT INTO manga (title, title_ar, slug, description, description_ar, author, artist, cover_image, status, type, language, views, is_premium, is_featured, is_published, publication_schedule, publisher_id, original_language, tags, age_rating, license_type, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)] [parameters: ('العودة من الهاوية', None, 'العودة-من-الهاوية', 'العودة من الهاويةالعودةالعودة من الهاويةالعودة من الهاويةالعودة من الهاويةالعودة من الهاويةالعودة من الهاويةالعودة من الهاوية من الهاوية', None, 'غير معروف', '', 'uploads/covers/2043982432314301686.jpg', 'ongoing', 'manga', 'en', 0, 0, 0, 1, None, None, 'en', '[]', 'T', 'exclusive', '2025-08-11 20:01:27.660777', '2025-08-11 20:01:27.660779')] (Background on this error at: https://sqlalche.me/e/20/gkpj)
+
+
+
+وظهر فى الكونسول 
+
+
+[2025-08-11 20:00:15 +0000] [3310] [INFO] Worker exiting (pid: 3310)
+[2025-08-11 20:00:15 +0000] [3313] [INFO] Booting worker with pid: 3313
+INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+INFO:root:Admin user already exists
+DEBUG:htmldate.validators:minimum date setting: 1995-01-01 00:00:00
+🧪 اختبار الكشط من: https://olympustaff.com/series/release-that-witch/1
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /series/release-that-witch/1 HTTP/1.1" 200 None
+🧪 اختبار الكشط من: https://olympustaff.com/series/release-that-witch/1
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /series/release-that-witch/1 HTTP/1.1" 200 None
+🚀 بدء رفع الصور إلى Cloudinary لفصل 1.0
+🕸️ رفع 7 صورة مكشوطة إلى Cloudinary
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/01.webp HTTP/1.1" 200 1638624
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 1: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/02.webp HTTP/1.1" 200 1442756
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 2: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/03.webp HTTP/1.1" 200 1170106
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 3: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/04.webp HTTP/1.1" 200 1493234
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 4: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/05.webp HTTP/1.1" 200 1470994
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 5: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/06.webp HTTP/1.1" 200 848706
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 6: Must supply api_key
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_a87ff/1/07.webp HTTP/1.1" 200 1620146
+ERROR:root:Cloudinary upload failed: Must supply api_key
+ERROR:root:Failed to upload scraped page 7: Must supply api_key
+✅ تم رفع 0 صورة مكشوطة إلى Cloudinary بنجاح

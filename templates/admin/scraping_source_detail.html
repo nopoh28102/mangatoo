@@ -1,0 +1,255 @@
+{% extends "admin/base.html" %}
+
+{% block title %}تفاصيل مصدر الكشط{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-info-circle me-2"></i>تفاصيل مصدر الكشط</h2>
+            <a href="{{ url_for('admin_auto_scraping') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right me-2"></i>العودة
+            </a>
+        </div>
+    </div>
+
+    <!-- Source Information -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">معلومات المصدر</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <img src="{{ url_for('static', filename=source.manga.cover_image) }}" 
+                                 class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                        <div class="col-md-9">
+                            <h4>{{ source.manga.title }}</h4>
+                            <p class="text-muted">{{ source.manga.author }}</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>نوع الموقع:</strong> 
+                                        <span class="badge bg-info">{{ source.website_type }}</span>
+                                    </p>
+                                    <p><strong>رابط المصدر:</strong> 
+                                        <a href="{{ source.source_url }}" target="_blank" class="text-decoration-none">
+                                            {{ source.source_url[:50] }}...
+                                            <i class="fas fa-external-link-alt ms-1"></i>
+                                        </a>
+                                    </p>
+                                    <p><strong>آخر فصل مكشوط:</strong> 
+                                        <span class="badge bg-secondary">{{ source.last_chapter_scraped }}</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>فترة الفحص:</strong> {{ source.check_interval // 3600 }} ساعة</p>
+                                    <p><strong>آخر فحص:</strong> 
+                                        {% if source.last_check %}
+                                            {{ source.last_check.strftime('%Y-%m-%d %H:%M') }}
+                                        {% else %}
+                                            <span class="text-muted">لم يتم فحصه بعد</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>الحالة:</strong> 
+                                        {% if source.is_active %}
+                                            <span class="badge bg-success">مفعل</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">معطل</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h6>إعدادات المصدر:</h6>
+                                    <div class="d-flex gap-2">
+                                        {% if source.auto_publish %}
+                                            <span class="badge bg-primary"><i class="fas fa-check me-1"></i>نشر تلقائي</span>
+                                        {% endif %}
+                                        {% if source.quality_check %}
+                                            <span class="badge bg-info"><i class="fas fa-shield-alt me-1"></i>فحص الجودة</span>
+                                        {% endif %}
+                                        {% if source.notification_enabled %}
+                                            <span class="badge bg-success"><i class="fas fa-bell me-1"></i>إشعارات مفعلة</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">إجراءات سريعة</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <form method="POST" action="{{ url_for('admin_check_scraping_source_now', source_id=source.id) }}">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sync me-2"></i>فحص الآن
+                            </button>
+                        </form>
+                        
+                        <form method="POST" action="{{ url_for('admin_toggle_scraping_source', source_id=source.id) }}">
+                            <button type="submit" class="btn btn-{% if source.is_active %}warning{% else %}success{% endif %} w-100">
+                                <i class="fas fa-{% if source.is_active %}pause{% else %}play{% endif %} me-2"></i>
+                                {% if source.is_active %}إيقاف{% else %}تفعيل{% endif %} المصدر
+                            </button>
+                        </form>
+                        
+                        <a href="{{ source.source_url }}" target="_blank" class="btn btn-outline-info w-100">
+                            <i class="fas fa-external-link-alt me-2"></i>زيارة المصدر
+                        </a>
+                        
+                        <form method="POST" action="{{ url_for('admin_delete_scraping_source', source_id=source.id) }}" 
+                              onsubmit="return confirm('هل أنت متأكد من حذف هذا المصدر؟ سيتم حذف جميع البيانات المرتبطة به.')">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-trash me-2"></i>حذف المصدر
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Queue Items -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">آخر عناصر قائمة الانتظار</h5>
+                </div>
+                <div class="card-body">
+                    {% if queue_items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>رقم الفصل</th>
+                                    <th>عنوان الفصل</th>
+                                    <th>الحالة</th>
+                                    <th>المحاولات</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th>تاريخ المعالجة</th>
+                                    <th>رسالة الخطأ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in queue_items %}
+                                <tr>
+                                    <td><span class="badge bg-info">{{ item.chapter_number }}</span></td>
+                                    <td>
+                                        {% if item.chapter_title %}
+                                            {{ item.chapter_title[:30] }}...
+                                        {% else %}
+                                            <span class="text-muted">غير محدد</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.status == 'pending' %}
+                                            <span class="badge bg-primary">في الانتظار</span>
+                                        {% elif item.status == 'processing' %}
+                                            <span class="badge bg-warning">قيد المعالجة</span>
+                                        {% elif item.status == 'completed' %}
+                                            <span class="badge bg-success">مكتمل</span>
+                                        {% elif item.status == 'failed' %}
+                                            <span class="badge bg-danger">فشل</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.attempts }}/{{ item.max_attempts }}</td>
+                                    <td><small>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</small></td>
+                                    <td>
+                                        {% if item.processed_at %}
+                                            <small>{{ item.processed_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                                        {% else %}
+                                            <span class="text-muted">لم تتم معالجته</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if item.error_message %}
+                                            <small class="text-danger" title="{{ item.error_message }}">
+                                                {{ item.error_message[:30] }}...
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">لا توجد عناصر في قائمة الانتظار لهذا المصدر</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Logs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">سجل العمليات الأخيرة</h5>
+                </div>
+                <div class="card-body">
+                    {% if logs %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>وقت الفحص</th>
+                                    <th>الحالة</th>
+                                    <th>الفصول المكتشفة</th>
+                                    <th>الفصول المكشوطة</th>
+                                    <th>وقت التنفيذ</th>
+                                    <th>رسالة الخطأ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td><small>{{ log.check_time.strftime('%Y-%m-%d %H:%M:%S') }}</small></td>
+                                    <td>
+                                        {% if log.status == 'success' %}
+                                            <span class="badge bg-success">نجح</span>
+                                        {% elif log.status == 'failed' %}
+                                            <span class="badge bg-danger">فشل</span>
+                                        {% else %}
+                                            <span class="badge bg-info">لا توجد فصول جديدة</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.chapters_found or 0 }}</td>
+                                    <td>{{ log.chapters_scraped or 0 }}</td>
+                                    <td><small>{{ "%.2f"|format(log.execution_time or 0) }}s</small></td>
+                                    <td>
+                                        {% if log.error_message %}
+                                            <small class="text-danger" title="{{ log.error_message }}">
+                                                {{ log.error_message[:50] }}...
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted text-center">لا توجد سجلات متاحة لهذا المصدر</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

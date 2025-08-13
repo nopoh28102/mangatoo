@@ -1,0 +1,800 @@
+
++ gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 main:app
+Aug 13 18:45:57
+[2025-08-13 15:45:52 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 18:45:57
+[2025-08-13 15:45:52 +0000] [25] [INFO] Listening at: http://0.0.0.0:5000 (25)
+Aug 13 18:45:57
+[2025-08-13 15:45:52 +0000] [25] [INFO] Using worker: sync
+Aug 13 18:45:57
+[2025-08-13 15:45:52 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 18:45:57
+[2025-08-13 15:45:52 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [26] [ERROR] Exception in worker process
+Aug 13 18:45:57
+Traceback (most recent call last):
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:45:57
+    worker.init_process()
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:45:57
+    self.load_wsgi()
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:45:57
+    self.wsgi = self.app.wsgi()
+Aug 13 18:45:57
+                ^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:45:57
+    self.callable = self.load()
+Aug 13 18:45:57
+                    ^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:45:57
+    return self.load_wsgiapp()
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:45:57
+    return util.import_app(self.app_uri)
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:45:57
+    mod = importlib.import_module(module)
+Aug 13 18:45:57
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:45:57
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:45:57
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:45:57
+    from app import app  # noqa: F401
+Aug 13 18:45:57
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:45:57
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:45:57
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:45:57
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [27] [ERROR] Exception in worker process
+Aug 13 18:45:57
+Traceback (most recent call last):
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:45:57
+    worker.init_process()
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:45:57
+    self.load_wsgi()
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:45:57
+    self.wsgi = self.app.wsgi()
+Aug 13 18:45:57
+                ^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:45:57
+    self.callable = self.load()
+Aug 13 18:45:57
+                    ^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:45:57
+    return self.load_wsgiapp()
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:45:57
+    return util.import_app(self.app_uri)
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:45:57
+    mod = importlib.import_module(module)
+Aug 13 18:45:57
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:45:57
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:45:57
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:45:57
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:45:57
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:45:57
+    from app import app  # noqa: F401
+Aug 13 18:45:57
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:45:57
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:45:57
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:45:57
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:45:57
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [26] [INFO] Worker exiting (pid: 26)
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [27] [INFO] Worker exiting (pid: 27)
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [25] [ERROR] Worker (pid:26) exited with code 3
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [25] [ERROR] Worker (pid:27) was sent SIGTERM!
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [25] [ERROR] Shutting down: Master
+Aug 13 18:45:57
+[2025-08-13 15:45:57 +0000] [25] [ERROR] Reason: Worker failed to boot.
+Aug 13 18:46:00
+Log size is too large, please check the log
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:46:00
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:46:00
+    from app import app  # noqa: F401
+Aug 13 18:46:00
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:46:00
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:46:00
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:46:00
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [25] [INFO] Worker exiting (pid: 25)
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [26] [ERROR] Exception in worker process
+Aug 13 18:46:00
+Traceback (most recent call last):
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:46:00
+    worker.init_process()
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:46:00
+    self.load_wsgi()
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:46:00
+    self.wsgi = self.app.wsgi()
+Aug 13 18:46:00
+                ^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:46:00
+    self.callable = self.load()
+Aug 13 18:46:00
+                    ^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:46:00
+    return self.load_wsgiapp()
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:46:00
+    return util.import_app(self.app_uri)
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:46:00
+    mod = importlib.import_module(module)
+Aug 13 18:46:00
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:46:00
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:46:00
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:46:00
+    from app import app  # noqa: F401
+Aug 13 18:46:00
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:46:00
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:46:00
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:46:00
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [26] [INFO] Worker exiting (pid: 26)
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Worker (pid:25) exited with code 3
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Worker (pid:26) was sent SIGTERM!
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Shutting down: Master
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Reason: Worker failed to boot.
+Aug 13 18:46:00
+Server SHUTDOWN: failure
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:46:00
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:46:00
+    from app import app  # noqa: F401
+Aug 13 18:46:00
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:46:00
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:46:00
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:46:00
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [25] [INFO] Worker exiting (pid: 25)
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [26] [ERROR] Exception in worker process
+Aug 13 18:46:00
+Traceback (most recent call last):
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:46:00
+    worker.init_process()
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:46:00
+    self.load_wsgi()
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:46:00
+    self.wsgi = self.app.wsgi()
+Aug 13 18:46:00
+                ^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:46:00
+    self.callable = self.load()
+Aug 13 18:46:00
+                    ^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:46:00
+    return self.load_wsgiapp()
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:46:00
+    return util.import_app(self.app_uri)
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:46:00
+    mod = importlib.import_module(module)
+Aug 13 18:46:00
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:46:00
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:46:00
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:46:00
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:46:00
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:46:00
+    from app import app  # noqa: F401
+Aug 13 18:46:00
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:46:00
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:46:00
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:46:00
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:46:00
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [26] [INFO] Worker exiting (pid: 26)
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Worker (pid:25) exited with code 3
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Worker (pid:26) was sent SIGTERM!
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Shutting down: Master
+Aug 13 18:46:00
+[2025-08-13 15:45:58 +0000] [24] [ERROR] Reason: Worker failed to boot.
+Aug 13 18:46:00
+Server SHUTDOWN: failure
+Aug 13 18:46:00
+Your function has exited, please check your function
+Aug 13 18:46:00
+RequestId: 3c347382-141f-43c7-8ce2-67cd101aeb45 Error: Runtime exited with error: exit status 3
+Aug 13 18:46:00
+Your function has exited, please check your function
+Aug 13 18:46:00
+RequestId: 1bcd16a5-186b-4490-b9d1-02791d455186 Error: Runtime exited with error: exit status 3
+Aug 13 18:46:00
+Your function has exited, please check your function
+Aug 13 18:46:00
+RequestId: cf4ad5c5-609b-4e64-8202-61815047f5af Error: Runtime exited with error: exit status 3
+Aug 13 18:46:03
+Log size is too large, please check the log
+Aug 13 18:46:03
+Your function has exited, please check your function
+Aug 13 18:46:03
+RequestId: f17e5860-c5cf-46b2-ba37-9dd4ec930fde Error: Runtime exited with error: exit status 1
+Aug 13 18:46:05
+Log size is too large, please check the log
+Aug 13 18:46:05
+Your function has exited, please check your function
+Aug 13 18:46:05
+RequestId: 9c6d43ff-3487-43d2-bb33-4346944d73ac Error: Runtime exited with error: exit status 3
+Aug 13 18:46:19
+Log size is too large, please check the log
+Aug 13 18:46:19
+Your function has exited, please check your function
+Aug 13 18:46:19
+RequestId: 0a089bd3-0e45-448e-85d7-6b1a11ed1d54 Error: Runtime exited with error: exit status 3
+Aug 13 18:47:43
+Log size is too large, please check the log
+Aug 13 18:47:43
+Your function has exited, please check your function
+Aug 13 18:47:43
+RequestId: aef0ef8d-723e-4cf9-83d1-d33989a891f9 Error: Runtime exited with error: exit status 3
+Aug 13 18:52:41
++ gunicorn --bind 0.0.0.0:8080 --workers 2 --timeout 120 main:app
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [25] [INFO] Listening at: http://0.0.0.0:8080 (25)
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [25] [INFO] Using worker: sync
+Aug 13 18:52:45
+[2025-08-13 15:52:42 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 18:52:45
+[2025-08-13 15:52:42 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 18:52:43
++ gunicorn --bind 0.0.0.0:8080 --workers 2 --timeout 120 main:app
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [26] [INFO] Starting gunicorn 23.0.0
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [26] [INFO] Listening at: http://0.0.0.0:8080 (26)
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [26] [INFO] Using worker: sync
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 18:52:43
+[2025-08-13 15:52:42 +0000] [28] [INFO] Booting worker with pid: 28
+Aug 13 18:52:46
++ gunicorn --bind 0.0.0.0:8080 --workers 2 --timeout 120 main:app
+Aug 13 18:52:46
+[2025-08-13 15:52:42 +0000] [26] [INFO] Starting gunicorn 23.0.0
+Aug 13 18:52:46
+[2025-08-13 15:52:42 +0000] [26] [INFO] Listening at: http://0.0.0.0:8080 (26)
+Aug 13 18:52:46
+[2025-08-13 15:52:42 +0000] [26] [INFO] Using worker: sync
+Aug 13 18:52:46
+[2025-08-13 15:52:42 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 18:52:46
+[2025-08-13 15:52:42 +0000] [28] [INFO] Booting worker with pid: 28
+Aug 13 18:52:46
+[2025-08-13 15:52:45 +0000] [28] [ERROR] Exception in worker process
+Aug 13 18:52:46
+Traceback (most recent call last):
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:52:46
+    worker.init_process()
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:52:46
+    self.load_wsgi()
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:52:46
+    self.wsgi = self.app.wsgi()
+Aug 13 18:52:46
+                ^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:52:46
+    self.callable = self.load()
+Aug 13 18:52:46
+                    ^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:52:46
+    return self.load_wsgiapp()
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:52:46
+    return util.import_app(self.app_uri)
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:52:46
+    mod = importlib.import_module(module)
+Aug 13 18:52:46
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:52:46
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:52:46
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:52:46
+    from app import app  # noqa: F401
+Aug 13 18:52:46
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:52:46
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:52:46
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:52:46
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:52:46
+[2025-08-13 15:52:45 +0000] [27] [ERROR] Exception in worker process
+Aug 13 18:52:46
+Traceback (most recent call last):
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:52:46
+    worker.init_process()
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:52:46
+    self.load_wsgi()
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:52:46
+    self.wsgi = self.app.wsgi()
+Aug 13 18:52:46
+                ^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:52:46
+    self.callable = self.load()
+Aug 13 18:52:46
+                    ^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:52:46
+    return self.load_wsgiapp()
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:52:46
+    return util.import_app(self.app_uri)
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:52:46
+    mod = importlib.import_module(module)
+Aug 13 18:52:46
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:52:46
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:52:46
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:52:46
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:52:46
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:52:46
+    from app import app  # noqa: F401
+Aug 13 18:52:46
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:46
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:52:46
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:52:46
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:52:46
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:52:46
+[2025-08-13 15:52:45 +0000] [27] [INFO] Worker exiting (pid: 27)
+Aug 13 18:52:46
+[2025-08-13 15:52:45 +0000] [28] [INFO] Worker exiting (pid: 28)
+Aug 13 18:52:46
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Worker (pid:27) exited with code 3
+Aug 13 18:52:46
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Worker (pid:28) was sent SIGTERM!
+Aug 13 18:52:46
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Shutting down: Master
+Aug 13 18:52:46
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Reason: Worker failed to boot.
+Aug 13 18:52:48
++ gunicorn --bind 0.0.0.0:8080 --workers 2 --timeout 120 main:app
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [25] [INFO] Starting gunicorn 23.0.0
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [25] [INFO] Listening at: http://0.0.0.0:8080 (25)
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [25] [INFO] Using worker: sync
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [26] [INFO] Booting worker with pid: 26
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [27] [INFO] Booting worker with pid: 27
+Aug 13 18:52:48
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:52:48
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:52:48
+    from app import app  # noqa: F401
+Aug 13 18:52:48
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:52:48
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:52:48
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:52:48
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:52:48
+[2025-08-13 15:52:46 +0000] [27] [INFO] Worker exiting (pid: 27)
+Aug 13 18:52:48
+[2025-08-13 15:52:46 +0000] [28] [ERROR] Exception in worker process
+Aug 13 18:52:48
+Traceback (most recent call last):
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/arbiter.py", line 608, in spawn_worker
+Aug 13 18:52:48
+    worker.init_process()
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 135, in init_process
+Aug 13 18:52:48
+    self.load_wsgi()
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/workers/base.py", line 147, in load_wsgi
+Aug 13 18:52:48
+    self.wsgi = self.app.wsgi()
+Aug 13 18:52:48
+                ^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/base.py", line 66, in wsgi
+Aug 13 18:52:48
+    self.callable = self.load()
+Aug 13 18:52:48
+                    ^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 57, in load
+Aug 13 18:52:48
+    return self.load_wsgiapp()
+Aug 13 18:52:48
+           ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/app/wsgiapp.py", line 47, in load_wsgiapp
+Aug 13 18:52:48
+    return util.import_app(self.app_uri)
+Aug 13 18:52:48
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/site-packages/gunicorn/util.py", line 370, in import_app
+Aug 13 18:52:48
+    mod = importlib.import_module(module)
+Aug 13 18:52:48
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/usr/local/lib/python3.11/importlib/__init__.py", line 126, in import_module
+Aug 13 18:52:48
+    return _bootstrap._gcd_import(name[level:], package, level)
+Aug 13 18:52:48
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1204, in _gcd_import
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1176, in _find_and_load
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 1147, in _find_and_load_unlocked
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap_external>", line 940, in exec_module
+Aug 13 18:52:48
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+Aug 13 18:52:48
+  File "/app/main.py", line 1, in <module>
+Aug 13 18:52:48
+    from app import app  # noqa: F401
+Aug 13 18:52:48
+    ^^^^^^^^^^^^^^^^^^^
+Aug 13 18:52:48
+  File "/app/app.py", line 48, in <module>
+Aug 13 18:52:48
+    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'], 'manga'), exist_ok=True)
+Aug 13 18:52:48
+  File "<frozen os>", line 225, in makedirs
+Aug 13 18:52:48
+OSError: [Errno 30] Read-only file system: 'static/uploads/manga'
+Aug 13 18:52:48
+[2025-08-13 15:52:46 +0000] [28] [INFO] Worker exiting (pid: 28)
+Aug 13 18:52:48
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Worker (pid:27) exited with code 3
+Aug 13 18:52:48
+[2025-08-13 15:52:46 +0000] [26] [ERROR] Worker (pid:28) was sent SIGTERM!
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [26] [ERROR] Shutting down: Master
+Aug 13 18:52:48
+[2025-08-13 15:52:47 +0000] [26] [ERROR] Reason: Worker failed to boot.
+Aug 13 18:52:48
+Server SHUTDOWN: failure
+Aug 13 18:52:48
+Log size is too large, please check the log
+Aug 13 18:52:48
+Your function has exited, please check your function
+Aug 13 18:52:48
+RequestId: 47bfa055-8eed-43a8-8bb6-ed87b708e9e9 Error: Runtime exited with error: exit status 3
+Aug 13 18:52:48
+Your function has exited, please check your function
+Aug 13 18:52:48
+RequestId: e4453ab8-00da-4d2f-9f4e-d5585c0a5f93 Error: Runtime exited with error: exit status 3
+Aug 13 18:52:52
+Log size is too large, please check the log
+Aug 13 18:52:53
+Log size is too large, please check the log
+Aug 13 18:52:52
+Your function has exited, please check your function
+Aug 13 18:52:52
+RequestId: 39cbd406-af9f-4a0a-a872-285c0f5c2a6d Error: Runtime exited with error: exit status 3
+Aug 13 18:52:53
+Your function has exited, please check your function
+Aug 13 18:52:53
+RequestId: 728ad094-2fff-4774-a170-5bd236ace90f Error: Runtime exited with error: exit status 3
+Aug 13 18:52:55
+Log size is too large, please check the log
+Aug 13 18:52:55
+Your function has exited, please check your function
+Aug 13 18:52:55
+RequestId: 537959ba-f7d9-4736-8cc3-b5c2ef0fc85f Error: Runtime exited with error: exit status 3
+Aug 13 18:53:08
+Log size is too large, please check the log
+Aug 13 18:53:08
+Your function has exited, please check your function
+Aug 13 18:53:08
+RequestId: a6b2479c-6838-475b-91be-b8ea99f96ae8 Error: Runtime exited with error: ex

@@ -1,0 +1,134 @@
+{% extends "admin/base.html" %}
+
+{% block title %}تعديل الإعلان{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">تعديل الإعلان</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title" class="form-label">العنوان (إنجليزي) *</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ announcement.title }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="title_ar" class="form-label">العنوان (عربي)</label>
+                                <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ announcement.title_ar or '' }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="content" class="form-label">المحتوى (إنجليزي) *</label>
+                        <textarea class="form-control" id="content" name="content" rows="4" required>{{ announcement.content }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="content_ar" class="form-label">المحتوى (عربي)</label>
+                        <textarea class="form-control" id="content_ar" name="content_ar" rows="4">{{ announcement.content_ar or '' }}</textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="type" class="form-label">نوع الإعلان</label>
+                                <select class="form-control" id="type" name="type">
+                                    <option value="info" {{ 'selected' if announcement.type == 'info' }}>معلومات</option>
+                                    <option value="warning" {{ 'selected' if announcement.type == 'warning' }}>تحذير</option>
+                                    <option value="success" {{ 'selected' if announcement.type == 'success' }}>نجاح</option>
+                                    <option value="error" {{ 'selected' if announcement.type == 'error' }}>خطأ</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="target_audience" class="form-label">الجمهور المستهدف</label>
+                                <select class="form-control" id="target_audience" name="target_audience">
+                                    <option value="all" {{ 'selected' if announcement.target_audience == 'all' }}>الجميع</option>
+                                    <option value="premium" {{ 'selected' if announcement.target_audience == 'premium' }}>المشتركون المميزون</option>
+                                    <option value="publishers" {{ 'selected' if announcement.target_audience == 'publishers' }}>الناشرون</option>
+                                    <option value="translators" {{ 'selected' if announcement.target_audience == 'translators' }}>المترجمون</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="display_until" class="form-label">ينتهي في (اختياري)</label>
+                        <input type="datetime-local" class="form-control" id="display_until" name="display_until" 
+                               value="{% if announcement.display_until %}{{ announcement.display_until.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+                        <small class="form-text text-muted">إذا لم يتم تحديد تاريخ، سيبقى الإعلان نشطاً حتى يتم إيقافه يدوياً</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {{ 'checked' if announcement.is_active }}>
+                                <label class="form-check-label" for="is_active">
+                                    نشط
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" {{ 'checked' if announcement.is_featured }}>
+                                <label class="form-check-label" for="is_featured">
+                                    مميز (يظهر بشكل بارز)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_announcements') }}" class="btn btn-secondary">إلغاء</a>
+                        <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">معلومات الإعلان</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>تاريخ الإنشاء:</strong><br>{{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% if announcement.updated_at != announcement.created_at %}
+                <p><strong>آخر تحديث:</strong><br>{{ announcement.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                {% endif %}
+                <p><strong>تم إنشاؤه بواسطة:</strong><br>{{ announcement.creator.username }}</p>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">أنواع الإعلانات</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <span class="badge bg-info">معلومات</span> - للأخبار العامة والتحديثات
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-warning">تحذير</span> - للتنبيهات المهمة
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-success">نجاح</span> - للإنجازات والنجاحات
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-danger">خطأ</span> - للمشاكل التقنية والأخطاء
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

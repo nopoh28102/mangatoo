@@ -1,0 +1,227 @@
+{% extends "admin/base.html" %}
+
+{% block title %}قائمة انتظار الكشط{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <h2><i class="fas fa-list-ul me-2"></i>قائمة انتظار الكشط</h2>
+            <a href="{{ url_for('admin_auto_scraping') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-right me-2"></i>العودة
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                    <h4 class="card-title">{{ queue_stats.pending }}</h4>
+                    <p class="card-text">في الانتظار</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-spinner fa-2x text-warning mb-2"></i>
+                    <h4 class="card-title">{{ queue_stats.processing }}</h4>
+                    <p class="card-text">قيد المعالجة</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check fa-2x text-success mb-2"></i>
+                    <h4 class="card-title">{{ queue_stats.completed }}</h4>
+                    <p class="card-text">مكتمل</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <i class="fas fa-times fa-2x text-danger mb-2"></i>
+                    <h4 class="card-title">{{ queue_stats.failed }}</h4>
+                    <p class="card-text">فشل</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="status" class="form-label">تصفية حسب الحالة</label>
+                            <select class="form-select" id="status" name="status" onchange="this.form.submit()">
+                                <option value="all" {{ 'selected' if status_filter == 'all' else '' }}>جميع الحالات</option>
+                                <option value="pending" {{ 'selected' if status_filter == 'pending' else '' }}>في الانتظار</option>
+                                <option value="processing" {{ 'selected' if status_filter == 'processing' else '' }}>قيد المعالجة</option>
+                                <option value="completed" {{ 'selected' if status_filter == 'completed' else '' }}>مكتمل</option>
+                                <option value="failed" {{ 'selected' if status_filter == 'failed' else '' }}>فشل</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Queue Items -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">عناصر قائمة الانتظار</h5>
+                </div>
+                <div class="card-body">
+                    {% if queue_items.items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>المانجا</th>
+                                    <th>رقم الفصل</th>
+                                    <th>عنوان الفصل</th>
+                                    <th>المصدر</th>
+                                    <th>الحالة</th>
+                                    <th>المحاولات</th>
+                                    <th>تاريخ الإنشاء</th>
+                                    <th>رسالة الخطأ</th>
+                                    <th>إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in queue_items.items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ url_for('static', filename=item.source.manga.cover_image) }}" 
+                                                 class="rounded me-2" width="30" height="45" style="object-fit: cover;">
+                                            <small><strong>{{ item.source.manga.title }}</strong></small>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-info">{{ item.chapter_number }}</span></td>
+                                    <td>
+                                        {% if item.chapter_title %}
+                                            <small>{{ item.chapter_title[:30] }}...</small>
+                                        {% else %}
+                                            <span class="text-muted">غير محدد</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="badge bg-secondary">{{ item.source.website_type }}</span></td>
+                                    <td>
+                                        {% if item.status == 'pending' %}
+                                            <span class="badge bg-primary">في الانتظار</span>
+                                        {% elif item.status == 'processing' %}
+                                            <span class="badge bg-warning">قيد المعالجة</span>
+                                        {% elif item.status == 'completed' %}
+                                            <span class="badge bg-success">مكتمل</span>
+                                        {% elif item.status == 'failed' %}
+                                            <span class="badge bg-danger">فشل</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ item.attempts }}/{{ item.max_attempts }}</small>
+                                        {% if item.attempts >= item.max_attempts and item.status == 'failed' %}
+                                            <i class="fas fa-exclamation-triangle text-danger" title="تم الوصول للحد الأقصى من المحاولات"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</small></td>
+                                    <td>
+                                        {% if item.error_message %}
+                                            <small class="text-danger" title="{{ item.error_message }}">
+                                                {{ item.error_message[:30] }}...
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% if item.status == 'failed' %}
+                                                <form method="POST" action="{{ url_for('admin_retry_queue_item', item_id=item.id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="إعادة المحاولة">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            <a href="{{ item.chapter_url }}" target="_blank" class="btn btn-sm btn-outline-info" title="عرض المصدر">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('admin_delete_queue_item', item_id=item.id) }}" 
+                                                  class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا العنصر؟')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if queue_items.pages > 1 %}
+                    <nav aria-label="Queue pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if queue_items.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_scraping_queue', page=queue_items.prev_num, status=status_filter) }}">السابق</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in queue_items.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != queue_items.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('admin_scraping_queue', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if queue_items.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_scraping_queue', page=queue_items.next_num, status=status_filter) }}">التالي</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-list-ul fa-3x text-muted mb-3"></i>
+                        <h5>لا توجد عناصر في قائمة الانتظار</h5>
+                        <p class="text-muted">
+                            {% if status_filter != 'all' %}
+                                لا توجد عناصر بحالة "{{ status_filter }}"
+                            {% else %}
+                                قائمة انتظار الكشط فارغة حالياً
+                            {% endif %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

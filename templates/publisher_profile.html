@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}{{ publisher.username }} - الناشر{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Publisher Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                {% if publisher.profile_picture %}
+                                <img src="{{ publisher.profile_picture }}" 
+                                     class="rounded-circle me-4" 
+                                     style="width: 80px; height: 80px; object-fit: cover;"
+                                     alt="{{ publisher.username }}">
+                                {% else %}
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-4" 
+                                     style="width: 80px; height: 80px;">
+                                    <i class="fas fa-user text-white fa-2x"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h2 class="mb-1">{{ publisher.username }}</h2>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-calendar me-1"></i>
+                                        <span data-lang="en">Joined {{ publisher.created_at.strftime('%B %Y') }}</span>
+                                        <span data-lang="ar">انضم في {{ publisher.created_at.strftime('%Y/%m') }}</span>
+                                    </p>
+                                    {% if publisher.country %}
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ publisher.country }}
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <h4 class="text-primary mb-0">{{ total_manga }}</h4>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Manga</span>
+                                        <span data-lang="ar">مانجا</span>
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-success mb-0">{{ total_chapters }}</h4>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Chapters</span>
+                                        <span data-lang="ar">فصل</span>
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <h4 class="text-info mb-0">{{ "{:,}".format(total_views) }}</h4>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Views</span>
+                                        <span data-lang="ar">مشاهدة</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if publisher.bio or publisher.bio_ar %}
+                    <hr>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>
+                                <span data-lang="en">About</span>
+                                <span data-lang="ar">نبذة</span>
+                            </h6>
+                            <p class="text-muted">
+                                <span data-lang="en">{{ publisher.bio or 'No biography available.' }}</span>
+                                <span data-lang="ar">{{ publisher.bio_ar or publisher.bio or 'لا توجد سيرة متاحة.' }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs mb-4" id="publisherTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="manga-tab" data-bs-toggle="tab" data-bs-target="#manga" type="button" role="tab">
+                <i class="fas fa-book me-1"></i>
+                <span data-lang="en">Published Manga</span>
+                <span data-lang="ar">المانجا المنشورة</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="chapters-tab" data-bs-toggle="tab" data-bs-target="#chapters" type="button" role="tab">
+                <i class="fas fa-list me-1"></i>
+                <span data-lang="en">Recent Chapters</span>
+                <span data-lang="ar">الفصول الحديثة</span>
+            </button>
+        </li>
+    </ul>
+    
+    <!-- Tab Content -->
+    <div class="tab-content" id="publisherTabsContent">
+        <!-- Manga Tab -->
+        <div class="tab-pane fade show active" id="manga" role="tabpanel">
+            {% if manga_list %}
+            <div class="row">
+                {% for item in manga_list %}
+                <div class="col-lg-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-3">
+                                    {% if item.manga.cover_image %}
+                                    <img src="{{ url_for('static', filename=item.manga.cover_image.replace('static/', '')) }}" 
+                                         class="img-fluid rounded" alt="{{ item.manga.title }}">
+                                    {% else %}
+                                    <div class="bg-secondary rounded d-flex align-items-center justify-content-center" 
+                                         style="aspect-ratio: 3/4; min-height: 120px;">
+                                        <i class="fas fa-book text-white fa-2x"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-9">
+                                    <h6 class="mb-2">
+                                        <a href="{{ url_for('manga_detail_by_id', manga_id=item.manga.id) }}" 
+                                           class="text-decoration-none">{{ item.manga.title }}</a>
+                                    </h6>
+                                    {% if item.manga.title_ar %}
+                                    <p class="text-muted small mb-1" dir="rtl">{{ item.manga.title_ar }}</p>
+                                    {% endif %}
+                                    <p class="text-muted small mb-2">
+                                        <span class="badge bg-secondary me-1">{{ item.manga.type.title() }}</span>
+                                        <span class="badge bg-{{ 'success' if item.manga.status == 'completed' else 'primary' if item.manga.status == 'ongoing' else 'warning' }}">
+                                            {{ item.manga.status.title() }}
+                                        </span>
+                                    </p>
+                                    <p class="small mb-1">
+                                        <i class="fas fa-list me-1"></i>{{ item.chapter_count }} 
+                                        <span data-lang="en">chapters</span>
+                                        <span data-lang="ar">فصل</span>
+                                    </p>
+                                    {% if item.latest_chapter %}
+                                    <p class="small text-muted mb-1">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span data-lang="en">Last: Ch.{{ item.latest_chapter.chapter_number }} ({{ item.latest_chapter.created_at.strftime('%Y-%m-%d') }})</span>
+                                        <span data-lang="ar">الأخير: ف.{{ item.latest_chapter.chapter_number }} ({{ item.latest_chapter.created_at.strftime('%Y/%m/%d') }})</span>
+                                    </p>
+                                    {% endif %}
+                                    <p class="small text-muted mb-0">
+                                        <i class="fas fa-eye me-1"></i>{{ "{:,}".format(item.manga.views) }} 
+                                        <span data-lang="en">views</span>
+                                        <span data-lang="ar">مشاهدة</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No manga published yet</span>
+                    <span data-lang="ar">لم يتم نشر أي مانجا بعد</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Chapters Tab -->
+        <div class="tab-pane fade" id="chapters" role="tabpanel">
+            {% if recent_chapters %}
+            <div class="list-group">
+                {% for chapter in recent_chapters %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">
+                                <a href="{{ url_for("read_chapter_by_id", chapter_id=chapter.id)) }}" 
+                                   class="text-decoration-none">
+                                    {{ chapter.manga.title }} - 
+                                    <span data-lang="en">Chapter {{ chapter.chapter_number }}</span>
+                                    <span data-lang="ar">الفصل {{ chapter.chapter_number }}</span>
+                                </a>
+                            </h6>
+                            {% if chapter.manga.title_ar %}
+                            <p class="text-muted small mb-1" dir="rtl">{{ chapter.manga.title_ar }}</p>
+                            {% endif %}
+                            {% if chapter.title %}
+                            <p class="text-muted small mb-1">{{ chapter.title }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="text-end">
+                            <small class="text-muted">{{ chapter.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            <br>
+                            <span class="badge bg-secondary">{{ chapter.page_images.count() }} 
+                                <span data-lang="en">pages</span>
+                                <span data-lang="ar">صفحة</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-list fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No chapters published yet</span>
+                    <span data-lang="ar">لم يتم نشر أي فصول بعد</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

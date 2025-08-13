@@ -1,0 +1,137 @@
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+🧪 اختبار الكشط من: https://olympustaff.com/series/return-from-the-depths/32
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /series/return-from-the-depths/32 HTTP/1.1" 200 None
+🚀 بدء رفع الصور إلى Cloudinary لفصل 1.0
+🕸️ رفع 10 صورة مكشوطة إلى Cloudinary
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/82738e304153e6dcdc038a3fb020d9db.webp HTTP/1.1" 200 637344
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.cloudinary.com:443
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 1: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754943992/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_001.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/007550343b8ff25f7f69ee0c624d9460.webp HTTP/1.1" 200 573970
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 2: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754943997/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_002.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/73b217a6228288c1c2fe747785f2b1b9.webp HTTP/1.1" 200 564682
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 3: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754944002/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_003.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/fdc8b0da86c4134c57ef2bf438b10fe2.webp HTTP/1.1" 200 503374
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 4: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754944006/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_004.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/772e84116c332fa86ea367aec9dfcc57.webp HTTP/1.1" 200 359396
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 5: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754944010/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_005.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/62cf9b7ee1c356f0045b4e45a0c57793.webp HTTP/1.1" 200 404856
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+DEBUG:urllib3.connectionpool:https://api.cloudinary.com:443 "POST /v1_1/dmxcipnbf/image/upload HTTP/1.1" 200 None
+INFO:root:Uploaded scraped page 6: https://res.cloudinary.com/dmxcipnbf/image/upload/v1754944014/manga_chapters/manga_4/manga_chapters/manga_4/chapter_8/page_006.webp
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): olympustaff.com:443
+DEBUG:urllib3.connectionpool:https://olympustaff.com:443 "GET /uploads/manga_ce514/32/d09eb665cd157b2ee5aec97289ebdaf2.webp HTTP/1.1" 200 540526
+INFO:root:✅ Configured Cloudinary with account: Primary Account
+[2025-08-11 20:26:59 +0000] [507] [CRITICAL] WORKER TIMEOUT (pid:518)
+[2025-08-11 20:26:59 +0000] [518] [ERROR] Error handling request /admin/upload-new
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 134, in handle
+    self.handle_request(listener, req, client, addr)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/sync.py", line 177, in handle_request
+    respiter = self.wsgi(environ, resp.start_response)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/werkzeug/middleware/proxy_fix.py", line 183, in __call__
+    return self.app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_login/utils.py", line 290, in decorated_view
+    return current_app.ensure_sync(func)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/routes.py", line 5303, in admin_upload_new
+    uploaded_results = cloudinary_uploader.upload_scraped_images(image_urls, manga.id, chapter.id, headers)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/utils_cloudinary.py", line 254, in upload_scraped_images
+    result = self.upload_image_file(BytesIO(response.content), manga_id, chapter_id, i)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/utils_cloudinary.py", line 100, in upload_image_file
+    result = cloudinary.uploader.upload(file_obj, **upload_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/cloudinary/uploader.py", line 198, in upload
+    return call_cacheable_api("upload", params, file=file, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/cloudinary/uploader.py", line 834, in call_cacheable_api
+    result = call_api(action, params, http_headers, return_error, unsigned, file, timeout, **options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/cloudinary/uploader.py", line 903, in call_api
+    response = _http.request(method="POST", url=api_url, fields=param_list, headers=headers, **kw)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/_request_methods.py", line 143, in request
+    return self.request_encode_body(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/_request_methods.py", line 278, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/poolmanager.py", line 459, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/urllib3/connection.py", line 565, in getresponse
+    httplib_response = super().getresponse()
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/http/client.py", line 1395, in getresponse
+    response.begin()
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/http/client.py", line 325, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/http/client.py", line 286, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/socket.py", line 718, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/ssl.py", line 1314, in recv_into
+    return self.read(nbytes, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/7d088dip86hlzri9sk0h78b63yfmx0a0-python3-3.11.13/lib/python3.11/ssl.py", line 1166, in read
+    return self._sslobj.read(len, buffer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-08-11 20:26:59 +0000] [518] [INFO] Worker exiting (pid: 518)
+[2025-08-11 20:26:59 +0000] [764] [INFO] Booting worker with pid: 764
+INFO:root:✅ Cloudinary models imported successfully
+INFO:root:Database tables created successfully
+INFO:root:Admin user already exists
+DEBUG:htmldate.validators:minimum date setting: 1995-01-01 00:00:00
+[2025-08-11 20:27:18 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:18 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:18 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
+[2025-08-11 20:27:19 +0000] [507] [INFO] Handling signal: winch
