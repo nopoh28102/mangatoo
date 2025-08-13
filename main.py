@@ -41,7 +41,7 @@ except ImportError as e:
     DATABASE_URL = os.environ.get("DATABASE_URL")
     
     # إذا كنت تريد وضع بيانات الاتصال مباشرة، قم بإلغاء التعليق عن السطر التالي:
-    # DATABASE_URL = "postgresql://pfvnjqepjzflguvrfhio:ckjntdhxpurkthvolgoosbiwprcmaa@9qasp5v56q8ckkf5dc.leapcellpool.com:6438/piuexiffbnczcaxdhidl"
+    DATABASE_URL = "postgres://avnadmin:AVNS_pbTUFscGMyRqBHuN7Jd@pg-34bab68b-mahmoudnabihsaleh-0434.d.aivencloud.com:18537/defaultdb?sslmode=require"
     
     if DATABASE_URL:
         app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
