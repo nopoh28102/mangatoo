@@ -1,0 +1,582 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إضافة فصل جديد - {{ manga.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            إضافة فصل جديد
+                        </h4>
+                        <p class="mb-0 opacity-75">{{ manga.title }}</p>
+                    </div>
+                    {% if manga.slug %}
+                    <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="btn btn-light btn-sm">
+                    {% else %}
+                    <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="btn btn-light btn-sm">
+                    {% endif %}
+                        <i class="fas fa-arrow-right me-2"></i>العودة للمانجا
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="addChapterForm">
+                        <div class="row">
+                            <!-- Chapter Information -->
+                            <div class="col-lg-6">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-secondary text-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            معلومات الفصل
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="chapter_number" class="form-label">رقم الفصل *</label>
+                                            <input type="number" step="0.1" class="form-control" id="chapter_number" 
+                                                   name="chapter_number" value="{{ next_chapter_number }}" required>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="chapter_title" class="form-label">عنوان الفصل</label>
+                                            <input type="text" class="form-control" id="chapter_title" 
+                                                   name="chapter_title" placeholder="اختياري">
+                                        </div>
+                                        
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="is_locked" name="is_locked">
+                                            <label class="form-check-label" for="is_locked">
+                                                فصل مميز (يتطلب اشتراك)
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="early_access_date" class="form-label">تاريخ الوصول المبكر</label>
+                                            <input type="datetime-local" class="form-control" id="early_access_date" 
+                                                   name="early_access_date">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="release_date" class="form-label">تاريخ النشر العام</label>
+                                            <input type="datetime-local" class="form-control" id="release_date" 
+                                                   name="release_date">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Method Selection -->
+                            <div class="col-lg-6">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-secondary text-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-upload me-2"></i>
+                                            طريقة رفع الفصل
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <div class="btn-group w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_files" value="images" checked>
+                                                    <label class="btn btn-outline-primary" for="method_files">
+                                                        <i class="fas fa-images me-2"></i>رفع الصور
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_zip" value="zip">
+                                                    <label class="btn btn-outline-primary" for="method_zip">
+                                                        <i class="fas fa-file-archive me-2"></i>رفع ZIP/CBZ
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_scrape" value="scrape">
+                                                    <label class="btn btn-outline-primary" for="method_scrape">
+                                                        <i class="fas fa-download me-2"></i>كشط من الويب
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- File Upload Section -->
+                                        <div id="upload_files" class="upload-section">
+                                            <div class="border-2 border-dashed border-primary rounded p-4 text-center">
+                                                <input type="file" class="form-control d-none" id="chapter_images" name="chapter_images" 
+                                                       multiple accept="image/*" onchange="handleFileSelect(this)">
+                                                <div class="dropzone" onclick="document.getElementById('chapter_images').click()">
+                                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                    <h5>انقر لاختيار الصور أو اسحب وأفلت</h5>
+                                                    <p class="text-muted">الصيغ المدعومة: JPG، PNG، WEBP</p>
+                                                </div>
+                                            </div>
+                                            <div id="file_preview" class="mt-3"></div>
+                                        </div>
+
+                                        <!-- ZIP Upload Section -->
+                                        <div id="upload_zip" class="upload-section d-none">
+                                            <div class="alert alert-success mb-3">
+                                                <i class="fas fa-archive me-2"></i>
+                                                <strong>استخراج ZIP محلي</strong><br>
+                                                <small>يتم استخراج ملفات ZIP محلياً على الخادم لمعالجة سريعة وموثوقة.</small>
+                                            </div>
+                                            <div class="border-2 border-dashed border-info rounded p-4 text-center">
+                                                <input type="file" class="form-control d-none" id="chapter_zip" name="chapter_zip" 
+                                                       accept=".zip,.cbz,.rar" onchange="handleZipSelect(this)">
+                                                <div class="dropzone" onclick="document.getElementById('chapter_zip').click()">
+                                                    <i class="fas fa-file-archive fa-3x text-info mb-3"></i>
+                                                    <h5>اختر أرشيف ZIP/CBZ/RAR</h5>
+                                                    <p class="text-muted">انقر على "استخراج ومعاينة" بعد الاختيار لمعاينة الصور</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- ZIP Preview and Extract Button -->
+                                            <div id="zip_preview" class="mt-3"></div>
+                                            
+                                            <!-- Extracted Images Preview -->
+                                            <div id="extracted_images_preview" class="mt-3 d-none">
+                                                <h6>معاينة الصور المستخرجة</h6>
+                                                <p class="text-muted mb-3">اسحب وأفلت لإعادة ترتيب الصور:</p>
+                                                <div id="extracted_images_container" class="sortable-images"></div>
+                                                <input type="hidden" id="extracted_images_data" name="extracted_images_data" value="">
+                                            </div>
+                                        </div>
+
+                                        <!-- Web Scraping Section -->
+                                        <div id="upload_scrape" class="upload-section d-none">
+                                            <div class="border-2 border-dashed border-success rounded p-4">
+                                                <div class="row">
+                                                    <div class="col-md-8 mb-3">
+                                                        <label for="chapter_url" class="form-label fw-bold">رابط الفصل</label>
+                                                        <input type="url" class="form-control form-control-lg" id="chapter_url" name="chapter_url"
+                                                               placeholder="https://olympustaff.com/series/BATE/225">
+                                                        <div class="form-text">المواقع المدعومة: OlympusStaff والمواقع المتوافقة</div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-3 d-flex align-items-end">
+                                                        <button type="button" class="btn btn-success btn-lg w-100" onclick="testScraping()">
+                                                            <i class="fas fa-search me-2"></i>اختبار الرابط
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div id="scrape_preview" class="mt-3"></div>
+                                                
+                                                <!-- Hidden fields to store scraping results -->
+                                                <input type="hidden" id="scraped_data" name="scraped_data" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="btn btn-secondary">
+                            {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="btn btn-secondary">
+                            {% endif %}
+                                <i class="fas fa-times me-2"></i>إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-plus me-2"></i>إضافة الفصل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let uploadMethod = 'images';
+
+// Upload method switching
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize upload method handlers
+    const methodInputs = document.querySelectorAll('input[name="upload_method"]');
+    
+    methodInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked) {
+                showUploadSection(this.value);
+            }
+        });
+    });
+    
+    // Show initial section
+    showUploadSection('images');
+});
+
+function showUploadSection(method) {
+    uploadMethod = method;
+    
+    // Hide all sections
+    document.querySelectorAll('.upload-section').forEach(section => {
+        section.classList.add('d-none');
+    });
+    
+    // Show selected section
+    if (method === 'images') {
+        document.getElementById('upload_files').classList.remove('d-none');
+    } else if (method === 'zip') {
+        document.getElementById('upload_zip').classList.remove('d-none');
+    } else if (method === 'scrape') {
+        document.getElementById('upload_scrape').classList.remove('d-none');
+    }
+}
+
+// File selection handler
+function handleFileSelect(input) {
+    const preview = document.getElementById('file_preview');
+    preview.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        const fileList = document.createElement('div');
+        fileList.className = 'row';
+        
+        Array.from(input.files).forEach((file, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 mb-2';
+            
+            const card = document.createElement('div');
+            card.className = 'card h-100';
+            card.innerHTML = `
+                <div class="card-body text-center p-2">
+                    <i class="fas fa-file-image fa-2x text-primary mb-2"></i>
+                    <h6 class="card-title small">${file.name}</h6>
+                    <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                </div>
+            `;
+            
+            col.appendChild(card);
+            fileList.appendChild(col);
+        });
+        
+        preview.appendChild(fileList);
+    }
+}
+
+// ZIP selection handler
+function handleZipSelect(input) {
+    const preview = document.getElementById('zip_preview');
+    preview.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        const file = input.files[0];
+        preview.innerHTML = `
+            <div class="alert alert-info">
+                <h6><i class="fas fa-file-archive me-2"></i>ملف محدد: ${file.name}</h6>
+                <p class="mb-2">الحجم: ${(file.size / 1024 / 1024).toFixed(2)} ميجابايت</p>
+                <button type="button" class="btn btn-primary" onclick="extractZipPreview()">
+                    <i class="fas fa-expand-arrows-alt me-2"></i>استخراج ومعاينة
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Extract ZIP preview
+function extractZipPreview() {
+    const zipInput = document.getElementById('chapter_zip');
+    const preview = document.getElementById('zip_preview');
+    
+    if (!zipInput.files || zipInput.files.length === 0) {
+        alert('يرجى اختيار ملف ZIP أولاً');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('zip_file', zipInput.files[0]);
+    
+    preview.innerHTML = `
+        <div class="alert alert-info">
+            <i class="fas fa-spinner fa-spin me-2"></i>جاري استخراج الملف...
+        </div>
+    `;
+    
+    fetch('/admin/extract-zip-preview', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayExtractedImages(data.images);
+        } else {
+            preview.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>خطأ في استخراج الملف: ${data.error}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>خطأ في الشبكة: ${error.message}
+            </div>
+        `;
+    });
+}
+
+// Display extracted images
+function displayExtractedImages(images) {
+    const container = document.getElementById('extracted_images_container');
+    const previewDiv = document.getElementById('extracted_images_preview');
+    
+    container.innerHTML = '';
+    
+    images.forEach((image, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'extracted-image-item p-2 border rounded mb-2 d-flex align-items-center';
+        imageDiv.draggable = true;
+        imageDiv.dataset.index = index;
+        
+        imageDiv.innerHTML = `
+            <i class="fas fa-grip-vertical me-3 text-muted"></i>
+            <img src="${image.url}" alt="صفحة ${index + 1}" style="width: 60px; height: 80px; object-fit: cover;" class="me-3">
+            <div>
+                <strong>صفحة ${index + 1}</strong><br>
+                <small class="text-muted">${image.filename}</small>
+            </div>
+        `;
+        
+        container.appendChild(imageDiv);
+    });
+    
+    // Update hidden field
+    document.getElementById('extracted_images_data').value = JSON.stringify(images);
+    
+    // Show preview
+    previewDiv.classList.remove('d-none');
+}
+
+// Test scraping function
+function testScraping() {
+    const chapterUrl = document.getElementById('chapter_url').value.trim();
+    const preview = document.getElementById('scrape_preview');
+
+    if (!chapterUrl) {
+        alert('يرجى إدخال رابط الفصل أولاً');
+        return;
+    }
+
+    // Check if URL is from supported sites
+    if (!chapterUrl.includes('olympustaff.com')) {
+        alert('حالياً ندعم فقط موقع olympustaff.com');
+        return;
+    }
+
+    preview.innerHTML = `
+        <div class="alert alert-info">
+            <i class="fas fa-spinner fa-spin me-2"></i>
+            جاري اختبار الكشط من الموقع...
+        </div>
+    `;
+
+    // Use the unified scraping endpoint
+    fetch('/test-olympustaff-scraping', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'chapter_url': chapterUrl
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Save scraped data for form submission
+            document.getElementById('scraped_data').value = JSON.stringify(data);
+            
+            preview.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check me-2"></i>نجح اختبار الكشط</h6>
+                    <ul class="mb-0">
+                        <li><strong>الفصل:</strong> ${data.chapter_title || 'غير محدد'}</li>
+                        <li><strong>الصور الموجودة:</strong> ${data.total_images || 0}</li>
+                        <li><strong>نوع الموقع:</strong> <span class="badge bg-info">${data.site_type || 'غير محدد'}</span></li>
+                        <li><strong>الرسالة:</strong> ${data.message || ''}</li>
+                    </ul>
+                    ${data.all_images && data.all_images.length > 0 ? `
+                        <div class="mt-3">
+                            <h6>معاينة الصور:</h6>
+                            <div class="row">
+                                ${data.all_images.slice(0, 8).map((img, index) => `
+                                    <div class="col-3 mb-2">
+                                        <div class="text-center border rounded p-1 bg-secondary text-light">
+                                            <img src="${img}" alt="صورة ${index + 1}" 
+                                                 class="img-fluid rounded" 
+                                                 style="max-height: 80px; width: auto; object-fit: cover;"
+                                                 loading="lazy"
+                                                 onerror="this.style.maxHeight='40px';">
+                                            <br><small class="text-muted">صورة ${index + 1}</small>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${data.all_images.length > 8 ? `<small class="text-muted">و ${data.all_images.length - 8} صورة أخرى...</small>` : ''}
+                            <div class="mt-2 p-2 bg-secondary text-light rounded">
+                                <small class="text-muted">
+                                    <strong>ملاحظة:</strong> عند إضافة الفصل سيتم تحميل جميع الـ ${data.total_images} صورة بالترتيب الصحيح.
+                                </small>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            preview.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-times me-2"></i>فشل اختبار الكشط</h6>
+                    <p class="mb-0">${data.error || 'خطأ غير معروف'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-times me-2"></i>خطأ في الشبكة</h6>
+                <p class="mb-0">${error.message}</p>
+            </div>
+        `;
+    });
+}
+    const preview = document.getElementById('scrape-preview');
+    const testBtn = document.getElementById('testScrapeBtn');
+
+    if (!chapterUrl) {
+        alert('يرجى إدخال رابط الفصل أولاً');
+        return;
+    }
+
+    // Check if URL is from supported sites
+    if (!chapterUrl.includes('olympustaff.com')) {
+        alert('حالياً ندعم فقط موقع olympustaff.com');
+        return;
+    }
+
+    testBtn.disabled = true;
+    testBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الاختبار...';
+    
+    preview.innerHTML = `
+        <div class="alert alert-info">
+            <i class="fas fa-spinner fa-spin me-2"></i>
+            جاري اختبار الكشط من الموقع...
+        </div>
+    `;
+
+    // Use the unified scraping endpoint
+    fetch('/test-olympustaff-scraping', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'chapter_url': chapterUrl
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        testBtn.disabled = false;
+        testBtn.innerHTML = '<i class="fas fa-search me-2"></i>اختبار الرابط';
+        
+        if (data.success) {
+            // Save scraped data for form submission
+            document.getElementById('scraped_images').value = JSON.stringify(data.all_images || data.sample_images || []);
+            document.getElementById('scraped_title').value = data.chapter_title || '';
+            document.getElementById('scraping_tested').value = 'true';
+            
+            preview.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check me-2"></i>نجح اختبار الكشط</h6>
+                    <ul class="mb-0">
+                        <li><strong>الفصل:</strong> ${data.chapter_title || 'غير محدد'}</li>
+                        <li><strong>الصور الموجودة:</strong> ${data.total_images || 0}</li>
+                        <li><strong>نوع الموقع:</strong> <span class="badge bg-info">${data.site_type || 'غير محدد'}</span></li>
+                        <li><strong>الرسالة:</strong> ${data.message || ''}</li>
+                    </ul>
+                    ${data.all_images && data.all_images.length > 0 ? `
+                        <div class="mt-3">
+                            <h6>معاينة الصور:</h6>
+                            <div class="row">
+                                ${data.all_images.slice(0, 8).map((img, index) => `
+                                    <div class="col-3 mb-2">
+                                        <div class="text-center border rounded p-1 bg-secondary text-light">
+                                            <img src="${img}" alt="صورة ${index + 1}" 
+                                                 class="img-fluid rounded" 
+                                                 style="max-height: 80px; width: auto; object-fit: cover;"
+                                                 loading="lazy"
+                                                 onerror="this.style.maxHeight='40px';">
+                                            <br><small class="text-muted">صورة ${index + 1}</small>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${data.all_images.length > 8 ? `<small class="text-muted">و ${data.all_images.length - 8} صورة أخرى...</small>` : ''}
+                            <div class="mt-2 p-2 bg-secondary text-light rounded">
+                                <small class="text-muted">
+                                    <strong>ملاحظة:</strong> عند إضافة الفصل سيتم تحميل جميع الـ ${data.total_images} صورة بالترتيب الصحيح.
+                                </small>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            preview.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-times me-2"></i>فشل اختبار الكشط</h6>
+                    <p class="mb-0">${data.error || 'خطأ غير معروف'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Scraping test error:', error);
+        testBtn.disabled = false;
+        testBtn.innerHTML = '<i class="fas fa-search me-2"></i>اختبار الرابط';
+        
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-times me-2"></i>خطأ في الاتصال</h6>
+                <p class="mb-0">تعذر الاتصال بالخادم. يرجى المحاولة مرة أخرى.</p>
+            </div>
+        `;
+    });
+}
+
+// Form validation
+document.getElementById('addChapterForm').addEventListener('submit', function(e) {
+    if (uploadMethod === 'images') {
+        const imageInput = document.getElementById('chapter_images');
+        if (!imageInput.files.length) {
+            e.preventDefault();
+            alert('يرجى تحديد صور الفصل.');
+            return false;
+        }
+    } else if (uploadMethod === 'scrape') {
+        const sourceWebsite = document.getElementById('source_website').value;
+        const chapterUrl = document.getElementById('chapter_url').value;
+        if (!sourceWebsite || !chapterUrl) {
+            e.preventDefault();
+            alert('يرجى تحديد الموقع المصدر ورابط الفصل.');
+            return false;
+        }
+    }
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    setUploadMethod('images');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,688 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Payment Management - إدارة المدفوعات{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Payment Management</span>
+            <span data-lang="ar">إدارة المدفوعات</span>
+        </h2>
+        <div class="btn-group">
+            <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-info">
+                <i class="fas fa-credit-card me-2"></i>
+                <span data-lang="en">Payment Gateways</span>
+                <span data-lang="ar">بوابات الدفع</span>
+            </a>
+            <a href="{{ url_for('admin_payment_plans') }}" class="btn btn-warning">
+                <i class="fas fa-tags me-2"></i>
+                <span data-lang="en">Subscription Plans</span>
+                <span data-lang="ar">خطط الاشتراك</span>
+            </a>
+            <button type="button" class="btn btn-success" onclick="exportPayments()">
+                <i class="fas fa-download me-2"></i>
+                <span data-lang="en">Export</span>
+                <span data-lang="ar">تصدير</span>
+            </button>
+            <button type="button" class="btn btn-primary" onclick="refreshPayments()">
+                <i class="fas fa-sync me-2"></i>
+                <span data-lang="en">Refresh</span>
+                <span data-lang="ar">تحديث</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Total Revenue</span>
+                                <span data-lang="ar">إجمالي الإيرادات</span>
+                            </h6>
+                            <h3>${{ total_revenue or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">This Month</span>
+                                <span data-lang="ar">هذا الشهر</span>
+                            </h6>
+                            <h3>${{ monthly_revenue or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Successful Payments</span>
+                                <span data-lang="ar">المدفوعات الناجحة</span>
+                            </h6>
+                            <h3>{{ successful_payments or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Failed Payments</span>
+                                <span data-lang="ar">المدفوعات الفاشلة</span>
+                            </h6>
+                            <h3>{{ failed_payments or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="search" class="form-label">
+                        <span data-lang="en">Search</span>
+                        <span data-lang="ar">البحث</span>
+                    </label>
+                    <input type="text" class="form-control" name="search" 
+                           placeholder-en="User, email, transaction ID..." 
+                           placeholder-ar="المستخدم، البريد، معرف المعاملة..."
+                           value="{{ search }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">
+                        <span data-lang="en">Status</span>
+                        <span data-lang="ar">الحالة</span>
+                    </label>
+                    <select class="form-select" name="status">
+                        <option value="">
+                            <span data-lang="en">All Status</span>
+                            <span data-lang="ar">جميع الحالات</span>
+                        </option>
+                        <option value="completed" {{ 'selected' if request.args.get('status') == 'completed' }}>
+                            <span data-lang="en">Completed</span>
+                            <span data-lang="ar">مكتمل</span>
+                        </option>
+                        <option value="pending" {{ 'selected' if request.args.get('status') == 'pending' }}>
+                            <span data-lang="en">Pending</span>
+                            <span data-lang="ar">معلق</span>
+                        </option>
+                        <option value="failed" {{ 'selected' if request.args.get('status') == 'failed' }}>
+                            <span data-lang="en">Failed</span>
+                            <span data-lang="ar">فاشل</span>
+                        </option>
+                        <option value="refunded" {{ 'selected' if request.args.get('status') == 'refunded' }}>
+                            <span data-lang="en">Refunded</span>
+                            <span data-lang="ar">مرجع</span>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="gateway" class="form-label">
+                        <span data-lang="en">Gateway</span>
+                        <span data-lang="ar">البوابة</span>
+                    </label>
+                    <select class="form-select" name="gateway">
+                        <option value="">
+                            <span data-lang="en">All Gateways</span>
+                            <span data-lang="ar">جميع البوابات</span>
+                        </option>
+                        {% for gateway in payment_gateways %}
+                        <option value="{{ gateway.name }}" {{ 'selected' if request.args.get('gateway') == gateway.name }}>
+                            {{ gateway.display_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label">
+                        <span data-lang="en">From Date</span>
+                        <span data-lang="ar">من تاريخ</span>
+                    </label>
+                    <input type="date" class="form-control" name="date_from" 
+                           value="{{ request.args.get('date_from') }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label">
+                        <span data-lang="en">To Date</span>
+                        <span data-lang="ar">إلى تاريخ</span>
+                    </label>
+                    <input type="date" class="form-control" name="date_to" 
+                           value="{{ request.args.get('date_to') }}">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payments Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Payment Transactions</span>
+                <span data-lang="ar">معاملات الدفع</span>
+                {% if payments %}
+                    <span class="badge bg-secondary ms-2">{{ payments.total }}</span>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            {% if payments and payments.items %}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <span data-lang="en">Transaction ID</span>
+                                <span data-lang="ar">معرف المعاملة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">User</span>
+                                <span data-lang="ar">المستخدم</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Plan</span>
+                                <span data-lang="ar">الخطة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Amount</span>
+                                <span data-lang="ar">المبلغ</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Gateway</span>
+                                <span data-lang="ar">البوابة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Status</span>
+                                <span data-lang="ar">الحالة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Date</span>
+                                <span data-lang="ar">التاريخ</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Actions</span>
+                                <span data-lang="ar">الإجراءات</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments.items %}
+                        <tr>
+                            <td>
+                                <code>{{ payment.gateway_transaction_id or payment.gateway_payment_id or ('PAY_' + payment.id|string) }}</code>
+                                {% if payment.gateway_payment_id and payment.gateway_transaction_id %}
+                                    <br><small class="text-muted">{{ payment.gateway_payment_id }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                         style="width: 32px; height: 32px; font-size: 12px;">
+                                        {{ payment.user.username[0].upper() }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ payment.user.username }}</div>
+                                        <small class="text-muted">{{ payment.user.email }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if payment.subscription_plan %}
+                                    <div class="fw-bold">{{ payment.subscription_plan.name }}</div>
+                                    <small class="text-muted">{{ payment.subscription_plan.billing_cycle }}</small>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-bold">${{ payment.amount }}</div>
+                                {% if payment.currency != 'USD' %}
+                                    <small class="text-muted">{{ payment.currency }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ payment.gateway }}</span>
+                            </td>
+                            <td>
+                                {% if payment.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>
+                                        <span data-lang="en">Completed</span>
+                                        <span data-lang="ar">مكتمل</span>
+                                    </span>
+                                {% elif payment.status == 'pending' %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>
+                                        <span data-lang="en">Pending</span>
+                                        <span data-lang="ar">معلق</span>
+                                    </span>
+                                {% elif payment.status == 'failed' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-times me-1"></i>
+                                        <span data-lang="en">Failed</span>
+                                        <span data-lang="ar">فاشل</span>
+                                    </span>
+                                {% elif payment.status == 'refunded' %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-undo me-1"></i>
+                                        <span data-lang="en">Refunded</span>
+                                        <span data-lang="ar">مرجع</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div>{{ payment.created_at.strftime('%Y-%m-%d') }}</div>
+                                <small class="text-muted">{{ payment.created_at.strftime('%H:%M:%S') }}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <button class="btn btn-outline-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#paymentDetailModal{{ payment.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if payment.status == 'completed' %}
+                                        <button class="btn btn-outline-warning" 
+                                                onclick="initiateRefund({{ payment.id }})">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    {% endif %}
+                                    {% if payment.status == 'pending' %}
+                                        <button class="btn btn-outline-success" 
+                                                onclick="verifyPayment({{ payment.id }})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-outline-primary" 
+                                                onclick="activatePayment({{ payment.id }})">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    {% endif %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" 
+                                                data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="dropdown-item" onclick="sendReceipt({{ payment.id }})">
+                                                    <i class="fas fa-receipt me-2"></i>
+                                                    <span data-lang="en">Send Receipt</span>
+                                                    <span data-lang="ar">إرسال إيصال</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="dropdown-item" onclick="viewGatewayLogs({{ payment.id }})">
+                                                    <i class="fas fa-list me-2"></i>
+                                                    <span data-lang="en">Gateway Logs</span>
+                                                    <span data-lang="ar">سجلات البوابة</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if payments.pages > 1 %}
+            <div class="card-footer">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if payments.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_payments', page=payments.prev_num, **request.args) }}">
+                                <span data-lang="en">Previous</span>
+                                <span data-lang="ar">السابق</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in payments.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != payments.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_payments', page=page_num, **request.args) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if payments.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_payments', page=payments.next_num, **request.args) }}">
+                                <span data-lang="en">Next</span>
+                                <span data-lang="ar">التالي</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No payment transactions found</span>
+                    <span data-lang="ar">لم يتم العثور على معاملات دفع</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Payment Detail Modals -->
+{% for payment in payments.items if payments %}
+<div class="modal fade" id="paymentDetailModal{{ payment.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Payment Details</span>
+                    <span data-lang="ar">تفاصيل الدفع</span>
+                    - {{ payment.gateway_transaction_id or payment.gateway_payment_id or ('PAY_' + payment.id|string) }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>
+                            <span data-lang="en">Transaction Information</span>
+                            <span data-lang="ar">معلومات المعاملة</span>
+                        </h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Transaction ID:</span>
+                                    <span data-lang="ar">معرف المعاملة:</span>
+                                </strong></td>
+                                <td><code>{{ payment.gateway_transaction_id or payment.gateway_payment_id or ('PAY_' + payment.id|string) }}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Gateway ID:</span>
+                                    <span data-lang="ar">معرف البوابة:</span>
+                                </strong></td>
+                                <td><code>{{ payment.gateway_transaction_id or '-' }}</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Amount:</span>
+                                    <span data-lang="ar">المبلغ:</span>
+                                </strong></td>
+                                <td>${{ payment.amount }} {{ payment.currency }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Gateway:</span>
+                                    <span data-lang="ar">البوابة:</span>
+                                </strong></td>
+                                <td>{{ payment.gateway }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Status:</span>
+                                    <span data-lang="ar">الحالة:</span>
+                                </strong></td>
+                                <td>
+                                    {% if payment.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif payment.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif payment.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% elif payment.status == 'refunded' %}
+                                        <span class="badge bg-secondary">Refunded</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>
+                            <span data-lang="en">User Information</span>
+                            <span data-lang="ar">معلومات المستخدم</span>
+                        </h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">User:</span>
+                                    <span data-lang="ar">المستخدم:</span>
+                                </strong></td>
+                                <td>{{ payment.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Email:</span>
+                                    <span data-lang="ar">البريد:</span>
+                                </strong></td>
+                                <td>{{ payment.user.email }}</td>
+                            </tr>
+                            {% if payment.subscription_plan %}
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Plan:</span>
+                                    <span data-lang="ar">الخطة:</span>
+                                </strong></td>
+                                <td>{{ payment.subscription_plan.name }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Billing:</span>
+                                    <span data-lang="ar">الفوترة:</span>
+                                </strong></td>
+                                <td>{{ payment.subscription_plan.billing_cycle }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+                
+                {% if payment.gateway_response %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Gateway Response</span>
+                        <span data-lang="ar">استجابة البوابة</span>
+                    </h6>
+                    <pre class="bg-secondary p-3 rounded small text-light">{{ payment.gateway_response | tojsonpretty }}</pre>
+                </div>
+                {% endif %}
+                
+                {% if payment.notes %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Notes</span>
+                        <span data-lang="ar">ملاحظات</span>
+                    </h6>
+                    <div class="alert alert-info">{{ payment.notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                {% if payment.status == 'completed' %}
+                    <button type="button" class="btn btn-warning" onclick="initiateRefund({{ payment.id }})">
+                        <i class="fas fa-undo me-2"></i>
+                        <span data-lang="en">Refund</span>
+                        <span data-lang="ar">استرداد</span>
+                    </button>
+                {% endif %}
+                <button type="button" class="btn btn-info" onclick="sendReceipt({{ payment.id }})">
+                    <i class="fas fa-receipt me-2"></i>
+                    <span data-lang="en">Send Receipt</span>
+                    <span data-lang="ar">إرسال إيصال</span>
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <span data-lang="en">Close</span>
+                    <span data-lang="ar">إغلاق</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshPayments() {
+    location.reload();
+}
+
+function exportPayments() {
+    const params = new URLSearchParams(window.location.search);
+    params.set('export', 'csv');
+    window.open(`/admin/payments?${params.toString()}`);
+}
+
+function verifyPayment(paymentId) {
+    if (confirm('Verify this payment with the gateway?')) {
+        fetch(`/admin/payments/${paymentId}/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Payment verified successfully', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showNotification('Payment verification failed: ' + data.error, 'error');
+            }
+        });
+    }
+}
+
+function initiateRefund(paymentId) {
+    const reason = prompt('Refund reason (required):');
+    if (reason) {
+        if (confirm('Are you sure you want to initiate a refund?')) {
+            fetch(`/admin/payments/${paymentId}/refund`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({reason: reason})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Refund initiated successfully', 'success');
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    showNotification('Refund failed: ' + data.error, 'error');
+                }
+            });
+        }
+    }
+}
+
+function sendReceipt(paymentId) {
+    fetch(`/admin/payments/${paymentId}/send-receipt`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Receipt sent successfully', 'success');
+        } else {
+            showNotification('Failed to send receipt', 'error');
+        }
+    });
+}
+
+function viewGatewayLogs(paymentId) {
+    // Open gateway logs in a new window or modal
+    window.open(`/admin/payments/${paymentId}/gateway-logs`, '_blank');
+}
+
+function activatePayment(paymentId) {
+    if (confirm('Are you sure you want to manually activate this payment?')) {
+        fetch(`/admin/payments/activate/${paymentId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification('Payment activated successfully', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showNotification('Failed to activate payment', 'error');
+            }
+        })
+        .catch(error => {
+            showNotification('Error activating payment', 'error');
+        });
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

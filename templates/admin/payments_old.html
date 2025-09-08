@@ -1,0 +1,378 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة المدفوعات - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>إدارة المدفوعات والاشتراكات</h2>
+        <div>
+            <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-primary me-2">
+                <i class="fas fa-credit-card me-2"></i>إدارة بوابات الدفع
+            </a>
+            <a href="{{ url_for('admin_payment_plans') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-list me-2"></i>إدارة الخطط
+            </a>
+            <a href="{{ url_for('admin_subscriptions') }}" class="btn btn-outline-info">
+                <i class="fas fa-users me-2"></i>الاشتراكات
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">إجمالي المدفوعات</h5>
+                            <h2 class="mb-0">{{ total_payments }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-receipt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">مدفوعات مكتملة</h5>
+                            <h2 class="mb-0">{{ completed_payments }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">مدفوعات معلقة</h5>
+                            <h2 class="mb-0">{{ pending_payments }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">إجمالي الإيرادات</h5>
+                            <h2 class="mb-0">${{ "%.2f"|format(total_revenue) }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-dollar-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Gateways Overview -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>بوابات الدفع المتاحة</h5>
+                    <a href="{{ url_for('admin_add_payment_gateway') }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-plus me-1"></i>إضافة بوابة جديدة
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if gateways %}
+                    <div class="row">
+                        {% for gateway in gateways %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card {{ 'border-success' if gateway.is_active else 'border-secondary' }}">
+                                <div class="card-body text-center">
+                                    {% if gateway.logo_url %}
+                                    <img src="{{ gateway.logo_url }}" alt="{{ gateway.display_name }}" class="mb-2" style="max-height: 40px;">
+                                    {% else %}
+                                    <i class="fas fa-credit-card fa-2x mb-2 text-{{ 'success' if gateway.is_active else 'secondary' }}"></i>
+                                    {% endif %}
+                                    <h6>{{ gateway.display_name_ar or gateway.display_name }}</h6>
+                                    <span class="badge bg-{{ 'success' if gateway.is_active else 'secondary' }}">
+                                        {{ 'مفعلة' if gateway.is_active else 'معطلة' }}
+                                    </span>
+                                    <div class="mt-2">
+                                        <a href="{{ url_for('admin_edit_payment_gateway', gateway_id=gateway.id) }}" class="btn btn-sm btn-outline-primary">تعديل</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-credit-card fa-3x mb-3"></i>
+                        <h5>لا توجد بوابات دفع مُعدة</h5>
+                        <p>ابدأ بإضافة بوابة دفع لتمكين المدفوعات على موقعك</p>
+                        <a href="{{ url_for('admin_add_payment_gateway') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>إضافة بوابة دفع
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>المدفوعات الأخيرة</h5>
+                    <a href="{{ url_for('admin_payments') }}?view=all" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_payments %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>رقم الدفع</th>
+                                    <th>المستخدم</th>
+                                    <th>المبلغ</th>
+                                    <th>بوابة الدفع</th>
+                                    <th>الحالة</th>
+                                    <th>التاريخ</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in recent_payments %}
+                                <tr>
+                                    <td>#{{ payment.id }}</td>
+                                    <td>{{ payment.user.username }}</td>
+                                    <td>${{ "%.2f"|format(payment.amount) }} {{ payment.currency }}</td>
+                                    <td>{{ payment.gateway.display_name_ar or payment.gateway.display_name }}</td>
+                                    <td>
+                                        {% if payment.status == 'completed' %}
+                                        <span class="badge bg-success">مكتمل</span>
+                                        {% elif payment.status == 'pending' %}
+                                        <span class="badge bg-warning">معلق</span>
+                                        {% elif payment.status == 'failed' %}
+                                        <span class="badge bg-danger">فاشل</span>
+                                        {% elif payment.status == 'cancelled' %}
+                                        <span class="badge bg-secondary">ملغي</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ payment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#paymentModal{{ payment.id }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-receipt fa-3x mb-3"></i>
+                        <h5>لا توجد مدفوعات حتى الآن</h5>
+                        <p>ستظهر المدفوعات هنا عند إجراء المستخدمين لعمليات دفع</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Details Modals -->
+{% for payment in recent_payments %}
+<div class="modal fade" id="paymentModal{{ payment.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تفاصيل الدفع #{{ payment.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>معلومات الدفع</h6>
+                        <p><strong>المبلغ:</strong> ${{ "%.2f"|format(payment.amount) }} {{ payment.currency }}</p>
+                        <p><strong>الحالة:</strong> 
+                            {% if payment.status == 'completed' %}
+                            <span class="badge bg-success">مكتمل</span>
+                            {% elif payment.status == 'pending' %}
+                            <span class="badge bg-warning">معلق</span>
+                            {% elif payment.status == 'failed' %}
+                            <span class="badge bg-danger">فاشل</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>بوابة الدفع:</strong> {{ payment.gateway.display_name_ar or payment.gateway.display_name }}</p>
+                        <p><strong>تاريخ الإنشاء:</strong> {{ payment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        {% if payment.completed_at %}
+                        <p><strong>تاريخ الاكتمال:</strong> {{ payment.completed_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>معلومات المستخدم</h6>
+                        <p><strong>اسم المستخدم:</strong> {{ payment.user.username }}</p>
+                        <p><strong>البريد الإلكتروني:</strong> {{ payment.user.email }}</p>
+                        <h6>معلومات الخطة</h6>
+                        <p><strong>الخطة:</strong> {{ payment.plan.name_ar or payment.plan.name }}</p>
+                        <p><strong>المدة:</strong> {{ payment.plan.duration_months }} شهر</p>
+                    </div>
+                </div>
+                {% if payment.gateway_payment_id %}
+                <hr>
+                <h6>معلومات البوابة</h6>
+                <p><strong>معرف الدفع:</strong> {{ payment.gateway_payment_id }}</p>
+                {% if payment.gateway_transaction_id %}
+                <p><strong>معرف المعاملة:</strong> {{ payment.gateway_transaction_id }}</p>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+                            <select class="form-select" id="paypal_mode" name="paypal_mode">
+                                <option value="sandbox" selected>وضع التجربة (Sandbox)</option>
+                                <option value="live">الوضع المباشر (Live)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="monthly_price" class="form-label">سعر الاشتراك الشهري ($)</label>
+                            <input type="number" class="form-control" id="monthly_price" name="monthly_price" 
+                                   value="9.99" step="0.01" min="0">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="yearly_price" class="form-label">سعر الاشتراك السنوي ($)</label>
+                            <input type="number" class="form-control" id="yearly_price" name="yearly_price" 
+                                   value="99.99" step="0.01" min="0">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>الإحصائيات المالية</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium Users List -->
+    <div class="card">
+        <div class="card-header">
+            <h5>المشتركين المميزين الحاليين</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in premium_users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% if user.premium_until %}
+                                    {{ user.premium_until.strftime('%Y-%m-%d') }}
+                                {% else %}
+                                    غير محدد
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.is_premium %}
+                                    <span class="badge bg-success">نشط</span>
+                                {% else %}
+                                    <span class="badge bg-warning">منتهي</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form class="d-inline" method="POST" action="{{ url_for('admin_extend_premium', user_id=user.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-plus-circle"></i> تمديد شهر
+                                    </button>
+                                </form>
+                                <form class="d-inline" method="POST" action="{{ url_for('admin_cancel_premium', user_id=user.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-times-circle"></i> إلغاء
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simple revenue chart
+const ctx = document.getElementById('revenueChart').getContext('2d');
+const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+        datasets: [{
+            label: 'الإيرادات الشهرية ($)',
+            data: [50, 120, 200, 350, 450, {{ monthly_revenue }}],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'نمو الإيرادات الشهرية'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+{% endblock %}

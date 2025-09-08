@@ -1,0 +1,475 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Translation Requests - طلبات الترجمة{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Translation Requests Management</span>
+            <span data-lang="ar">إدارة طلبات الترجمة</span>
+        </h2>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.total_requests }}</h3>
+                    <small>
+                        <span data-lang="en">Total Requests</span>
+                        <span data-lang="ar">إجمالي الطلبات</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.open_requests }}</h3>
+                    <small>
+                        <span data-lang="en">Open</span>
+                        <span data-lang="ar">مفتوحة</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.in_progress }}</h3>
+                    <small>
+                        <span data-lang="en">In Progress</span>
+                        <span data-lang="ar">قيد التنفيذ</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.completed }}</h3>
+                    <small>
+                        <span data-lang="en">Completed</span>
+                        <span data-lang="ar">مكتملة</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-dark text-white">
+                <div class="card-body text-center">
+                    <h3>{{ stats.published }}</h3>
+                    <small>
+                        <span data-lang="en">Published</span>
+                        <span data-lang="ar">منشورة</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row">
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <span data-lang="en">Status</span>
+                        <span data-lang="ar">الحالة</span>
+                    </label>
+                    <select name="status" class="form-select">
+                        <option value="">
+                            <span data-lang="en">All Status</span>
+                            <span data-lang="ar">جميع الحالات</span>
+                        </option>
+                        <option value="open" {% if status_filter == 'open' %}selected{% endif %}>
+                            <span data-lang="en">Open</span>
+                            <span data-lang="ar">مفتوحة</span>
+                        </option>
+                        <option value="assigned" {% if status_filter == 'assigned' %}selected{% endif %}>
+                            <span data-lang="en">Assigned</span>
+                            <span data-lang="ar">معينة</span>
+                        </option>
+                        <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>
+                            <span data-lang="en">In Progress</span>
+                            <span data-lang="ar">قيد التنفيذ</span>
+                        </option>
+                        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>
+                            <span data-lang="en">Completed</span>
+                            <span data-lang="ar">مكتملة</span>
+                        </option>
+                        <option value="published" {% if status_filter == 'published' %}selected{% endif %}>
+                            <span data-lang="en">Published</span>
+                            <span data-lang="ar">منشورة</span>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">
+                        <span data-lang="en">Target Language</span>
+                        <span data-lang="ar">اللغة المطلوبة</span>
+                    </label>
+                    <select name="language" class="form-select">
+                        <option value="">
+                            <span data-lang="en">All Languages</span>
+                            <span data-lang="ar">جميع اللغات</span>
+                        </option>
+                        <option value="ar" {% if language_filter == 'ar' %}selected{% endif %}>العربية</option>
+                        <option value="en" {% if language_filter == 'en' %}selected{% endif %}>English</option>
+                        <option value="fr" {% if language_filter == 'fr' %}selected{% endif %}>Français</option>
+                        <option value="es" {% if language_filter == 'es' %}selected{% endif %}>Español</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter me-1"></i>
+                        <span data-lang="en">Filter</span>
+                        <span data-lang="ar">تصفية</span>
+                    </button>
+                    <a href="{{ url_for('admin_translation_requests') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i>
+                        <span data-lang="en">Clear</span>
+                        <span data-lang="ar">مسح</span>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Translation Requests Table -->
+    <div class="card">
+        <div class="card-body">
+            {% if translation_requests.items %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span data-lang="en">Manga</span>
+                                <span data-lang="ar">المانجا</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Chapter</span>
+                                <span data-lang="ar">الفصل</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Languages</span>
+                                <span data-lang="ar">اللغات</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Translator</span>
+                                <span data-lang="ar">المترجم</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Status</span>
+                                <span data-lang="ar">الحالة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Priority</span>
+                                <span data-lang="ar">الأولوية</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Created</span>
+                                <span data-lang="ar">تاريخ الإنشاء</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Actions</span>
+                                <span data-lang="ar">الإجراءات</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in translation_requests.items %}
+                        <tr>
+                            <td>
+                                {% if request.manga %}
+                                    <strong>{{ request.manga.title }}</strong>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.chapter %}
+                                    {{ request.chapter.title }}
+                                {% else %}
+                                    <span class="text-muted">
+                                        <span data-lang="en">General</span>
+                                        <span data-lang="ar">عام</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>
+                                    {{ request.from_language }} → {{ request.to_language }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if request.translator %}
+                                    <span class="badge bg-success">{{ request.translator.username }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <span data-lang="en">Unassigned</span>
+                                        <span data-lang="ar">غير معين</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.status == 'open' %}
+                                    <span class="badge bg-warning">
+                                        <span data-lang="en">Open</span>
+                                        <span data-lang="ar">مفتوحة</span>
+                                    </span>
+                                {% elif request.status == 'assigned' %}
+                                    <span class="badge bg-info">
+                                        <span data-lang="en">Assigned</span>
+                                        <span data-lang="ar">معينة</span>
+                                    </span>
+                                {% elif request.status == 'in_progress' %}
+                                    <span class="badge bg-primary">
+                                        <span data-lang="en">In Progress</span>
+                                        <span data-lang="ar">قيد التنفيذ</span>
+                                    </span>
+                                {% elif request.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        <span data-lang="en">Completed</span>
+                                        <span data-lang="ar">مكتملة</span>
+                                    </span>
+                                {% elif request.status == 'published' %}
+                                    <span class="badge bg-dark">
+                                        <span data-lang="en">Published</span>
+                                        <span data-lang="ar">منشورة</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.priority == 'urgent' %}
+                                    <span class="badge bg-danger">
+                                        <span data-lang="en">Urgent</span>
+                                        <span data-lang="ar">عاجل</span>
+                                    </span>
+                                {% elif request.priority == 'high' %}
+                                    <span class="badge bg-warning">
+                                        <span data-lang="en">High</span>
+                                        <span data-lang="ar">عالية</span>
+                                    </span>
+                                {% elif request.priority == 'normal' %}
+                                    <span class="badge bg-secondary">
+                                        <span data-lang="en">Normal</span>
+                                        <span data-lang="ar">عادية</span>
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-light text-dark">
+                                        <span data-lang="en">Low</span>
+                                        <span data-lang="ar">منخفضة</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <small>{{ request.created_at.strftime('%Y-%m-%d') }}</small>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if request.status == 'open' %}
+                                    <button class="btn btn-outline-primary btn-sm" onclick="assignTranslator({{ request.id }})">
+                                        <i class="fas fa-user-plus me-1"></i>
+                                        <span data-lang="en">Assign</span>
+                                        <span data-lang="ar">تعيين</span>
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-secondary btn-sm" onclick="updateStatus({{ request.id }}, '{{ request.status }}')">
+                                        <i class="fas fa-edit me-1"></i>
+                                        <span data-lang="en">Update</span>
+                                        <span data-lang="ar">تحديث</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if translation_requests.pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if translation_requests.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_translation_requests', page=translation_requests.prev_num, status=status_filter, language=language_filter) }}">
+                                <span data-lang="en">Previous</span>
+                                <span data-lang="ar">السابق</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in translation_requests.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != translation_requests.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_translation_requests', page=page_num, status=status_filter, language=language_filter) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if translation_requests.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_translation_requests', page=translation_requests.next_num, status=status_filter, language=language_filter) }}">
+                                <span data-lang="en">Next</span>
+                                <span data-lang="ar">التالي</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-language fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No translation requests found</span>
+                    <span data-lang="ar">لم يتم العثور على طلبات ترجمة</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Assign Translator Modal -->
+<div class="modal fade" id="assignTranslatorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Assign Translator</span>
+                    <span data-lang="ar">تعيين مترجم</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="assignTranslatorForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <span data-lang="en">Select Translator</span>
+                            <span data-lang="ar">اختر مترجم</span>
+                        </label>
+                        <select name="translator_id" class="form-select" required>
+                            <option value="">
+                                <span data-lang="en">Choose translator...</span>
+                                <span data-lang="ar">اختر مترجم...</span>
+                            </option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span data-lang="en">Assign</span>
+                        <span data-lang="ar">تعيين</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Update Status</span>
+                    <span data-lang="ar">تحديث الحالة</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="updateStatusForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <span data-lang="en">New Status</span>
+                            <span data-lang="ar">الحالة الجديدة</span>
+                        </label>
+                        <select name="status" class="form-select" required>
+                            <option value="open">
+                                <span data-lang="en">Open</span>
+                                <span data-lang="ar">مفتوحة</span>
+                            </option>
+                            <option value="assigned">
+                                <span data-lang="en">Assigned</span>
+                                <span data-lang="ar">معينة</span>
+                            </option>
+                            <option value="in_progress">
+                                <span data-lang="en">In Progress</span>
+                                <span data-lang="ar">قيد التنفيذ</span>
+                            </option>
+                            <option value="completed">
+                                <span data-lang="en">Completed</span>
+                                <span data-lang="ar">مكتملة</span>
+                            </option>
+                            <option value="published">
+                                <span data-lang="en">Published</span>
+                                <span data-lang="ar">منشورة</span>
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span data-lang="en">Update</span>
+                        <span data-lang="ar">تحديث</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function assignTranslator(requestId) {
+    const form = document.getElementById('assignTranslatorForm');
+    form.action = `/admin/translation-requests/${requestId}/assign`;
+    
+    // Load translators via AJAX (simplified for now)
+    const select = form.querySelector('select[name="translator_id"]');
+    select.innerHTML = '<option value="">Choose translator...</option>';
+    
+    const modal = new bootstrap.Modal(document.getElementById('assignTranslatorModal'));
+    modal.show();
+}
+
+function updateStatus(requestId, currentStatus) {
+    const form = document.getElementById('updateStatusForm');
+    form.action = `/admin/translation-requests/${requestId}/update-status`;
+    
+    // Set current status as selected
+    const select = form.querySelector('select[name="status"]');
+    select.value = currentStatus;
+    
+    const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

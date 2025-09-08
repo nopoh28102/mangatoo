@@ -1,0 +1,878 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Database Settings - إعدادات قاعدة البيانات{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-database me-2"></i>
+            <span data-lang="en">Database Settings</span>
+            <span data-lang="ar">إعدادات قاعدة البيانات</span>
+        </h2>
+    </div>
+
+    <!-- Current Database Status -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>
+                        <span data-lang="en">Current Database Status</span>
+                        <span data-lang="ar">حالة قاعدة البيانات الحالية</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p><strong>
+                                <span data-lang="en">Database Type:</span>
+                                <span data-lang="ar">نوع قاعدة البيانات:</span>
+                            </strong> 
+                                <span class="badge bg-{{ 'success' if current_db == 'sqlite' else 'primary' }}">
+                                    {{ current_db.upper() if current_db else db_type }}
+                                </span>
+                            </p>
+                            <p><strong>
+                                <span data-lang="en">Connection Status:</span>
+                                <span data-lang="ar">حالة الاتصال:</span>
+                            </strong> 
+                                <span class="badge bg-{{ 'success' if db_connected else 'danger' }}">
+                                    {% if db_connected %}
+                                        <span data-lang="en">Connected</span>
+                                        <span data-lang="ar">متصل</span>
+                                    {% else %}
+                                        <span data-lang="en">Disconnected</span>
+                                        <span data-lang="ar">غير متصل</span>
+                                    {% endif %}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>
+                                <span data-lang="en">Tables Count:</span>
+                                <span data-lang="ar">عدد الجداول:</span>
+                            </strong> <span class="badge bg-primary">{{ table_count }}</span></p>
+                            <p><strong>
+                                <span data-lang="en">Total Records:</span>
+                                <span data-lang="ar">إجمالي السجلات:</span>
+                            </strong> <span class="badge bg-info">{{ total_records or 0 }}</span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>
+                                <span data-lang="en">Database Size:</span>
+                                <span data-lang="ar">حجم قاعدة البيانات:</span>
+                            </strong> <span class="badge bg-secondary">{{ database_size }}</span></p>
+                            <p><strong>
+                                <span data-lang="en">Last Check:</span>
+                                <span data-lang="ar">آخر فحص:</span>
+                            </strong> <small class="text-muted">{{ last_check }}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Database Type Selection -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-database me-2"></i>
+                        <span data-lang="en">Database Type Selection</span>
+                        <span data-lang="ar">اختيار نوع قاعدة البيانات</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <button type="button" class="btn btn-outline-primary w-100 db-type-btn" data-db="postgresql" onclick="showDatabaseForm('postgresql')">
+                                <i class="fab fa-postgresql fs-2 d-block mb-2"></i>
+                                <span>PostgreSQL</span>
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button type="button" class="btn btn-outline-success w-100 db-type-btn" data-db="mysql" onclick="showDatabaseForm('mysql')">
+                                <i class="fas fa-database fs-2 d-block mb-2"></i>
+                                <span>MySQL</span>
+                            </button>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <button type="button" class="btn btn-outline-secondary w-100 db-type-btn" data-db="sqlite" onclick="showDatabaseForm('sqlite')">
+                                <i class="fas fa-file-archive fs-2 d-block mb-2"></i>
+                                <span>SQLite (محلي)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PostgreSQL Connection Form -->
+    <div class="row db-form" id="postgresqlForm">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fab fa-postgresql me-2 text-primary"></i>ربط قاعدة بيانات PostgreSQL خارجية</h5>
+                </div>
+                <div class="card-body">
+                    <form id="dbConnectionForm" method="POST" action="{{ url_for('admin_update_database_connection') }}">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>تحذير:</strong> تأكد من صحة بيانات الاتصال قبل الحفظ. أي خطأ قد يعطل الموقع!
+                        </div>
+
+                        <!-- Connection Type -->
+                        <div class="mb-3">
+                            <label for="connectionType" class="form-label">نوع الاتصال</label>
+                            <select class="form-select" id="connectionType" name="connection_type" onchange="toggleConnectionForm()">
+                                <option value="separate_fields">بيانات منفصلة (موصى به)</option>
+                                <option value="database_url">URL كامل لقاعدة البيانات</option>
+                            </select>
+                        </div>
+
+                        <!-- Separate Fields Method (Default) -->
+                        <div id="fieldsMethod" class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="host" class="form-label">المضيف (Host) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-server"></i></span>
+                                        <input type="text" class="form-control" id="host" name="host" 
+                                               placeholder="localhost أو IP العنوان" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="port" class="form-label">المنفذ (Port)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-ethernet"></i></span>
+                                        <input type="number" class="form-control" id="port" name="port" 
+                                               placeholder="5432" value="5432">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">اسم المستخدم (Username) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="username" name="username" 
+                                               placeholder="اسم المستخدم" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">كلمة المرور (Password) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="password" name="password" 
+                                               placeholder="كلمة المرور" required>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('password')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="database" class="form-label">اسم قاعدة البيانات (Database) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-database"></i></span>
+                                        <input type="text" class="form-control" id="database" name="database" 
+                                               placeholder="اسم قاعدة البيانات" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="schema" class="form-label">المخطط (Schema)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-sitemap"></i></span>
+                                        <input type="text" class="form-control" id="schema" name="schema" 
+                                               placeholder="public" value="public">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SSL Option for Separate Fields -->
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="sslMode" name="ssl_mode">
+                                <label class="form-check-label" for="sslMode">
+                                    <i class="fas fa-shield-alt me-2"></i>استخدام اتصال SSL آمن
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Database URL Method -->
+                        <div id="urlMethod" class="mb-4" style="display: none;">
+                            <div class="mb-3">
+                                <label for="databaseUrl" class="form-label">رابط قاعدة البيانات (DATABASE_URL)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-link"></i></span>
+                                    <input type="text" class="form-control" id="databaseUrl" name="database_url" 
+                                           placeholder="postgresql://username:password@host:port/database"
+                                           value="{{ current_database_url or '' }}">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('databaseUrl')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    مثال: postgresql://username:password@host:port/database
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-info" onclick="testConnection()">
+                                    <i class="fas fa-plug me-2"></i>اختبار الاتصال
+                                </button>
+                                <button type="button" class="btn btn-warning" onclick="backupCurrentDB()">
+                                    <i class="fas fa-download me-2"></i>نسخ احتياطي
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                                    <i class="fas fa-undo me-2"></i>إعادة تعيين
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MySQL Connection Form -->
+    <div class="row db-form" id="mysqlForm" style="display: none;">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-database me-2 text-success"></i>ربط قاعدة بيانات MySQL خارجية</h5>
+                </div>
+                <div class="card-body">
+                    <form id="mysqlConnectionForm" method="POST" action="{{ url_for('admin_update_database_connection') }}">
+                        <input type="hidden" name="db_type" value="mysql">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>تحذير:</strong> تأكد من صحة بيانات الاتصال قبل الحفظ. أي خطأ قد يعطل الموقع!
+                        </div>
+
+                        <!-- Connection Type -->
+                        <div class="mb-3">
+                            <label for="mysqlConnectionType" class="form-label">نوع الاتصال</label>
+                            <select class="form-select" id="mysqlConnectionType" name="connection_type" onchange="toggleMySQLConnectionForm()">
+                                <option value="separate_fields">بيانات منفصلة (موصى به)</option>
+                                <option value="database_url">URL كامل لقاعدة البيانات</option>
+                            </select>
+                        </div>
+
+                        <!-- Separate Fields Method (Default) -->
+                        <div id="mysqlFieldsMethod" class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="mysqlHost" class="form-label">المضيف (Host) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-server"></i></span>
+                                        <input type="text" class="form-control" id="mysqlHost" name="mysql_host" 
+                                               placeholder="localhost أو IP العنوان" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="mysqlPort" class="form-label">المنفذ (Port)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-ethernet"></i></span>
+                                        <input type="number" class="form-control" id="mysqlPort" name="mysql_port" 
+                                               placeholder="3306" value="3306">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="mysqlUsername" class="form-label">اسم المستخدم (Username) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="mysqlUsername" name="mysql_username" 
+                                               placeholder="اسم المستخدم" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="mysqlPassword" class="form-label">كلمة المرور (Password) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="form-control" id="mysqlPassword" name="mysql_password" 
+                                               placeholder="كلمة المرور" required>
+                                        <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('mysqlPassword')">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="mysqlDatabase" class="form-label">اسم قاعدة البيانات (Database) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-database"></i></span>
+                                        <input type="text" class="form-control" id="mysqlDatabase" name="mysql_database" 
+                                               placeholder="اسم قاعدة البيانات" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-3">
+                                    <label for="mysqlCharset" class="form-label">التشفير (Charset)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-font"></i></span>
+                                        <input type="text" class="form-control" id="mysqlCharset" name="mysql_charset" 
+                                               placeholder="utf8mb4" value="utf8mb4">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- SSL Option for Separate Fields -->
+                            <div class="form-check mb-3">
+                                <input type="checkbox" class="form-check-input" id="mysqlSslMode" name="mysql_ssl_mode">
+                                <label class="form-check-label" for="mysqlSslMode">
+                                    <i class="fas fa-shield-alt me-2"></i>استخدام اتصال SSL آمن
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Database URL Method -->
+                        <div id="mysqlUrlMethod" class="mb-4" style="display: none;">
+                            <div class="mb-3">
+                                <label for="mysqlDatabaseUrl" class="form-label">رابط قاعدة البيانات (DATABASE_URL)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-link"></i></span>
+                                    <input type="text" class="form-control" id="mysqlDatabaseUrl" name="mysql_database_url" 
+                                           placeholder="mysql://username:password@host:port/database">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="togglePasswordVisibility('mysqlDatabaseUrl')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    مثال: mysql://username:password@host:port/database
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <button type="button" class="btn btn-info" onclick="testMySQLConnection()">
+                                    <i class="fas fa-plug me-2"></i>اختبار الاتصال
+                                </button>
+                                <button type="button" class="btn btn-warning" onclick="backupCurrentDB()">
+                                    <i class="fas fa-download me-2"></i>نسخ احتياطي
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-secondary" onclick="resetMySQLForm()">
+                                    <i class="fas fa-undo me-2"></i>إعادة تعيين
+                                </button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-2"></i>حفظ الإعدادات
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQLite Info Form -->
+    <div class="row db-form" id="sqliteForm" style="display: none;">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-file-archive me-2 text-secondary"></i>قاعدة بيانات SQLite المحلية</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>معلومات:</strong> SQLite هي قاعدة بيانات محلية لا تحتاج إلى إعداد خارجي. مناسبة للتطوير والمشاريع الصغيرة.
+                    </div>
+                    <p class="text-muted">
+                        قاعدة بيانات SQLite تعمل حاليًا وهي جاهزة للاستخدام. لا تحتاج إلى أي إعدادات إضافية.
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-outline-primary" onclick="showDatabaseForm('postgresql')">
+                            <i class="fab fa-postgresql me-2"></i>الترقية إلى PostgreSQL
+                        </button>
+                        <button type="button" class="btn btn-outline-success ms-2" onclick="showDatabaseForm('mysql')">
+                            <i class="fas fa-database me-2"></i>الترقية إلى MySQL
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Results -->
+    <div id="testResults" class="row mt-4" style="display: none;">
+        <div class="col-12">
+            <div class="card" id="testResultCard">
+                <div class="card-header">
+                    <h5><i class="fas fa-flask me-2"></i>نتائج اختبار الاتصال</h5>
+                </div>
+                <div class="card-body" id="testResultBody">
+                    <!-- Results will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Toggle between connection methods
+function toggleConnectionForm() {
+    const connectionType = document.getElementById('connectionType').value;
+    const fieldsMethod = document.getElementById('fieldsMethod');
+    const urlMethod = document.getElementById('urlMethod');
+    
+    if (connectionType === 'separate_fields') {
+        fieldsMethod.style.display = 'block';
+        urlMethod.style.display = 'none';
+        // Make individual fields required
+        setFieldsRequired(true);
+    } else {
+        fieldsMethod.style.display = 'none';
+        urlMethod.style.display = 'block';
+        // Remove required from individual fields
+        setFieldsRequired(false);
+    }
+}
+
+// Set required attribute for individual fields
+function setFieldsRequired(required) {
+    const requiredFields = ['host', 'username', 'password', 'database'];
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (required) {
+                field.setAttribute('required', '');
+            } else {
+                field.removeAttribute('required');
+            }
+        }
+    });
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    const button = field.nextElementSibling;
+    const icon = button.querySelector('i');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+}
+
+// Test database connection
+function testConnection() {
+    const form = document.getElementById('dbConnectionForm');
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const testBtn = event.target;
+    const originalText = testBtn.innerHTML;
+    testBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الاختبار...';
+    testBtn.disabled = true;
+    
+    fetch('{{ url_for("admin_test_database_connection") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        showTestResults(data);
+    })
+    .catch(error => {
+        showTestResults({
+            success: false,
+            error: 'خطأ في الاتصال: ' + error.message
+        });
+    })
+    .finally(() => {
+        // Restore button state
+        testBtn.innerHTML = originalText;
+        testBtn.disabled = false;
+    });
+}
+
+// Show test results
+function showTestResults(data) {
+    const resultsDiv = document.getElementById('testResults');
+    const resultCard = document.getElementById('testResultCard');
+    const resultBody = document.getElementById('testResultBody');
+    
+    if (data.success) {
+        resultCard.className = 'card border-success';
+        resultBody.innerHTML = `
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i><strong>نجح الاتصال!</strong>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>نوع قاعدة البيانات:</strong> ${data.db_type}</p>
+                    <p><strong>الإصدار:</strong> ${data.version}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>المضيف:</strong> ${data.host}</p>
+                    <p><strong>المنفذ:</strong> ${data.port}</p>
+                    <p><strong>قاعدة البيانات:</strong> ${data.database}</p>
+                    <p><strong>عدد الجداول:</strong> ${data.tables_count}</p>
+                </div>
+            </div>
+        `;
+    } else {
+        resultCard.className = 'card border-danger';
+        resultBody.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-times-circle me-2"></i><strong>فشل الاتصال!</strong>
+                <p class="mb-0 mt-2">${data.error}</p>
+            </div>
+        `;
+    }
+    
+    resultsDiv.style.display = 'block';
+}
+
+// Backup current database
+function backupCurrentDB() {
+    window.location.href = '{{ url_for("admin_database_backup_download") }}';
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('dbConnectionForm').reset();
+    document.getElementById('testResults').style.display = 'none';
+    toggleConnectionForm();
+}
+
+// Database Migration Functions
+function migrateToPostgreSQL() {
+    if (!confirm('هل أنت متأكد من أنك تريد ترحيل البيانات إلى PostgreSQL؟ هذه العملية لا يمكن التراجع عنها.')) {
+        return;
+    }
+    
+    const migrationBtn = document.getElementById('migrationBtn');
+    const originalText = migrationBtn.innerHTML;
+    migrationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الترحيل...';
+    migrationBtn.disabled = true;
+    
+    fetch('/admin/api/migrate-database', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('تم ترحيل قاعدة البيانات بنجاح!');
+            location.reload();
+        } else {
+            alert('خطأ في الترحيل: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ غير متوقع أثناء الترحيل');
+    })
+    .finally(() => {
+        migrationBtn.innerHTML = originalText;
+        migrationBtn.disabled = false;
+    });
+}
+
+function checkDatabaseHealth() {
+    fetch('/admin/database-health')
+        .then(response => response.json())
+        .then(data => {
+            const healthResults = document.getElementById('healthResults');
+            let html = '<div class="mt-3 p-3 border rounded">';
+            
+            if (data.status === 'healthy') {
+                html += '<div class="alert alert-success"><i class="fas fa-check-circle"></i> قاعدة البيانات سليمة</div>';
+            } else {
+                html += '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> توجد مشاكل في قاعدة البيانات</div>';
+            }
+            
+            if (data.checks) {
+                html += '<ul class="list-unstyled mt-2">';
+                data.checks.forEach(check => {
+                    const icon = check.status === 'success' ? 'fa-check text-success' : 'fa-times text-danger';
+                    html += `<li><i class="fas ${icon}"></i> ${check.name}: ${check.message}</li>`;
+                });
+                html += '</ul>';
+            }
+            
+            html += '</div>';
+            healthResults.innerHTML = html;
+        })
+        .catch(error => {
+            document.getElementById('healthResults').innerHTML = 
+                '<div class="alert alert-danger">خطأ في فحص قاعدة البيانات</div>';
+        });
+}
+
+function optimizeDatabase() {
+    if (!confirm('هل تريد تحسين أداء قاعدة البيانات؟')) {
+        return;
+    }
+    
+    fetch('/admin/database-optimize')
+        .then(response => response.json())
+        .then(data => {
+            const optimizeResults = document.getElementById('optimizeResults');
+            let html = '<div class="mt-3 p-3 border rounded">';
+            
+            if (data.success) {
+                html += '<div class="alert alert-success"><i class="fas fa-check-circle"></i> تم تحسين قاعدة البيانات</div>';
+                if (data.results) {
+                    html += '<ul class="list-unstyled mt-2">';
+                    data.results.forEach(result => {
+                        const icon = result.status === 'success' ? 'fa-check text-success' : 'fa-times text-danger';
+                        html += `<li><i class="fas ${icon}"></i> ${result.operation}: ${result.message}</li>`;
+                    });
+                    html += '</ul>';
+                }
+            } else {
+                html += '<div class="alert alert-danger">خطأ في التحسين: ' + data.message + '</div>';
+            }
+            
+            html += '</div>';
+            optimizeResults.innerHTML = html;
+        })
+        .catch(error => {
+            document.getElementById('optimizeResults').innerHTML = 
+                '<div class="alert alert-danger">خطأ في تحسين قاعدة البيانات</div>';
+        });
+}
+
+// Show specific database form
+function showDatabaseForm(dbType) {
+    // Hide all forms
+    const forms = document.querySelectorAll('.db-form');
+    forms.forEach(form => form.style.display = 'none');
+    
+    // Update button states
+    const buttons = document.querySelectorAll('.db-type-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('btn-primary', 'btn-success', 'btn-secondary');
+        if (btn.dataset.db === 'postgresql') {
+            btn.classList.add('btn-outline-primary');
+        } else if (btn.dataset.db === 'mysql') {
+            btn.classList.add('btn-outline-success');
+        } else {
+            btn.classList.add('btn-outline-secondary');
+        }
+    });
+    
+    // Show selected form and update button
+    const selectedForm = document.getElementById(dbType + 'Form');
+    if (selectedForm) {
+        selectedForm.style.display = 'block';
+        const selectedButton = document.querySelector(`[data-db="${dbType}"]`);
+        if (selectedButton) {
+            selectedButton.classList.remove('btn-outline-primary', 'btn-outline-success', 'btn-outline-secondary');
+            if (dbType === 'postgresql') {
+                selectedButton.classList.add('btn-primary');
+            } else if (dbType === 'mysql') {
+                selectedButton.classList.add('btn-success');
+            } else {
+                selectedButton.classList.add('btn-secondary');
+            }
+        }
+    }
+    
+    // Initialize form toggles
+    if (dbType === 'postgresql') {
+        toggleConnectionForm();
+    } else if (dbType === 'mysql') {
+        toggleMySQLConnectionForm();
+    }
+}
+
+// Toggle MySQL connection form
+function toggleMySQLConnectionForm() {
+    const connectionType = document.getElementById('mysqlConnectionType').value;
+    const fieldsMethod = document.getElementById('mysqlFieldsMethod');
+    const urlMethod = document.getElementById('mysqlUrlMethod');
+    
+    if (connectionType === 'separate_fields') {
+        fieldsMethod.style.display = 'block';
+        urlMethod.style.display = 'none';
+        // Make individual fields required
+        setMySQLFieldsRequired(true);
+    } else {
+        fieldsMethod.style.display = 'none';
+        urlMethod.style.display = 'block';
+        // Remove required from individual fields
+        setMySQLFieldsRequired(false);
+    }
+}
+
+// Set required attribute for MySQL fields
+function setMySQLFieldsRequired(required) {
+    const requiredFields = ['mysqlHost', 'mysqlUsername', 'mysqlPassword', 'mysqlDatabase'];
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (required) {
+                field.setAttribute('required', '');
+            } else {
+                field.removeAttribute('required');
+            }
+        }
+    });
+}
+
+// Test MySQL database connection
+function testMySQLConnection() {
+    const form = document.getElementById('mysqlConnectionForm');
+    const formData = new FormData(form);
+    
+    // Show loading state
+    const testBtn = event.target;
+    const originalText = testBtn.innerHTML;
+    testBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الاختبار...';
+    testBtn.disabled = true;
+    
+    fetch('{{ url_for("admin_test_database_connection") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        showTestResults(data);
+    })
+    .catch(error => {
+        showTestResults({
+            success: false,
+            error: 'خطأ في الاتصال: ' + error.message
+        });
+    })
+    .finally(() => {
+        // Restore button state
+        testBtn.innerHTML = originalText;
+        testBtn.disabled = false;
+    });
+}
+
+// Reset MySQL form
+function resetMySQLForm() {
+    document.getElementById('mysqlConnectionForm').reset();
+    document.getElementById('testResults').style.display = 'none';
+    toggleMySQLConnectionForm();
+}
+
+// Initialize form on page load
+document.addEventListener('DOMContentLoaded', function() {
+    toggleConnectionForm();
+    // Show PostgreSQL form by default
+    showDatabaseForm('postgresql');
+});
+</script>
+
+    <!-- Database Migration Section -->
+    {% if current_db == 'sqlite' %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>ترحيل قاعدة البيانات إلى PostgreSQL</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>نظام ترحيل مرن:</strong> يمكنك ترقية قاعدة البيانات من SQLite إلى PostgreSQL للحصول على أداء أفضل ومميزات متقدمة.
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6>حالة الترحيل:</h6>
+                            <p class="mb-2">
+                                <span class="badge bg-{{ 'success' if can_migrate else 'danger' }}">
+                                    {{ 'جاهز للترحيل' if can_migrate else 'غير جاهز' }}
+                                </span>
+                            </p>
+                            <p class="text-muted small">{{ migration_message }}</p>
+                            
+                            {% if can_migrate %}
+                            <button type="button" class="btn btn-primary me-2" id="migrationBtn" onclick="migrateToPostgreSQL()">
+                                <i class="fas fa-database"></i> ترحيل إلى PostgreSQL
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <h6>إحصائيات:</h6>
+                            <ul class="list-unstyled small">
+                                <li>إصدار SQLite: {{ sqlite_version }}</li>
+                                <li>المنصة: {{ platform_info }}</li>
+                                <li>Python: {{ python_version }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Database Tools Section -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-tools"></i> أدوات قاعدة البيانات</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-info" onclick="backupCurrentDB()">
+                            <i class="fas fa-download"></i> إنشاء نسخة احتياطية
+                        </button>
+                        <button type="button" class="btn btn-outline-success" onclick="checkDatabaseHealth()">
+                            <i class="fas fa-heartbeat"></i> فحص سلامة قاعدة البيانات
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="optimizeDatabase()">
+                            <i class="fas fa-rocket"></i> تحسين أداء قاعدة البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line"></i> نتائج الفحوصات</h5>
+                </div>
+                <div class="card-body">
+                    <div id="healthResults"></div>
+                    <div id="optimizeResults"></div>
+                    <p class="text-muted small">انقر على أي من الأدوات أعلاه لعرض النتائج هنا.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

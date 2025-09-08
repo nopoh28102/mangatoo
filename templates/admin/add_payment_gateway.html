@@ -1,0 +1,273 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إضافة بوابة دفع جديدة - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>إضافة بوابة دفع جديدة</h2>
+        <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>العودة لبوابات الدفع
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Basic Information -->
+                        <h5>المعلومات الأساسية</h5>
+                        <hr>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">اسم البوابة (تقني)</label>
+                                <input type="text" class="form-control" id="name" name="name" required placeholder="stripe_main">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="display_name" class="form-label">اسم العرض (إنجليزي)</label>
+                                <input type="text" class="form-control" id="display_name" name="display_name" required placeholder="Stripe">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="display_name_ar" class="form-label">اسم العرض (عربي)</label>
+                                <input type="text" class="form-control" id="display_name_ar" name="display_name_ar" placeholder="سترايب">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gateway_type" class="form-label">نوع البوابة</label>
+                                <select class="form-control" id="gateway_type" name="gateway_type" required onchange="showGatewayConfig()">
+                                    <option value="">اختر نوع البوابة</option>
+                                    <option value="stripe">Stripe</option>
+                                    <option value="paypal">PayPal</option>
+                                    <option value="paytabs">PayTabs</option>
+                                    <option value="fawry">Fawry</option>
+                                    <option value="razorpay">Razorpay</option>
+                                    <option value="paymob">PayMob</option>
+                                    <option value="square">Square</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="supported_currencies" class="form-label">العملات المدعومة</label>
+                                <input type="text" class="form-control" id="supported_currencies" name="supported_currencies" placeholder="USD,EUR,SAR" value="USD">
+                                <small class="form-text text-muted">افصل بين العملات بفاصلة</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="logo_url" class="form-label">رابط الشعار</label>
+                                <input type="url" class="form-control" id="logo_url" name="logo_url" placeholder="https://example.com/logo.png">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" checked>
+                                    <label class="form-check-label" for="is_active">
+                                        تفعيل البوابة
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_sandbox" name="is_sandbox" checked>
+                                    <label class="form-check-label" for="is_sandbox">
+                                        وضع التجريب (Sandbox)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="description" class="form-label">الوصف (إنجليزي)</label>
+                                <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="description_ar" class="form-label">الوصف (عربي)</label>
+                                <textarea class="form-control" id="description_ar" name="description_ar" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Gateway-specific Configuration -->
+                        <h5 class="mt-4">إعدادات البوابة</h5>
+                        <hr>
+                        
+                        <!-- Stripe Configuration -->
+                        <div id="stripe-config" class="gateway-config" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>إعدادات Stripe:</strong> تحتاج إلى مفاتيح API من لوحة تحكم Stripe
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="stripe_publishable_key" class="form-label">المفتاح العام (Publishable Key)</label>
+                                    <input type="text" class="form-control" id="stripe_publishable_key" name="stripe_publishable_key" placeholder="pk_test_...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="stripe_secret_key" class="form-label">المفتاح السري (Secret Key)</label>
+                                    <input type="password" class="form-control" id="stripe_secret_key" name="stripe_secret_key" placeholder="sk_test_...">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="stripe_webhook_secret" class="form-label">مفتاح Webhook (اختياري)</label>
+                                <input type="password" class="form-control" id="stripe_webhook_secret" name="stripe_webhook_secret" placeholder="whsec_...">
+                            </div>
+                        </div>
+                        
+                        <!-- PayPal Configuration -->
+                        <div id="paypal-config" class="gateway-config" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayPal:</strong> أدخل بيانات اعتماد API من PayPal Developer
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paypal_client_id" class="form-label">Client ID</label>
+                                    <input type="text" class="form-control" id="paypal_client_id" name="paypal_client_id"
+                                           placeholder="1934nlV6GslAduWG0oqHpp_akHMJjlbeTDzjXY1q2qZloKUeL">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paypal_client_secret" class="form-label">Secret Key</label>
+                                    <input type="password" class="form-control" id="paypal_client_secret" name="paypal_client_secret"
+                                           placeholder="d9G309waVBAVTyAkQODwWpU2y9lyuzqSytcOhysMk2Fl8M">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PayTabs Configuration -->
+                        <div id="paytabs-config" class="gateway-config" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayTabs:</strong> تحتاج إلى مفاتيح API من لوحة تحكم PayTabs
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="paytabs_server_key" class="form-label">Server Key</label>
+                                    <input type="password" class="form-control" id="paytabs_server_key" name="paytabs_server_key">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="paytabs_client_key" class="form-label">Client Key</label>
+                                    <input type="text" class="form-control" id="paytabs_client_key" name="paytabs_client_key">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="paytabs_merchant_id" class="form-label">Merchant ID</label>
+                                    <input type="text" class="form-control" id="paytabs_merchant_id" name="paytabs_merchant_id">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fawry Configuration -->
+                        <div id="fawry-config" class="gateway-config" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>إعدادات Fawry:</strong> تحتاج إلى بيانات التاجر من Fawry
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="fawry_merchant_code" class="form-label">Merchant Code</label>
+                                    <input type="text" class="form-control" id="fawry_merchant_code" name="fawry_merchant_code">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fawry_security_key" class="form-label">Security Key</label>
+                                    <input type="password" class="form-control" id="fawry_security_key" name="fawry_security_key">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PayMob Configuration -->
+                        <div id="paymob-config" class="gateway-config" style="display: none;">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayMob:</strong> تحتاج إلى مفاتيح API من لوحة تحكم PayMob Accept
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paymob_api_key" class="form-label">API Key</label>
+                                    <input type="password" class="form-control" id="paymob_api_key" name="paymob_api_key" 
+                                           placeholder="ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paymob_integration_id" class="form-label">Integration ID</label>
+                                    <input type="text" class="form-control" id="paymob_integration_id" name="paymob_integration_id" 
+                                           placeholder="123456">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paymob_iframe_id" class="form-label">iFrame ID</label>
+                                    <input type="text" class="form-control" id="paymob_iframe_id" name="paymob_iframe_id" 
+                                           placeholder="123456">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paymob_hmac_secret" class="form-label">HMAC Secret</label>
+                                    <input type="password" class="form-control" id="paymob_hmac_secret" name="paymob_hmac_secret" 
+                                           placeholder="hmac_secret_key">
+                                </div>
+                            </div>
+                            <div class="alert alert-warning">
+                                <strong>ملاحظة:</strong> PayMob متاح في مصر، باكستان، ونيجيريا. تأكد من استخدام العملة المحلية المناسبة.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-secondary">إلغاء</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>حفظ بوابة الدفع
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>نصائح التكوين</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <strong>مهم:</strong> تأكد من استخدام وضع التجريب أولاً قبل التفعيل في الإنتاج
+                    </div>
+                    
+                    <h6>خطوات التكوين:</h6>
+                    <ol class="small">
+                        <li>اختر نوع البوابة</li>
+                        <li>أدخل بيانات API الصحيحة</li>
+                        <li>اختبر البوابة في وضع التجريب</li>
+                        <li>فعّل البوابة عند التأكد من عملها</li>
+                    </ol>
+                    
+                    <h6>بوابات الدفع المدعومة:</h6>
+                    <ul class="small">
+                        <li><strong>Stripe:</strong> دعم عالمي، بطاقات ائتمان</li>
+                        <li><strong>PayPal:</strong> محافظ رقمية، دعم دولي</li>
+                        <li><strong>PayTabs:</strong> مخصص للشرق الأوسط</li>
+                        <li><strong>Fawry:</strong> مخصص لمصر</li>
+                        <li><strong>PayMob:</strong> مخصص لمصر وباكستان ونيجيريا</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showGatewayConfig() {
+    // Hide all config sections
+    document.querySelectorAll('.gateway-config').forEach(el => {
+        el.style.display = 'none';
+    });
+    
+    // Show selected gateway config
+    const selectedType = document.getElementById('gateway_type').value;
+    if (selectedType) {
+        const configEl = document.getElementById(selectedType + '-config');
+        if (configEl) {
+            configEl.style.display = 'block';
+        }
+    }
+}
+</script>
+{% endblock %}

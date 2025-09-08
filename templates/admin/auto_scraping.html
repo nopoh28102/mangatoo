@@ -1,0 +1,658 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Auto Scraping Management - إدارة الكشط التلقائي{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Auto Scraping Management</span>
+            <span data-lang="ar">إدارة الكشط التلقائي</span>
+        </h2>
+        <div class="btn-group">
+            <a href="{{ url_for('admin_add_scraping_source') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                <span data-lang="en">Add Source</span>
+                <span data-lang="ar">إضافة مصدر</span>
+            </a>
+            <button type="button" class="btn btn-success" onclick="startScraping()">
+                <i class="fas fa-play me-2"></i>
+                <span data-lang="en">Start Scraping</span>
+                <span data-lang="ar">بدء الكشط</span>
+            </button>
+            <button type="button" class="btn btn-warning" onclick="pauseAll()">
+                <i class="fas fa-pause me-2"></i>
+                <span data-lang="en">Pause All</span>
+                <span data-lang="ar">إيقاف الكل</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Scraping Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Active Sources</span>
+                                <span data-lang="ar">المصادر النشطة</span>
+                            </h6>
+                            <h3>{{ active_sources or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-rss fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Queued Items</span>
+                                <span data-lang="ar">عناصر في الانتظار</span>
+                            </h6>
+                            <h3>{{ queued_items or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Scraped Today</span>
+                                <span data-lang="ar">تم كشطه اليوم</span>
+                            </h6>
+                            <h3>{{ scraped_today or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-download fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Failed Jobs</span>
+                                <span data-lang="ar">المهام الفاشلة</span>
+                            </h6>
+                            <h3>{{ failed_jobs or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scraping Sources -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Scraping Sources</span>
+                <span data-lang="ar">مصادر الكشط</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>
+                                <span data-lang="en">Source</span>
+                                <span data-lang="ar">المصدر</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">URL</span>
+                                <span data-lang="ar">الرابط</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Status</span>
+                                <span data-lang="ar">الحالة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Schedule</span>
+                                <span data-lang="ar">الجدولة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Last Run</span>
+                                <span data-lang="ar">آخر تشغيل</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Success Rate</span>
+                                <span data-lang="ar">معدل النجاح</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Actions</span>
+                                <span data-lang="ar">الإجراءات</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for source in scraping_sources %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if source.favicon %}
+                                        <img src="{{ source.favicon }}" width="20" height="20" class="me-2" alt="Favicon">
+                                    {% else %}
+                                        <i class="fas fa-globe me-2"></i>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ source.name }}</strong>
+                                        {% if source.description %}
+                                            <br><small class="text-muted">{{ source.description[:50] }}...</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{{ source.url }}" target="_blank" class="text-decoration-none">
+                                    {{ source.url[:40] }}...
+                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                </a>
+                            </td>
+                            <td>
+                                {% if source.is_active %}
+                                    {% if source.is_running %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-play me-1"></i>
+                                            <span data-lang="en">Running</span>
+                                            <span data-lang="ar">قيد التشغيل</span>
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-check me-1"></i>
+                                            <span data-lang="en">Active</span>
+                                            <span data-lang="ar">نشط</span>
+                                        </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-pause me-1"></i>
+                                        <span data-lang="en">Inactive</span>
+                                        <span data-lang="ar">غير نشط</span>
+                                    </span>
+                                {% endif %}
+                                
+                                {% if source.has_errors %}
+                                    <br><span class="badge bg-danger">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        <span data-lang="en">Errors</span>
+                                        <span data-lang="ar">أخطاء</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if source.schedule %}
+                                    <span class="badge bg-info">{{ source.schedule }}</span>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <span data-lang="en">Manual</span>
+                                        <span data-lang="ar">يدوي</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if source.last_run %}
+                                    <div>{{ source.last_run.strftime('%Y-%m-%d %H:%M') }}</div>
+                                    <small class="text-muted">
+                                        {% set hours_ago = ((now - source.last_run).total_seconds() / 3600) | int %}
+                                        {% if hours_ago < 1 %}
+                                            <span data-lang="en">< 1 hour ago</span>
+                                            <span data-lang="ar">أقل من ساعة</span>
+                                        {% elif hours_ago < 24 %}
+                                            {{ hours_ago }} 
+                                            <span data-lang="en">hours ago</span>
+                                            <span data-lang="ar">ساعات مضت</span>
+                                        {% else %}
+                                            {{ (hours_ago // 24) }}
+                                            <span data-lang="en">days ago</span>
+                                            <span data-lang="ar">أيام مضت</span>
+                                        {% endif %}
+                                    </small>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <span data-lang="en">Never run</span>
+                                        <span data-lang="ar">لم يتم التشغيل</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if source.total_attempts %}
+                                    {% set success_rate = ((source.successful_attempts / source.total_attempts) * 100) | round(1) %}
+                                    <div class="progress" style="height: 20px;">
+                                        {% if success_rate >= 80 %}
+                                            <div class="progress-bar bg-success" style="width: {{ success_rate }}%">{{ success_rate }}%</div>
+                                        {% elif success_rate >= 50 %}
+                                            <div class="progress-bar bg-warning" style="width: {{ success_rate }}%">{{ success_rate }}%</div>
+                                        {% else %}
+                                            <div class="progress-bar bg-danger" style="width: {{ success_rate }}%">{{ success_rate }}%</div>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">{{ source.successful_attempts }}/{{ source.total_attempts }}</small>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('admin_scraping_source_detail', source_id=source.id) }}" 
+                                       class="btn btn-outline-primary" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if source.is_active %}
+                                        <button class="btn btn-outline-warning" onclick="pauseSource({{ source.id }})" title="Pause">
+                                            <i class="fas fa-pause"></i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-outline-success" onclick="activateSource({{ source.id }})" title="Activate">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-info" onclick="runNow({{ source.id }})" title="Run Now">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                                                data-bs-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{{ url_for('admin_edit_scraping_source', source_id=source.id) }}">
+                                                    <i class="fas fa-edit me-2"></i>
+                                                    <span data-lang="en">Edit</span>
+                                                    <span data-lang="ar">تعديل</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <button class="dropdown-item" onclick="viewLogs({{ source.id }})">
+                                                    <i class="fas fa-file-alt me-2"></i>
+                                                    <span data-lang="en">View Logs</span>
+                                                    <span data-lang="ar">عرض السجلات</span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button class="dropdown-item" onclick="testSource({{ source.id }})">
+                                                    <i class="fas fa-vial me-2"></i>
+                                                    <span data-lang="en">Test Source</span>
+                                                    <span data-lang="ar">اختبار المصدر</span>
+                                                </button>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <button class="dropdown-item text-danger" onclick="deleteSource({{ source.id }})">
+                                                    <i class="fas fa-trash me-2"></i>
+                                                    <span data-lang="en">Delete</span>
+                                                    <span data-lang="ar">حذف</span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="fas fa-rss fa-3x mb-3"></i>
+                                <p>
+                                    <span data-lang="en">No scraping sources found</span>
+                                    <span data-lang="ar">لم يتم العثور على مصادر كشط</span>
+                                </p>
+                                <a href="{{ url_for('admin_add_scraping_source') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-2"></i>
+                                    <span data-lang="en">Add First Source</span>
+                                    <span data-lang="ar">إضافة أول مصدر</span>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Recent Scraping Activity</span>
+                <span data-lang="ar">النشاط الأخير للكشط</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if recent_activities %}
+            <div class="timeline">
+                {% for activity in recent_activities %}
+                <div class="timeline-item">
+                    <div class="timeline-marker 
+                        {% if activity.status == 'success' %}bg-success
+                        {% elif activity.status == 'error' %}bg-danger
+                        {% elif activity.status == 'running' %}bg-primary
+                        {% else %}bg-secondary{% endif %}">
+                        {% if activity.status == 'success' %}
+                            <i class="fas fa-check"></i>
+                        {% elif activity.status == 'error' %}
+                            <i class="fas fa-times"></i>
+                        {% elif activity.status == 'running' %}
+                            <i class="fas fa-sync fa-spin"></i>
+                        {% else %}
+                            <i class="fas fa-clock"></i>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <h6>{{ activity.source_name }}</h6>
+                        <p class="text-muted mb-1">{{ activity.description }}</p>
+                        <small class="text-muted">
+                            {{ activity.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}
+                            {% if activity.items_processed %}
+                                - {{ activity.items_processed }} 
+                                <span data-lang="en">items processed</span>
+                                <span data-lang="ar">عنصر تمت معالجته</span>
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center text-muted py-4">
+                <i class="fas fa-history fa-3x mb-3"></i>
+                <p>
+                    <span data-lang="en">No recent activity</span>
+                    <span data-lang="ar">لا يوجد نشاط حديث</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Logs Modal -->
+<div class="modal fade" id="logsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Scraping Logs</span>
+                    <span data-lang="ar">سجلات الكشط</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="logsContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <span data-lang="en">Close</span>
+                    <span data-lang="ar">إغلاق</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.progress {
+    min-width: 80px;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function startScraping() {
+    fetch('/admin/scraping/start-all', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Scraping started successfully', 'success');
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showNotification('Error starting scraping', 'error');
+        }
+    });
+}
+
+function pauseAll() {
+    if (confirm('Are you sure you want to pause all scraping sources?')) {
+        fetch('/admin/scraping/pause-all', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('All sources paused', 'warning');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showNotification('Error pausing sources', 'error');
+            }
+        });
+    }
+}
+
+function pauseSource(sourceId) {
+    fetch(`/admin/scraping/source/${sourceId}/pause`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            showNotification('Error pausing source', 'error');
+        }
+    });
+}
+
+function activateSource(sourceId) {
+    fetch(`/admin/scraping/source/${sourceId}/activate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            showNotification('Error activating source', 'error');
+        }
+    });
+}
+
+function runNow(sourceId) {
+    fetch(`/admin/scraping/source/${sourceId}/run`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Scraping started for source', 'info');
+            setTimeout(() => location.reload(), 3000);
+        } else {
+            showNotification('Error starting source', 'error');
+        }
+    });
+}
+
+function viewLogs(sourceId) {
+    document.getElementById('logsContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('logsModal'));
+    modal.show();
+    
+    fetch(`/admin/scraping/source/${sourceId}/logs`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let logsHtml = '<div class="font-monospace small">';
+                data.logs.forEach(log => {
+                    const levelClass = log.level === 'ERROR' ? 'text-danger' : 
+                                     log.level === 'WARNING' ? 'text-warning' : 
+                                     log.level === 'INFO' ? 'text-info' : '';
+                    logsHtml += `<div class="${levelClass}">
+                        [${log.timestamp}] ${log.level}: ${log.message}
+                    </div>`;
+                });
+                logsHtml += '</div>';
+                document.getElementById('logsContent').innerHTML = logsHtml;
+            } else {
+                document.getElementById('logsContent').innerHTML = 
+                    '<div class="alert alert-warning">No logs available</div>';
+            }
+        });
+}
+
+function testSource(sourceId) {
+    showNotification('Testing source...', 'info');
+    
+    fetch(`/admin/scraping/source/${sourceId}/test`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Source test completed successfully', 'success');
+        } else {
+            showNotification(`Source test failed: ${data.error}`, 'error');
+        }
+    });
+}
+
+function deleteSource(sourceId) {
+    if (confirm('Are you sure you want to delete this scraping source? This action cannot be undone.')) {
+        fetch(`/admin/scraping/source/${sourceId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Source deleted successfully', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showNotification('Error deleting source', 'error');
+            }
+        });
+    }
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Auto refresh every 30 seconds when scraping is active
+document.addEventListener('DOMContentLoaded', function() {
+    const hasActiveJobs = {{ 'true' if active_sources is defined and active_sources > 0 else 'false' }};
+    if (hasActiveJobs) {
+        setInterval(() => {
+            location.reload();
+        }, 30000); // Refresh every 30 seconds
+    }
+});
+</script>
+{% endblock %}

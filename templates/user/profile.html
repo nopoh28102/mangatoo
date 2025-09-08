@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- User Profile Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            {% if user.profile_picture %}
+                                <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" 
+                                     alt="{{ user.username }}" 
+                                     class="rounded-circle img-fluid mb-3" 
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3"
+                                     style="width: 150px; height: 150px;">
+                                    <i class="fas fa-user fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <h3 class="mb-1">{{ user.username }}</h3>
+                            <p class="text-muted mb-2">{{ user.email }}</p>
+                            
+                            <!-- User Badges -->
+                            <div class="mb-3">
+                                {% if user.is_admin %}
+                                    <span class="badge bg-danger me-1">
+                                        <i class="fas fa-crown"></i>
+                                        <span data-lang="en">Admin</span>
+                                        <span data-lang="ar">مدير</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_publisher %}
+                                    <span class="badge bg-primary me-1">
+                                        <i class="fas fa-upload"></i>
+                                        <span data-lang="en">Publisher</span>
+                                        <span data-lang="ar">ناشر</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_translator %}
+                                    <span class="badge bg-info me-1">
+                                        <i class="fas fa-language"></i>
+                                        <span data-lang="en">Translator</span>
+                                        <span data-lang="ar">مترجم</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_premium %}
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-star"></i>
+                                        <span data-lang="en">Premium</span>
+                                        <span data-lang="ar">مميز</span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-sm-6 mb-3">
+                                    <h6 class="text-uppercase fw-bold text-muted mb-2">
+                                        <span data-lang="en">Member Since</span>
+                                        <span data-lang="ar">عضو منذ</span>
+                                    </h6>
+                                    <p class="mb-0">{{ user.created_at.strftime('%B %d, %Y') }}</p>
+                                </div>
+                                
+                                <div class="col-sm-6 mb-3">
+                                    <h6 class="text-uppercase fw-bold text-muted mb-2">
+                                        <span data-lang="en">Country</span>
+                                        <span data-lang="ar">البلد</span>
+                                    </h6>
+                                    <p class="mb-0">{{ user.country or 'Not specified' }}</p>
+                                </div>
+                                
+                                {% if user.bio %}
+                                <div class="col-12 mb-3">
+                                    <h6 class="text-uppercase fw-bold text-muted mb-2">
+                                        <span data-lang="en">About</span>
+                                        <span data-lang="ar">نبذة</span>
+                                    </h6>
+                                    <p class="mb-0">{{ user.bio }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Published Manga (if publisher) -->
+            {% if published_manga %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-book me-2"></i>
+                        <span data-lang="en">Published Manga</span>
+                        <span data-lang="ar">المانجا المنشورة</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for manga in published_manga %}
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                            {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                            {% endif %}
+                                <div class="card h-100">
+                                    {% if manga.cover_image %}
+                                        <img src="{{ url_for('static', filename='uploads/covers/' + manga.cover_image) }}" 
+                                             alt="{{ manga.title }}" 
+                                             class="card-img-top"
+                                             style="height: 200px; object-fit: cover;">
+                                    {% else %}
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                             style="height: 200px;">
+                                            <i class="fas fa-image fa-2x text-muted"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1 small">{{ manga.title[:30] }}...</h6>
+                                        <small class="text-muted">
+                                            {{ manga.chapters.count() }} 
+                                            <span data-lang="en">chapters</span>
+                                            <span data-lang="ar">فصل</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recent Comments -->
+            {% if recent_comments %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-comments me-2"></i>
+                        <span data-lang="en">Recent Comments</span>
+                        <span data-lang="ar">التعليقات الأخيرة</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for comment in recent_comments %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="mb-1">
+                                <a href="{{ url_for('manga_detail_by_id', manga_id=comment.manga.id) }}" class="text-decoration-none">
+                                    {{ comment.manga.title }}
+                                </a>
+                                {% if comment.chapter %}
+                                    - <span data-lang="en">Chapter</span><span data-lang="ar">الفصل</span> {{ comment.chapter.chapter_number }}
+                                {% endif %}
+                            </h6>
+                            <small class="text-muted">{{ comment.created_at.strftime('%m/%d/%Y') }}</small>
+                        </div>
+                        <p class="mb-0 text-muted">{{ comment.content[:100] }}...</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

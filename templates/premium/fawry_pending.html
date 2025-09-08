@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}في انتظار الدفع - فوري{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clock me-2"></i>
+                        في انتظار الدفع
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-hourglass-half fa-5x text-warning mb-3 rotating"></i>
+                        <h5 class="text-dark">دفعتك قيد المراجعة</h5>
+                        <p class="text-muted">قد يستغرق الأمر بضع دقائق للمعالجة</p>
+                    </div>
+
+                    {% if payment %}
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>المبلغ:</strong> {{ payment.amount }} {{ payment.currency }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Status Timeline -->
+                    <div class="card border-light mb-4">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <i class="fas fa-list-check me-2"></i>
+                                مراحل المعالجة
+                            </h6>
+                            <div class="timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-marker bg-success">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">تم إنشاء طلب الدفع</h6>
+                                        <p class="text-muted mb-0">تم إنشاء كود فوري بنجاح</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item active">
+                                    <div class="timeline-marker bg-warning">
+                                        <i class="fas fa-spinner fa-spin text-white"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">في انتظار الدفع</h6>
+                                        <p class="text-muted mb-0">يرجى إكمال الدفع في منفذ فوري</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-light">
+                                        <i class="fas fa-crown text-muted"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">تفعيل الاشتراك</h6>
+                                        <p class="text-muted mb-0">سيتم تفعيل اشتراكك المميز تلقائياً</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auto-refresh notice -->
+                    <div class="alert alert-light">
+                        <i class="fas fa-refresh me-2"></i>
+                        <span>سيتم تحديث هذه الصفحة تلقائياً كل 30 ثانية</span>
+                        <div class="mt-2">
+                            <small class="text-muted">آخر تحديث: <span id="last-update"></span></small>
+                        </div>
+                    </div>
+
+                    <!-- Manual check button -->
+                    {% if check_url %}
+                    <div class="d-grid gap-2 mb-3">
+                        <a href="{{ check_url }}" class="btn btn-primary">
+                            <i class="fas fa-sync-alt me-2"></i>
+                            تحقق من حالة الدفع الآن
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- Alternative actions -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-home me-2"></i>
+                            الصفحة الرئيسية
+                        </a>
+                    </div>
+
+                    <!-- Support info -->
+                    <div class="mt-4 pt-3 border-top">
+                        <p class="text-muted small">
+                            <i class="fas fa-question-circle me-1"></i>
+                            هل تواجه مشكلة؟ 
+                            <a href="mailto:support@example.com" class="text-decoration-none">تواصل مع الدعم</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.rotating {
+    animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(359deg);
+    }
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 0;
+    height: 100%;
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.timeline-item:last-child:before {
+    display: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.timeline-content {
+    text-align: start;
+}
+
+.timeline-item.completed .timeline-marker {
+    background-color: #28a745 !important;
+}
+
+.timeline-item.active .timeline-marker {
+    background-color: #ffc107 !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update last update time
+    function updateLastUpdateTime() {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString('ar-EG', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+        document.getElementById('last-update').textContent = timeString;
+    }
+    
+    updateLastUpdateTime();
+    
+    // Auto-refresh every 30 seconds
+    setInterval(function() {
+        updateLastUpdateTime();
+        location.reload();
+    }, 30000);
+    
+    // Add pulse animation to the waiting icon
+    const waitingIcon = document.querySelector('.fa-hourglass-half');
+    if (waitingIcon) {
+        setInterval(function() {
+            waitingIcon.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                waitingIcon.style.transform = 'scale(1)';
+            }, 500);
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

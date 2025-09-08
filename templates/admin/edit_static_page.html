@@ -1,0 +1,562 @@
+{% extends "admin/base.html" %}
+
+{% block title %}تحرير الصفحة الثابتة - {{ page.title }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-edit text-primary me-2"></i>
+        <span data-lang="en">Edit Static Page</span>
+        <span data-lang="ar">تحرير الصفحة الثابتة</span>
+    </h2>
+    <div>
+        {% if page.is_published %}
+        <a href="{{ url_for('static_page', slug=page.slug) }}" target="_blank" class="btn btn-outline-info me-2">
+            <i class="fas fa-external-link-alt me-2"></i>
+            <span data-lang="en">View Page</span>
+            <span data-lang="ar">عرض الصفحة</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('admin_static_pages') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Pages</span>
+            <span data-lang="ar">العودة للصفحات</span>
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <!-- Basic Information -->
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            <span data-lang="en">Title (English)</span>
+                            <span data-lang="ar">العنوان (إنجليزي)</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ page.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="title_ar" class="form-label">
+                            <span data-lang="en">Title (Arabic)</span>
+                            <span data-lang="ar">العنوان (عربي)</span>
+                        </label>
+                        <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ page.title_ar or '' }}" dir="rtl">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="slug" class="form-label">
+                            <span data-lang="en">URL Slug</span>
+                            <span data-lang="ar">رابط الصفحة</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">/page/</span>
+                            <input type="text" class="form-control" id="slug" name="slug" value="{{ page.slug }}" required 
+                                   pattern="[a-z0-9-]+" title="Only lowercase letters, numbers and hyphens allowed">
+                        </div>
+                        <div class="form-text">
+                            <span data-lang="en">Only lowercase letters, numbers and hyphens allowed</span>
+                            <span data-lang="ar">حروف صغيرة وأرقام وشرطات فقط</span>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">
+                                <span data-lang="en">Content (English)</span>
+                                <span data-lang="ar">المحتوى (إنجليزي)</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" class="btn-check" name="content-mode-en" id="visual-mode-en" checked>
+                                <label class="btn btn-outline-primary" for="visual-mode-en">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span data-lang="en">Visual</span>
+                                    <span data-lang="ar">مرئي</span>
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="content-mode-en" id="html-mode-en">
+                                <label class="btn btn-outline-primary" for="html-mode-en">
+                                    <i class="fas fa-code me-1"></i>
+                                    <span data-lang="en">HTML</span>
+                                    <span data-lang="ar">HTML</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="content-editor" style="height: 300px;"></div>
+                        <textarea id="content-html" class="form-control" style="height: 300px; display: none; font-family: 'Courier New', monospace;" placeholder="أدخل كود HTML هنا...">{{ page.content }}</textarea>
+                        <div class="mt-2">
+                            <button type="button" class="image-upload-btn" onclick="uploadImage(false)">
+                                <i class="fas fa-image"></i> Upload Image
+                            </button>
+                        </div>
+                        <textarea id="content" name="content" style="display: none;" required>{{ page.content }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Switch between visual editor and HTML mode</span>
+                            <span data-lang="ar">التبديل بين المحرر المرئي ووضع HTML</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">
+                                <span data-lang="en">Content (Arabic)</span>
+                                <span data-lang="ar">المحتوى (عربي)</span>
+                            </label>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" class="btn-check" name="content-mode-ar" id="visual-mode-ar" checked>
+                                <label class="btn btn-outline-primary" for="visual-mode-ar">
+                                    <i class="fas fa-eye me-1"></i>
+                                    <span data-lang="en">Visual</span>
+                                    <span data-lang="ar">مرئي</span>
+                                </label>
+                                
+                                <input type="radio" class="btn-check" name="content-mode-ar" id="html-mode-ar">
+                                <label class="btn btn-outline-primary" for="html-mode-ar">
+                                    <i class="fas fa-code me-1"></i>
+                                    <span data-lang="en">HTML</span>
+                                    <span data-lang="ar">HTML</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="content-editor-rtl" class="rtl-editor" style="height: 300px; direction: rtl;"></div>
+                        <textarea id="content_ar-html" class="form-control" style="height: 300px; display: none; font-family: 'Courier New', monospace; direction: rtl;" placeholder="أدخل كود HTML هنا...">{{ page.content_ar or '' }}</textarea>
+                        <div class="mt-2">
+                            <button type="button" class="image-upload-btn" onclick="uploadImage(true)">
+                                <i class="fas fa-image"></i> رفع صورة
+                            </button>
+                        </div>
+                        <textarea id="content_ar" name="content_ar" style="display: none;">{{ page.content_ar or '' }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Switch between visual editor and HTML mode</span>
+                            <span data-lang="ar">التبديل بين المحرر المرئي ووضع HTML</span>
+                        </div>
+                    </div>
+
+                    <!-- SEO Section -->
+                    <h5 class="mt-4 mb-3">
+                        <i class="fas fa-search me-2"></i>
+                        <span data-lang="en">SEO Settings</span>
+                        <span data-lang="ar">إعدادات السيو</span>
+                    </h5>
+
+                    <div class="mb-3">
+                        <label for="meta_description" class="form-label">
+                            <span data-lang="en">Meta Description (English)</span>
+                            <span data-lang="ar">وصف الصفحة (إنجليزي)</span>
+                        </label>
+                        <textarea class="form-control" id="meta_description" name="meta_description" rows="3" maxlength="500">{{ page.meta_description or '' }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Maximum 500 characters</span>
+                            <span data-lang="ar">500 حرف كحد أقصى</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meta_description_ar" class="form-label">
+                            <span data-lang="en">Meta Description (Arabic)</span>
+                            <span data-lang="ar">وصف الصفحة (عربي)</span>
+                        </label>
+                        <textarea class="form-control" id="meta_description_ar" name="meta_description_ar" rows="3" maxlength="500" dir="rtl">{{ page.meta_description_ar or '' }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meta_keywords" class="form-label">
+                            <span data-lang="en">Keywords</span>
+                            <span data-lang="ar">الكلمات المفتاحية</span>
+                        </label>
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="{{ page.meta_keywords or '' }}">
+                        <div class="form-text">
+                            <span data-lang="en">Separate keywords with commas</span>
+                            <span data-lang="ar">فصل الكلمات بالفواصل</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Sidebar -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>
+                                <span data-lang="en">Page Settings</span>
+                                <span data-lang="ar">إعدادات الصفحة</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_published" name="is_published" 
+                                           {% if page.is_published %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_published">
+                                        <span data-lang="en">Published</span>
+                                        <span data-lang="ar">منشور</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    <span data-lang="en">Make page visible to users</span>
+                                    <span data-lang="ar">جعل الصفحة مرئية للمستخدمين</span>
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="show_in_menu" name="show_in_menu" 
+                                           {% if page.show_in_menu %}checked{% endif %}>
+                                    <label class="form-check-label" for="show_in_menu">
+                                        <span data-lang="en">Show in Menu</span>
+                                        <span data-lang="ar">إظهار في القائمة</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    <span data-lang="en">Display page in navigation menu</span>
+                                    <span data-lang="ar">عرض الصفحة في قائمة التنقل</span>
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="menu_order" class="form-label">
+                                    <span data-lang="en">Menu Order</span>
+                                    <span data-lang="ar">ترتيب القائمة</span>
+                                </label>
+                                <input type="number" class="form-control" id="menu_order" name="menu_order" value="{{ page.menu_order }}" min="0">
+                                <small class="text-muted">
+                                    <span data-lang="en">Lower numbers appear first</span>
+                                    <span data-lang="ar">الأرقام الأقل تظهر أولاً</span>
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="template_name" class="form-label">
+                                    <span data-lang="en">Template</span>
+                                    <span data-lang="ar">القالب</span>
+                                </label>
+                                <select class="form-select" id="template_name" name="template_name">
+                                    <option value="static_page.html" {% if page.template_name == 'static_page.html' %}selected{% endif %}>Default Template</option>
+                                    <option value="static_page_full.html" {% if page.template_name == 'static_page_full.html' %}selected{% endif %}>Full Width Template</option>
+                                    <option value="static_page_sidebar.html" {% if page.template_name == 'static_page_sidebar.html' %}selected{% endif %}>With Sidebar Template</option>
+                                </select>
+                            </div>
+
+                            <!-- Page Information -->
+                            <hr>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <span data-lang="en">Created by:</span>
+                                    <span data-lang="ar">أنشأه:</span>
+                                    <strong>{{ page.created_by.username }}</strong>
+                                </small>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <span data-lang="en">Created:</span>
+                                    <span data-lang="ar">تاريخ الإنشاء:</span>
+                                    {{ page.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                </small>
+                            </div>
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <span data-lang="en">Last updated:</span>
+                                    <span data-lang="ar">آخر تحديث:</span>
+                                    {{ page.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('admin_static_pages') }}" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i>
+                    <span data-lang="en">Cancel</span>
+                    <span data-lang="ar">إلغاء</span>
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>
+                    <span data-lang="en">Update Page</span>
+                    <span data-lang="ar">تحديث الصفحة</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Quill.js CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<!-- Rich Text Editor Styles -->
+<style>
+.quill-editor {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.ql-toolbar {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+}
+
+.ql-container {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 300px;
+}
+
+.ql-editor {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rtl-editor .ql-editor {
+    direction: rtl;
+    text-align: right;
+}
+
+.image-upload-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.image-upload-btn:hover {
+    opacity: 0.9;
+}
+
+/* HTML Editor Styles */
+textarea[id*="html"] {
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace !important;
+    font-size: 13px;
+    line-height: 1.4;
+    border: 2px solid #e3e6f0;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fc;
+    resize: vertical;
+    min-height: 300px;
+    tab-size: 2;
+    white-space: pre;
+    overflow-wrap: break-word;
+}
+
+textarea[id*="html"]:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    background: #fff;
+}
+
+.btn-group .btn-check:checked + .btn-outline-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-outline-primary {
+    transition: all 0.2s ease;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Initialize Quill for English content
+var quillEn = new Quill('#content-editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['link', 'blockquote', 'code-block'],
+            ['clean']
+        ]
+    },
+    placeholder: 'Enter content in English...'
+});
+
+// Initialize Quill for Arabic content (RTL)
+var quillAr = new Quill('#content-editor-rtl', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['link', 'blockquote', 'code-block'],
+            ['clean']
+        ]
+    },
+    placeholder: 'أدخل المحتوى باللغة العربية...'
+});
+
+// Set initial content with proper escaping
+const initialContentEn = document.getElementById('content').value || '';
+const initialContentAr = document.getElementById('content_ar').value || '';
+
+// Set content in Quill editors
+if (initialContentEn) {
+    quillEn.clipboard.dangerouslyPasteHTML(initialContentEn);
+} else {
+    quillEn.setText('');
+}
+
+if (initialContentAr) {
+    quillAr.clipboard.dangerouslyPasteHTML(initialContentAr);
+} else {
+    quillAr.setText('');
+}
+
+// Also set the HTML textareas
+document.getElementById('content-html').value = initialContentEn;
+document.getElementById('content_ar-html').value = initialContentAr;
+
+// Update hidden fields on content change
+quillEn.on('text-change', function() {
+    document.getElementById('content').value = quillEn.root.innerHTML;
+    document.getElementById('content-html').value = quillEn.root.innerHTML;
+});
+
+quillAr.on('text-change', function() {
+    document.getElementById('content_ar').value = quillAr.root.innerHTML;
+    document.getElementById('content_ar-html').value = quillAr.root.innerHTML;
+});
+
+// English content mode switchers
+document.getElementById('visual-mode-en').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('content-editor').style.display = 'block';
+        document.getElementById('content-html').style.display = 'none';
+        // Sync content from HTML to Quill
+        quillEn.root.innerHTML = document.getElementById('content-html').value || '';
+    }
+});
+
+document.getElementById('html-mode-en').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('content-editor').style.display = 'none';
+        document.getElementById('content-html').style.display = 'block';
+        // Sync content from Quill to HTML
+        document.getElementById('content-html').value = quillEn.root.innerHTML || '';
+    }
+});
+
+// Arabic content mode switchers
+document.getElementById('visual-mode-ar').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('content-editor-rtl').style.display = 'block';
+        document.getElementById('content_ar-html').style.display = 'none';
+        // Sync content from HTML to Quill
+        quillAr.root.innerHTML = document.getElementById('content_ar-html').value || '';
+    }
+});
+
+document.getElementById('html-mode-ar').addEventListener('change', function() {
+    if (this.checked) {
+        document.getElementById('content-editor-rtl').style.display = 'none';
+        document.getElementById('content_ar-html').style.display = 'block';
+        // Sync content from Quill to HTML
+        document.getElementById('content_ar-html').value = quillAr.root.innerHTML || '';
+    }
+});
+
+// HTML textarea change handlers
+document.getElementById('content-html').addEventListener('input', function() {
+    document.getElementById('content').value = this.value;
+});
+
+document.getElementById('content_ar-html').addEventListener('input', function() {
+    document.getElementById('content_ar').value = this.value;
+});
+
+// Image upload functionality
+function uploadImage(isArabic = false) {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = function() {
+        const file = input.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/admin/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.location) {
+                    const range = isArabic ? quillAr.getSelection() : quillEn.getSelection();
+                    const editor = isArabic ? quillAr : quillEn;
+                    editor.insertEmbed(range ? range.index : 0, 'image', data.location);
+                } else {
+                    alert('فشل في رفع الصورة: ' + (data.error || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('فشل في رفع الصورة');
+            });
+        }
+    };
+}
+
+// Form submission handler
+document.querySelector('form[method="POST"]').addEventListener('submit', function(e) {
+    // Get content based on active mode
+    if (document.getElementById('html-mode-en').checked) {
+        document.getElementById('content').value = document.getElementById('content-html').value;
+    } else {
+        document.getElementById('content').value = quillEn.root.innerHTML;
+    }
+    
+    if (document.getElementById('html-mode-ar').checked) {
+        document.getElementById('content_ar').value = document.getElementById('content_ar-html').value;
+    } else {
+        document.getElementById('content_ar').value = quillAr.root.innerHTML;
+    }
+});
+
+// Character counter for meta descriptions
+document.getElementById('meta_description').addEventListener('input', function() {
+    const remaining = 500 - this.value.length;
+    const parent = this.parentNode;
+    let counter = parent.querySelector('.char-counter');
+    if (!counter) {
+        counter = document.createElement('small');
+        counter.className = 'char-counter text-muted';
+        parent.appendChild(counter);
+    }
+    counter.textContent = remaining + ' characters remaining';
+    counter.classList.toggle('text-danger', remaining < 0);
+});
+
+}); // End DOMContentLoaded
+</script>
+{% endblock %}

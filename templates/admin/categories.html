@@ -1,0 +1,689 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Categories Management - إدارة التصنيفات{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <span data-lang="en">Categories Management</span>
+        <span data-lang="ar">إدارة التصنيفات</span>
+    </h2>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+        <i class="fas fa-plus me-2"></i>
+        <span data-lang="en">Add Category</span>
+        <span data-lang="ar">إضافة تصنيف</span>
+    </button>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Total Categories</span>
+                            <span data-lang="ar">إجمالي التصنيفات</span>
+                        </h6>
+                        <h3>{{ stats.total_categories or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-tags fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Active</span>
+                            <span data-lang="ar">نشط</span>
+                        </h6>
+                        <h3>{{ stats.active_categories or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Most Popular</span>
+                            <span data-lang="ar">الأكثر شعبية</span>
+                        </h6>
+                        <h3>{{ stats.popular_categories or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-fire fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Total Manga</span>
+                            <span data-lang="ar">إجمالي المانجا</span>
+                        </h6>
+                        <h3>{{ stats.total_manga or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-book fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Table -->
+<div class="card">
+    <div class="card-header">
+        <h5>
+            <span data-lang="en">Categories List</span>
+            <span data-lang="ar">قائمة التصنيفات</span>
+        </h5>
+    </div>
+    <div class="card-body p-0">
+        {% if categories %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0" id="categoriesTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            <span data-lang="en">Category</span>
+                            <span data-lang="ar">التصنيف</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Description</span>
+                            <span data-lang="ar">الوصف</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Manga Count</span>
+                            <span data-lang="ar">عدد المانجا</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Status</span>
+                            <span data-lang="ar">الحالة</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Created</span>
+                            <span data-lang="ar">تاريخ الإنشاء</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Actions</span>
+                            <span data-lang="ar">الإجراءات</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="sortable">
+                    {% for category in categories %}
+                    <tr data-category-id="{{ category.id }}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="drag-handle me-3" title="Drag to reorder">
+                                    <i class="fas fa-grip-vertical text-muted"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1">
+                                        <span data-lang="en">{{ category.name }}</span>
+                                        <span data-lang="ar">{{ category.name_ar or category.name }}</span>
+                                    </h6>
+                                    {% if category.name_ar and category.name_ar != category.name %}
+                                        <div class="small text-muted">
+                                            <span data-lang="en">{{ category.name_ar }}</span>
+                                            <span data-lang="ar">{{ category.name }}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if category.slug %}
+                                        <small class="text-muted"><i class="fas fa-link me-1"></i>{{ category.slug }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if category.description %}
+                                <div class="description-cell">
+                                    <span data-lang="en">{{ category.description[:100] }}{{ '...' if category.description|length > 100 else '' }}</span>
+                                    <span data-lang="ar">{{ (category.description_ar or category.description)[:100] }}{{ '...' if (category.description_ar or category.description)|length > 100 else '' }}</span>
+                                    {% if category.description|length > 100 %}
+                                        <a href="#" class="text-primary small ms-2" onclick="toggleDescription(this)" title="Show full description">
+                                            <span data-lang="en">Show more</span>
+                                            <span data-lang="ar">عرض المزيد</span>
+                                        </a>
+                                        <div class="full-description d-none">
+                                            <span data-lang="en">{{ category.description }}</span>
+                                            <span data-lang="ar">{{ category.description_ar or category.description }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-center">
+                                <span class="badge bg-primary fs-6">{{ category.manga_count or 0 }}</span>
+                                <br><small class="text-muted">
+                                    <span data-lang="en">manga</span>
+                                    <span data-lang="ar">مانجا</span>
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if category.is_active %}
+                                <span class="badge bg-success">
+                                    <span data-lang="en">Active</span>
+                                    <span data-lang="ar">نشط</span>
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <span data-lang="en">Inactive</span>
+                                    <span data-lang="ar">غير نشط</span>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div>{{ category.created_at.strftime('%Y-%m-%d') }}</div>
+                            <small class="text-muted">{{ category.created_at.strftime('%H:%M') }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                {% if category.slug %}
+                                <a href="{{ url_for('category_manga', category_slug=category.slug) }}" 
+                                   class="btn btn-outline-primary" target="_blank" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% else %}
+                                <button class="btn btn-outline-secondary" disabled title="No slug assigned">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% endif %}
+                                <button class="btn btn-outline-secondary" 
+                                        onclick="editCategory({{ category.id }})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-outline-{{ 'warning' if category.is_active else 'success' }}" 
+                                        onclick="toggleCategoryStatus({{ category.id }})" 
+                                        title="{{ 'Deactivate' if category.is_active else 'Activate' }}">
+                                    {% if category.is_active %}
+                                        <i class="fas fa-toggle-on"></i>
+                                    {% else %}
+                                        <i class="fas fa-toggle-off"></i>
+                                    {% endif %}
+                                </button>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" onclick="duplicateCategory({{ category.id }})">
+                                                <i class="fas fa-copy me-2"></i>
+                                                <span data-lang="en">Duplicate</span>
+                                                <span data-lang="ar">تكرار</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="exportCategory({{ category.id }})">
+                                                <i class="fas fa-download me-2"></i>
+                                                <span data-lang="en">Export</span>
+                                                <span data-lang="ar">تصدير</span>
+                                            </button>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" onclick="deleteCategory({{ category.id }})">
+                                                <i class="fas fa-trash me-2"></i>
+                                                <span data-lang="en">Delete</span>
+                                                <span data-lang="ar">حذف</span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">
+                <span data-lang="en">No categories found</span>
+                <span data-lang="ar">لم يتم العثور على تصنيفات</span>
+            </h5>
+            <p class="text-muted">
+                <span data-lang="en">Start by creating your first category</span>
+                <span data-lang="ar">ابدأ بإنشاء أول تصنيف</span>
+            </p>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                <i class="fas fa-plus me-2"></i>
+                <span data-lang="en">Add First Category</span>
+                <span data-lang="ar">إضافة أول تصنيف</span>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Add New Category</span>
+                    <span data-lang="ar">إضافة تصنيف جديد</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="addCategoryForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryName" class="form-label">
+                                <span data-lang="en">Name (English)</span>
+                                <span data-lang="ar">الاسم (إنجليزي)</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="categoryName" name="name" required
+                                   placeholder-en="Category name..." 
+                                   placeholder-ar="اسم التصنيف...">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryNameAr" class="form-label">
+                                <span data-lang="en">Name (Arabic)</span>
+                                <span data-lang="ar">الاسم (عربي)</span>
+                            </label>
+                            <input type="text" class="form-control" id="categoryNameAr" name="name_ar"
+                                   placeholder-en="Arabic name..." 
+                                   placeholder-ar="الاسم العربي...">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categorySlug" class="form-label">
+                            <span data-lang="en">Slug</span>
+                            <span data-lang="ar">الرابط</span>
+                        </label>
+                        <input type="text" class="form-control" id="categorySlug" name="slug"
+                               placeholder-en="category-slug (auto-generated)" 
+                               placeholder-ar="رابط-التصنيف (تلقائي)">
+                        <div class="form-text">
+                            <span data-lang="en">Leave empty to auto-generate from name</span>
+                            <span data-lang="ar">اتركه فارغاً للإنشاء التلقائي</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryDescription" class="form-label">
+                                <span data-lang="en">Description (English)</span>
+                                <span data-lang="ar">الوصف (إنجليزي)</span>
+                            </label>
+                            <textarea class="form-control" id="categoryDescription" name="description" rows="3"
+                                      placeholder-en="Brief description of this category..." 
+                                      placeholder-ar="وصف مختصر لهذا التصنيف..."></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="categoryDescriptionAr" class="form-label">
+                                <span data-lang="en">Description (Arabic)</span>
+                                <span data-lang="ar">الوصف (عربي)</span>
+                            </label>
+                            <textarea class="form-control" id="categoryDescriptionAr" name="description_ar" rows="3"
+                                      placeholder-en="Arabic description..." 
+                                      placeholder-ar="الوصف العربي..."></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoryColor" class="form-label">
+                            <span data-lang="en">Color</span>
+                            <span data-lang="ar">اللون</span>
+                        </label>
+                        <input type="color" class="form-control form-control-color" id="categoryColor" name="color" value="#007bff">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="categoryActive" name="is_active" checked>
+                        <label class="form-check-label" for="categoryActive">
+                            <span data-lang="en">Active</span>
+                            <span data-lang="ar">نشط</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>
+                        <span data-lang="en">Save Category</span>
+                        <span data-lang="ar">حفظ التصنيف</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Category Modal -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Edit Category</span>
+                    <span data-lang="ar">تعديل التصنيف</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editCategoryForm">
+                <input type="hidden" id="editCategoryId" name="id">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editCategoryName" class="form-label">
+                                <span data-lang="en">Name (English)</span>
+                                <span data-lang="ar">الاسم (إنجليزي)</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="editCategoryName" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editCategoryNameAr" class="form-label">
+                                <span data-lang="en">Name (Arabic)</span>
+                                <span data-lang="ar">الاسم (عربي)</span>
+                            </label>
+                            <input type="text" class="form-control" id="editCategoryNameAr" name="name_ar">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategorySlug" class="form-label">
+                            <span data-lang="en">Slug</span>
+                            <span data-lang="ar">الرابط</span>
+                        </label>
+                        <input type="text" class="form-control" id="editCategorySlug" name="slug">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editCategoryDescription" class="form-label">
+                                <span data-lang="en">Description (English)</span>
+                                <span data-lang="ar">الوصف (إنجليزي)</span>
+                            </label>
+                            <textarea class="form-control" id="editCategoryDescription" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editCategoryDescriptionAr" class="form-label">
+                                <span data-lang="en">Description (Arabic)</span>
+                                <span data-lang="ar">الوصف (عربي)</span>
+                            </label>
+                            <textarea class="form-control" id="editCategoryDescriptionAr" name="description_ar" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCategoryColor" class="form-label">
+                            <span data-lang="en">Color</span>
+                            <span data-lang="ar">اللون</span>
+                        </label>
+                        <input type="color" class="form-control form-control-color" id="editCategoryColor" name="color">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="editCategoryActive" name="is_active">
+                        <label class="form-check-label" for="editCategoryActive">
+                            <span data-lang="en">Active</span>
+                            <span data-lang="ar">نشط</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>
+                        <span data-lang="en">Update Category</span>
+                        <span data-lang="ar">تحديث التصنيف</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-generate slug from name
+document.getElementById('categoryName').addEventListener('input', function() {
+    const name = this.value;
+    const slug = name.toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF\s-]/g, '') // Keep Arabic characters
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim('-');
+    document.getElementById('categorySlug').value = slug;
+});
+
+// Add category form submission
+document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    
+    fetch('/admin/categories/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('addCategoryModal')).hide();
+            showNotification(data.message || 'تم إضافة الفئة بنجاح', 'success');
+            location.reload();
+        } else {
+            showNotification(data.error || 'خطأ في إضافة الفئة', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('حدث خطأ في الاتصال', 'danger');
+    });
+});
+
+// Edit category form submission
+document.getElementById('editCategoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+    const categoryId = data.id;
+    
+    fetch(`/admin/categories/${categoryId}/edit`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            bootstrap.Modal.getInstance(document.getElementById('editCategoryModal')).hide();
+            showNotification(data.message || 'تم تحديث الفئة بنجاح', 'success');
+            location.reload();
+        } else {
+            showNotification(data.error || 'خطأ في تحديث الفئة', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('حدث خطأ في الاتصال', 'danger');
+    });
+});
+
+function editCategory(categoryId) {
+    fetch(`/admin/categories/${categoryId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const category = data.category;
+                document.getElementById('editCategoryId').value = category.id;
+                document.getElementById('editCategoryName').value = category.name;
+                document.getElementById('editCategoryNameAr').value = category.name_ar || '';
+                document.getElementById('editCategorySlug').value = category.slug;
+                document.getElementById('editCategoryDescription').value = category.description || '';
+                document.getElementById('editCategoryDescriptionAr').value = category.description_ar || '';
+                document.getElementById('editCategoryColor').value = category.color || '#007bff';
+                document.getElementById('editCategoryActive').checked = category.is_active;
+                
+                new bootstrap.Modal(document.getElementById('editCategoryModal')).show();
+            }
+        });
+}
+
+function toggleCategoryStatus(categoryId) {
+    fetch(`/admin/categories/${categoryId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message || 'تم تحديث حالة الفئة بنجاح', 'success');
+            location.reload();
+        } else {
+            showNotification(data.error || 'خطأ في تحديث حالة الفئة', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('حدث خطأ في الاتصال', 'danger');
+    });
+}
+
+function duplicateCategory(categoryId) {
+    if (confirm('هل تريد إنشاء نسخة من هذه الفئة؟')) {
+        fetch(`/admin/categories/${categoryId}/duplicate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message || 'تم تكرار الفئة بنجاح', 'success');
+                location.reload();
+            } else {
+                showNotification(data.error || 'خطأ في تكرار الفئة', 'danger');
+            }
+        })
+        .catch(error => {
+            showNotification('حدث خطأ في الاتصال', 'danger');
+        });
+    }
+}
+
+function exportCategory(categoryId) {
+    window.location.href = `/admin/categories/${categoryId}/export`;
+}
+
+function deleteCategory(categoryId) {
+    if (confirm('هل أنت متأكد من حذف هذه الفئة؟ لا يمكن التراجع عن هذا الإجراء.')) {
+        fetch(`/admin/categories/${categoryId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message || 'تم حذف الفئة بنجاح', 'success');
+                location.reload();
+            } else {
+                showNotification(data.error || 'خطأ في حذف الفئة', 'danger');
+            }
+        })
+        .catch(error => {
+            showNotification('حدث خطأ في الاتصال', 'danger');
+        });
+    }
+}
+
+function toggleDescription(element) {
+    const cell = element.closest('.description-cell');
+    const shortDesc = element.previousElementSibling;
+    const fullDesc = cell.querySelector('.full-description');
+    
+    if (fullDesc.classList.contains('d-none')) {
+        shortDesc.style.display = 'none';
+        fullDesc.classList.remove('d-none');
+        element.textContent = 'عرض أقل / Show less';
+    } else {
+        shortDesc.style.display = 'inline';
+        fullDesc.classList.add('d-none');
+        element.innerHTML = '<span data-lang="en">Show more</span><span data-lang="ar">عرض المزيد</span>';
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Initialize sortable if available
+document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.querySelector('.sortable');
+    if (tbody && typeof Sortable !== 'undefined') {
+        new Sortable(tbody, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function(evt) {
+                const categoryIds = Array.from(tbody.children).map(row => row.dataset.categoryId);
+                fetch('/admin/categories/reorder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({category_ids: categoryIds})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        showNotification('Error reordering categories', 'danger');
+                        location.reload();
+                    }
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

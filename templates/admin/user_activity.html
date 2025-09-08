@@ -1,0 +1,306 @@
+{% extends "admin/base.html" %}
+
+{% block title %}User Activity - نشاط المستخدم{{ ' - ' + user.username if user else '' }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <span data-lang="en">User Activity: {{ user.username }}</span>
+        <span data-lang="ar">نشاط المستخدم: {{ user.username }}</span>
+    </h2>
+    <a href="{{ url_for('admin_users') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        <span data-lang="en">Back to Users</span>
+        <span data-lang="ar">العودة إلى المستخدمين</span>
+    </a>
+</div>
+
+<!-- User Info Card -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ user.avatar_url or '/static/img/default-avatar.png' }}" 
+                     class="rounded-circle mb-3" width="100" height="100" alt="{{ user.username }}">
+                <h5>{{ user.username }}</h5>
+                <p class="text-muted">{{ user.email }}</p>
+                <div>
+                    {% if user.is_admin %}
+                        <span class="badge bg-danger">
+                            <span data-lang="en">Admin</span>
+                            <span data-lang="ar">مدير</span>
+                        </span>
+                    {% elif user.is_publisher %}
+                        <span class="badge bg-warning">
+                            <span data-lang="en">Publisher</span>
+                            <span data-lang="ar">ناشر</span>
+                        </span>
+                    {% elif user.is_premium %}
+                        <span class="badge bg-success">
+                            <span data-lang="en">Premium</span>
+                            <span data-lang="ar">مدفوع</span>
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary">
+                            <span data-lang="en">Regular User</span>
+                            <span data-lang="ar">مستخدم عادي</span>
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>
+                                    <span data-lang="en">Reading Count</span>
+                                    <span data-lang="ar">عدد القراءات</span>
+                                </h6>
+                                <h3>{{ reading_history|length or 0 }}</h3>
+                            </div>
+                            <i class="fas fa-book-open fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>
+                                    <span data-lang="en">Bookmarks</span>
+                                    <span data-lang="ar">الإشارات المرجعية</span>
+                                </h6>
+                                <h3>{{ bookmarks|length or 0 }}</h3>
+                            </div>
+                            <i class="fas fa-bookmark fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>
+                                    <span data-lang="en">Comments</span>
+                                    <span data-lang="ar">التعليقات</span>
+                                </h6>
+                                <h3>{{ comments|length or 0 }}</h3>
+                            </div>
+                            <i class="fas fa-comment fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>
+                                    <span data-lang="en">Join Date</span>
+                                    <span data-lang="ar">تاريخ الانضمام</span>
+                                </h6>
+                                <h5>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at }}</h5>
+                            </div>
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activity Tabs -->
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="activityTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="reading-tab" data-bs-toggle="tab" data-bs-target="#reading" type="button" role="tab">
+                    <i class="fas fa-book me-2"></i>
+                    <span data-lang="en">Reading History</span>
+                    <span data-lang="ar">تاريخ القراءة</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bookmarks-tab" data-bs-toggle="tab" data-bs-target="#bookmarks" type="button" role="tab">
+                    <i class="fas fa-bookmark me-2"></i>
+                    <span data-lang="en">Bookmarks</span>
+                    <span data-lang="ar">الإشارات المرجعية</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">
+                    <i class="fas fa-comment me-2"></i>
+                    <span data-lang="en">Comments</span>
+                    <span data-lang="ar">التعليقات</span>
+                </button>
+            </li>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="activityTabsContent">
+            <!-- Reading History Tab -->
+            <div class="tab-pane fade show active" id="reading" role="tabpanel">
+                {% if reading_history %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span data-lang="en">Manga</span>
+                                    <span data-lang="ar">المانجا</span>
+                                </th>
+                                <th>
+                                    <span data-lang="en">Chapter</span>
+                                    <span data-lang="ar">الفصل</span>
+                                </th>
+                                <th>
+                                    <span data-lang="en">Progress</span>
+                                    <span data-lang="ar">التقدم</span>
+                                </th>
+                                <th>
+                                    <span data-lang="en">Last Read</span>
+                                    <span data-lang="ar">آخر قراءة</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in reading_history %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ item.manga.cover_image or '/static/img/no-cover.png' }}" 
+                                             class="me-3" width="40" height="50" style="object-fit: cover;">
+                                        <div>
+                                            <h6 class="mb-0">{{ item.manga.title }}</h6>
+                                            <small class="text-muted">{{ item.manga.author }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ item.chapter.title or ('Chapter ' + item.chapter.chapter_number|string) }}</td>
+                                <td>{{ item.current_page }}/{{ item.chapter.pages }}</td>
+                                <td>{{ item.updated_at.strftime('%Y-%m-%d %H:%M') if item.updated_at }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">
+                        <span data-lang="en">No reading history</span>
+                        <span data-lang="ar">لا يوجد تاريخ قراءة</span>
+                    </h5>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Bookmarks Tab -->
+            <div class="tab-pane fade" id="bookmarks" role="tabpanel">
+                {% if bookmarks %}
+                <div class="row">
+                    {% for bookmark in bookmarks %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ bookmark.manga.cover_image or '/static/img/no-cover.png' }}" 
+                                 class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ bookmark.manga.title }}</h6>
+                                <p class="card-text text-muted small">{{ bookmark.manga.author }}</p>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <span data-lang="en">Added:</span>
+                                        <span data-lang="ar">تم الإضافة:</span>
+                                        {{ bookmark.created_at.strftime('%Y-%m-%d') if bookmark.created_at }}
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bookmark fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">
+                        <span data-lang="en">No bookmarks</span>
+                        <span data-lang="ar">لا توجد إشارات مرجعية</span>
+                    </h5>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Comments Tab -->
+            <div class="tab-pane fade" id="comments" role="tabpanel">
+                {% if comments %}
+                <div class="list-group list-group-flush">
+                    {% for comment in comments %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ comment.manga.title if comment.manga }}</h6>
+                                <p class="mb-1">{{ comment.content }}</p>
+                                <small class="text-muted">
+                                    {{ comment.created_at.strftime('%Y-%m-%d %H:%M') if comment.created_at }}
+                                </small>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteComment({{ comment.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-comment fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">
+                        <span data-lang="en">No comments</span>
+                        <span data-lang="ar">لا توجد تعليقات</span>
+                    </h5>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function deleteComment(commentId) {
+    if (confirm('حذف هذا التعليق؟')) {
+        fetch(`/admin/comments/${commentId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('حدث خطأ في حذف التعليق');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

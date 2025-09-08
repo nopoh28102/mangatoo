@@ -1,0 +1,254 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة الصفحات الثابتة{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-file-alt text-info me-2"></i>
+        <span data-lang="en">Static Pages Management</span>
+        <span data-lang="ar">إدارة الصفحات الثابتة</span>
+    </h2>
+    <a href="{{ url_for('admin_add_static_page') }}" class="btn btn-success">
+        <i class="fas fa-plus me-2"></i>
+        <span data-lang="en">Add New Page</span>
+        <span data-lang="ar">إضافة صفحة جديدة</span>
+    </a>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">{{ total_pages }}</h3>
+                        <p class="card-text mb-0">
+                            <span data-lang="en">Total Pages</span>
+                            <span data-lang="ar">إجمالي الصفحات</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">{{ published_pages }}</h3>
+                        <p class="card-text mb-0">
+                            <span data-lang="en">Published Pages</span>
+                            <span data-lang="ar">الصفحات المنشورة</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="fas fa-bars fa-2x"></i>
+                    </div>
+                    <div>
+                        <h3 class="card-title">{{ menu_pages }}</h3>
+                        <p class="card-text mb-0">
+                            <span data-lang="en">Menu Pages</span>
+                            <span data-lang="ar">صفحات القائمة</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pages List -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <span data-lang="en">Static Pages List</span>
+            <span data-lang="ar">قائمة الصفحات الثابتة</span>
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if pages.items %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>
+                            <span data-lang="en">Title</span>
+                            <span data-lang="ar">العنوان</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">URL</span>
+                            <span data-lang="ar">الرابط</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Status</span>
+                            <span data-lang="ar">الحالة</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Menu</span>
+                            <span data-lang="ar">القائمة</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Created</span>
+                            <span data-lang="ar">تاريخ الإنشاء</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Actions</span>
+                            <span data-lang="ar">الإجراءات</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in pages.items %}
+                    <tr>
+                        <td>
+                            <strong>{{ page.title }}</strong>
+                            {% if page.title_ar %}
+                            <br><small class="text-muted" dir="rtl">{{ page.title_ar }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <code>/page/{{ page.slug }}</code>
+                            {% if page.is_published %}
+                            <a href="{{ url_for('static_page', slug=page.slug) }}" target="_blank" class="ms-2">
+                                <i class="fas fa-external-link-alt text-primary"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if page.is_published %}
+                            <span class="badge bg-success">
+                                <span data-lang="en">Published</span>
+                                <span data-lang="ar">منشور</span>
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary">
+                                <span data-lang="en">Draft</span>
+                                <span data-lang="ar">مسودة</span>
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if page.show_in_menu %}
+                            <span class="badge bg-info">
+                                <span data-lang="en">Yes</span>
+                                <span data-lang="ar">نعم</span>
+                                ({{ page.menu_order }})
+                            </span>
+                            {% else %}
+                            <span class="badge bg-light text-dark">
+                                <span data-lang="en">No</span>
+                                <span data-lang="ar">لا</span>
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>{{ page.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                            <br><small class="text-muted">{{ page.created_by.username }}</small>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('admin_edit_static_page', page_id=page.id) }}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin_toggle_page_publish', page_id=page.id) }}" 
+                                      class="d-inline">
+                                    <button type="submit" class="btn btn-outline-{% if page.is_published %}warning{% else %}success{% endif %}">
+                                        <i class="fas fa-{% if page.is_published %}eye-slash{% else %}eye{% endif %}"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin_delete_static_page', page_id=page.id) }}" 
+                                      class="d-inline" 
+                                      onsubmit="return confirm('هل أنت متأكد من حذف هذه الصفحة؟')">
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if pages.pages > 1 %}
+        <nav aria-label="Static Pages Pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if pages.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin_static_pages', page=pages.prev_num) }}">
+                        <span data-lang="en">Previous</span>
+                        <span data-lang="ar">السابق</span>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in pages.iter_pages() %}
+                {% if page_num %}
+                {% if page_num != pages.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin_static_pages', page=page_num) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">…</span>
+                </li>
+                {% endif %}
+                {% endfor %}
+                
+                {% if pages.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin_static_pages', page=pages.next_num) }}">
+                        <span data-lang="en">Next</span>
+                        <span data-lang="ar">التالي</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">
+                <span data-lang="en">No static pages found</span>
+                <span data-lang="ar">لا توجد صفحات ثابتة</span>
+            </h5>
+            <p class="text-muted">
+                <span data-lang="en">Create your first static page to get started</span>
+                <span data-lang="ar">أنشئ أول صفحة ثابتة للبدء</span>
+            </p>
+            <a href="{{ url_for('admin_add_static_page') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                <span data-lang="en">Add Static Page</span>
+                <span data-lang="ar">إضافة صفحة ثابتة</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,703 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Publisher Requests - طلبات النشر{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Publisher Requests Management</span>
+            <span data-lang="ar">إدارة طلبات النشر</span>
+        </h2>
+        <div class="btn-group">
+            <button type="button" class="btn btn-success" onclick="bulkApprove()">
+                <i class="fas fa-check-circle me-2"></i>
+                <span data-lang="en">Bulk Approve</span>
+                <span data-lang="ar">موافقة جماعية</span>
+            </button>
+            <button type="button" class="btn btn-danger" onclick="bulkReject()">
+                <i class="fas fa-times-circle me-2"></i>
+                <span data-lang="en">Bulk Reject</span>
+                <span data-lang="ar">رفض جماعي</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Pending Requests</span>
+                                <span data-lang="ar">الطلبات المعلقة</span>
+                            </h6>
+                            <h3>{{ pending_requests or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-hourglass-half fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Approved</span>
+                                <span data-lang="ar">موافق عليها</span>
+                            </h6>
+                            <h3>{{ approved_requests or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Rejected</span>
+                                <span data-lang="ar">مرفوضة</span>
+                            </h6>
+                            <h3>{{ rejected_requests or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-times-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Active Publishers</span>
+                                <span data-lang="ar">الناشرين النشطين</span>
+                            </h6>
+                            <h3>{{ active_publishers or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" name="search" 
+                           placeholder-en="Search by username or email..." 
+                           placeholder-ar="البحث باسم المستخدم أو البريد..."
+                           value="{{ search }}">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="status">
+                        <option value="">
+                            <span data-lang="en">All Status</span>
+                            <span data-lang="ar">جميع الحالات</span>
+                        </option>
+                        <option value="pending" {{ 'selected' if request.args.get('status') == 'pending' }}>
+                            <span data-lang="en">Pending</span>
+                            <span data-lang="ar">معلق</span>
+                        </option>
+                        <option value="approved" {{ 'selected' if request.args.get('status') == 'approved' }}>
+                            <span data-lang="en">Approved</span>
+                            <span data-lang="ar">موافق عليه</span>
+                        </option>
+                        <option value="rejected" {{ 'selected' if request.args.get('status') == 'rejected' }}>
+                            <span data-lang="en">Rejected</span>
+                            <span data-lang="ar">مرفوض</span>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="sort">
+                        <option value="newest" {{ 'selected' if request.args.get('sort') == 'newest' }}>
+                            <span data-lang="en">Newest First</span>
+                            <span data-lang="ar">الأحدث أولاً</span>
+                        </option>
+                        <option value="oldest" {{ 'selected' if request.args.get('sort') == 'oldest' }}>
+                            <span data-lang="en">Oldest First</span>
+                            <span data-lang="ar">الأقدم أولاً</span>
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter me-2"></i>
+                        <span data-lang="en">Filter</span>
+                        <span data-lang="ar">فلترة</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Publisher Requests Table -->
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>
+                    <span data-lang="en">Publisher Requests</span>
+                    <span data-lang="ar">طلبات النشر</span>
+                    <span class="badge bg-secondary ms-2">{{ requests.total if requests else 0 }}</span>
+                </h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="selectAll">
+                    <label class="form-check-label" for="selectAll">
+                        <span data-lang="en">Select All</span>
+                        <span data-lang="ar">تحديد الكل</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            {% if requests and requests.items %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="50">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="selectAllHeader">
+                                </div>
+                            </th>
+                            <th>
+                                <span data-lang="en">User</span>
+                                <span data-lang="ar">المستخدم</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Request Details</span>
+                                <span data-lang="ar">تفاصيل الطلب</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Portfolio</span>
+                                <span data-lang="ar">أعمال سابقة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Status</span>
+                                <span data-lang="ar">الحالة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Date</span>
+                                <span data-lang="ar">التاريخ</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Actions</span>
+                                <span data-lang="ar">الإجراءات</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in requests.items %}
+                        <tr>
+                            <td>
+                                <div class="form-check">
+                                    <input class="form-check-input request-checkbox" type="checkbox" 
+                                           value="{{ request.id }}" data-status="{{ request.status }}">
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                         style="width: 40px; height: 40px;">
+                                        {{ request.user.username[0].upper() }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ request.user.username }}</div>
+                                        <div class="text-muted small">{{ request.user.email }}</div>
+                                        <div class="text-muted small">
+                                            <span data-lang="en">Joined:</span>
+                                            <span data-lang="ar">انضم:</span>
+                                            {{ request.user.created_at.strftime('%Y-%m-%d') if request.user.created_at else 'Unknown' }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="mb-2">
+                                    <strong>
+                                        <span data-lang="en">Experience:</span>
+                                        <span data-lang="ar">الخبرة:</span>
+                                    </strong>
+                                    <span class="badge bg-info">{{ request.experience or 'Not specified' }}</span>
+                                </div>
+                                {% if request.motivation %}
+                                <div class="mb-2">
+                                    <strong>
+                                        <span data-lang="en">Motivation:</span>
+                                        <span data-lang="ar">الدافع:</span>
+                                    </strong>
+                                    <p class="text-muted mb-0 small">
+                                        {{ request.motivation[:100] }}{% if request.motivation|length > 100 %}...{% endif %}
+                                    </p>
+                                </div>
+                                {% endif %}
+                                {% if request.specialties %}
+                                <div>
+                                    <strong>
+                                        <span data-lang="en">Specialties:</span>
+                                        <span data-lang="ar">التخصصات:</span>
+                                    </strong>
+                                    <div class="mt-1">
+                                        {% for specialty in request.specialties.split(',') %}
+                                            <span class="badge bg-secondary me-1">{{ specialty.strip() }}</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.portfolio_url %}
+                                    <a href="{{ request.portfolio_url }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-external-link-alt me-1"></i>
+                                        <span data-lang="en">View Portfolio</span>
+                                        <span data-lang="ar">عرض الأعمال</span>
+                                    </a>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <span data-lang="en">No portfolio provided</span>
+                                        <span data-lang="ar">لا توجد أعمال مرفقة</span>
+                                    </span>
+                                {% endif %}
+                                {% if request.sample_work %}
+                                <div class="mt-1">
+                                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" 
+                                            data-bs-target="#sampleWorkModal{{ request.id }}">
+                                        <i class="fas fa-image me-1"></i>
+                                        <span data-lang="en">Sample Work</span>
+                                        <span data-lang="ar">عمل نموذجي</span>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if request.status == 'pending' %}
+                                    <span class="badge bg-warning">
+                                        <span data-lang="en">Pending</span>
+                                        <span data-lang="ar">معلق</span>
+                                    </span>
+                                {% elif request.status == 'approved' %}
+                                    <span class="badge bg-success">
+                                        <span data-lang="en">Approved</span>
+                                        <span data-lang="ar">موافق عليه</span>
+                                    </span>
+                                {% elif request.status == 'rejected' %}
+                                    <span class="badge bg-danger">
+                                        <span data-lang="en">Rejected</span>
+                                        <span data-lang="ar">مرفوض</span>
+                                    </span>
+                                {% endif %}
+                                
+                                {% if request.admin_notes %}
+                                <div class="mt-1">
+                                    <button class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" 
+                                            title="{{ request.admin_notes }}">
+                                        <i class="fas fa-sticky-note"></i>
+                                    </button>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="text-muted small">{{ request.created_at.strftime('%Y-%m-%d') }}</div>
+                                {% if request.reviewed_at %}
+                                <div class="text-muted small">
+                                    <span data-lang="en">Reviewed:</span>
+                                    <span data-lang="ar">تمت المراجعة:</span>
+                                    {{ request.reviewed_at.strftime('%Y-%m-%d') }}
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    {% if request.status == 'pending' %}
+                                        <button class="btn btn-success" onclick="approveRequest({{ request.id }})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-danger" onclick="rejectRequest({{ request.id }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    {% endif %}
+                                    <button class="btn btn-outline-primary" data-bs-toggle="modal" 
+                                            data-bs-target="#requestDetailModal{{ request.id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if request.status != 'pending' %}
+                                        <button class="btn btn-outline-warning" onclick="resetRequest({{ request.id }})">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if requests.pages > 1 %}
+            <div class="card-footer">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if requests.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_publisher_requests', page=requests.prev_num, **request.args) }}">
+                                <span data-lang="en">Previous</span>
+                                <span data-lang="ar">السابق</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in requests.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != requests.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_publisher_requests', page=page_num, **request.args) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if requests.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_publisher_requests', page=requests.next_num, **request.args) }}">
+                                <span data-lang="en">Next</span>
+                                <span data-lang="ar">التالي</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No publisher requests found</span>
+                    <span data-lang="ar">لم يتم العثور على طلبات نشر</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+<!-- Request Detail Modals -->
+{% for request in requests.items if requests %}
+<div class="modal fade" id="requestDetailModal{{ request.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Publisher Request Details</span>
+                    <span data-lang="ar">تفاصيل طلب النشر</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>
+                            <span data-lang="en">User Information</span>
+                            <span data-lang="ar">معلومات المستخدم</span>
+                        </h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Username:</span>
+                                    <span data-lang="ar">اسم المستخدم:</span>
+                                </strong></td>
+                                <td>{{ request.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Email:</span>
+                                    <span data-lang="ar">البريد:</span>
+                                </strong></td>
+                                <td>{{ request.user.email }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Join Date:</span>
+                                    <span data-lang="ar">تاريخ الانضمام:</span>
+                                </strong></td>
+                                <td>{{ request.user.created_at.strftime('%Y-%m-%d') if request.user.created_at else 'Unknown' }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>
+                            <span data-lang="en">Request Information</span>
+                            <span data-lang="ar">معلومات الطلب</span>
+                        </h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Status:</span>
+                                    <span data-lang="ar">الحالة:</span>
+                                </strong></td>
+                                <td>
+                                    {% if request.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif request.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% elif request.status == 'rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Request Date:</span>
+                                    <span data-lang="ar">تاريخ الطلب:</span>
+                                </strong></td>
+                                <td>{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% if request.reviewed_at %}
+                            <tr>
+                                <td><strong>
+                                    <span data-lang="en">Reviewed Date:</span>
+                                    <span data-lang="ar">تاريخ المراجعة:</span>
+                                </strong></td>
+                                <td>{{ request.reviewed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+                
+                {% if request.motivation %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Motivation</span>
+                        <span data-lang="ar">الدافع</span>
+                    </h6>
+                    <p class="border p-3 rounded bg-light">{{ request.motivation }}</p>
+                </div>
+                {% endif %}
+                
+                {% if request.experience %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Experience</span>
+                        <span data-lang="ar">الخبرة</span>
+                    </h6>
+                    <p><span class="badge bg-info">{{ request.experience }}</span></p>
+                </div>
+                {% endif %}
+                
+                {% if request.specialties %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Specialties</span>
+                        <span data-lang="ar">التخصصات</span>
+                    </h6>
+                    <div>
+                        {% for specialty in request.specialties.split(',') %}
+                            <span class="badge bg-secondary me-1">{{ specialty.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if request.admin_notes %}
+                <div class="mt-3">
+                    <h6>
+                        <span data-lang="en">Admin Notes</span>
+                        <span data-lang="ar">ملاحظات الإدارة</span>
+                    </h6>
+                    <div class="alert alert-info">{{ request.admin_notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                {% if request.status == 'pending' %}
+                    <button type="button" class="btn btn-success" onclick="approveRequest({{ request.id }})">
+                        <i class="fas fa-check me-2"></i>
+                        <span data-lang="en">Approve</span>
+                        <span data-lang="ar">موافقة</span>
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="rejectRequest({{ request.id }})">
+                        <i class="fas fa-times me-2"></i>
+                        <span data-lang="en">Reject</span>
+                        <span data-lang="ar">رفض</span>
+                    </button>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <span data-lang="en">Close</span>
+                    <span data-lang="ar">إغلاق</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all functionality
+    const selectAllCheckboxes = document.querySelectorAll('#selectAll, #selectAllHeader');
+    const requestCheckboxes = document.querySelectorAll('.request-checkbox');
+    
+    selectAllCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const isChecked = this.checked;
+            requestCheckboxes.forEach(cb => cb.checked = isChecked);
+            selectAllCheckboxes.forEach(cb => cb.checked = isChecked);
+        });
+    });
+    
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+function approveRequest(requestId, withNote = false) {
+    let notes = '';
+    if (withNote) {
+        notes = prompt('Add approval notes (optional):') || '';
+    }
+    
+    fetch(`/admin/publisher-requests/approve/${requestId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({notes: notes})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error approving request');
+        }
+    });
+}
+
+function rejectRequest(requestId) {
+    const reason = prompt('Rejection reason (required):');
+    if (reason) {
+        fetch(`/admin/publisher-requests/reject/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({reason: reason})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error rejecting request');
+            }
+        });
+    }
+}
+
+function resetRequest(requestId) {
+    if (confirm('Are you sure you want to reset this request to pending?')) {
+        fetch(`/admin/publisher-requests/reset/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error resetting request');
+            }
+        });
+    }
+}
+
+function bulkApprove() {
+    const selectedRequests = Array.from(document.querySelectorAll('.request-checkbox:checked'))
+        .filter(cb => cb.dataset.status === 'pending')
+        .map(cb => cb.value);
+    
+    if (selectedRequests.length === 0) {
+        alert('Please select pending requests to approve.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to approve ${selectedRequests.length} requests?`)) {
+        fetch('/admin/publisher-requests/bulk-approve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({request_ids: selectedRequests})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error processing bulk approval');
+            }
+        });
+    }
+}
+
+function bulkReject() {
+    const selectedRequests = Array.from(document.querySelectorAll('.request-checkbox:checked'))
+        .filter(cb => cb.dataset.status === 'pending')
+        .map(cb => cb.value);
+    
+    if (selectedRequests.length === 0) {
+        alert('Please select pending requests to reject.');
+        return;
+    }
+    
+    const reason = prompt('Rejection reason (required):');
+    if (reason && confirm(`Are you sure you want to reject ${selectedRequests.length} requests?`)) {
+        fetch('/admin/publisher-requests/bulk-reject', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                request_ids: selectedRequests,
+                reason: reason
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error processing bulk rejection');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

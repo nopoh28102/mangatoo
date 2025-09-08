@@ -1,0 +1,725 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+/* Admin Panel Dark Theme - Using Consistent Variables */
+.admin-container {
+    background: var(--bg-primary) !important;
+    min-height: 100vh;
+}
+
+body {
+    background: var(--bg-primary) !important;
+    color: var(--text-color) !important;
+}
+
+.container-fluid {
+    background: transparent;
+}
+
+/* Navigation and Lists */
+.list-group-item {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+.list-group-item:hover {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-color) !important;
+    border-color: var(--primary-color) !important;
+    transform: translateX(2px);
+}
+
+.list-group-item.active {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Cards */
+.card {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    background: var(--bg-tertiary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-success {
+    background: var(--success-color) !important;
+    border-color: var(--success-color) !important;
+}
+
+.btn-info {
+    background: var(--info-color) !important;
+    border-color: var(--info-color) !important;
+}
+
+.btn-warning {
+    background: var(--warning-color) !important;
+    border-color: var(--warning-color) !important;
+}
+
+/* Background Colors */
+.bg-primary {
+    background: var(--primary-color) !important;
+}
+
+.bg-success {
+    background: var(--success-color) !important;
+}
+
+.bg-info {
+    background: var(--info-color) !important;
+}
+
+.bg-warning {
+    background: var(--warning-color) !important;
+}
+
+.bg-danger {
+    background: var(--danger-color) !important;
+}
+
+/* Tables */
+.table-dark {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}
+
+.table-dark th, .table-dark td {
+    border-color: var(--border-color) !important;
+    background: transparent !important;
+}
+
+.table-dark th {
+    background: var(--bg-tertiary) !important;
+}
+
+.table-hover tbody tr:hover {
+    background: var(--bg-tertiary) !important;
+}
+
+/* Forms */
+.form-control, .form-select {
+    background: var(--bg-tertiary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    background: var(--bg-tertiary) !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+    color: var(--text-color) !important;
+}
+
+.form-control::placeholder {
+    color: var(--text-muted) !important;
+}
+
+.form-label {
+    color: var(--text-color) !important;
+    font-weight: 500;
+}
+
+/* Text and Typography */
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color) !important;
+}
+
+/* Badges and Alerts */
+.badge {
+    background: rgba(220, 53, 69, 0.2) !important;
+    color: var(--primary-color) !important;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.badge-success {
+    background: rgba(72, 187, 120, 0.2) !important;
+    color: var(--success-color) !important;
+    border: 1px solid rgba(72, 187, 120, 0.3);
+}
+
+.alert {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.alert-info {
+    background: rgba(220, 53, 69, 0.1) !important;
+    border-color: rgba(220, 53, 69, 0.2) !important;
+    color: var(--primary-color) !important;
+}
+
+.alert-success {
+    background: rgba(72, 187, 120, 0.1) !important;
+    border-color: rgba(72, 187, 120, 0.2) !important;
+    color: var(--success-color) !important;
+}
+
+.alert-warning {
+    background: rgba(237, 137, 54, 0.1) !important;
+    border-color: rgba(237, 137, 54, 0.2) !important;
+    color: var(--warning-color) !important;
+}
+
+/* Pagination */
+.pagination .page-link {
+    background: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.pagination .page-link:hover {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Modals */
+.modal-content {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color) !important;
+    background: var(--bg-tertiary) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border-color) !important;
+    background: var(--bg-tertiary) !important;
+}
+
+/* Dropdowns */
+.dropdown-menu {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.dropdown-item {
+    color: var(--text-color) !important;
+}
+
+.dropdown-item:hover {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-color) !important;
+}
+
+/* Progress bars */
+.progress {
+    background: var(--bg-tertiary) !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
+
+/* Additional comprehensive dark theme coverage */
+.table-light thead th {
+    background: var(--bg-tertiary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.list-unstyled, .list-group-flush .list-group-item {
+    background: transparent !important;
+    color: var(--text-color) !important;
+}
+
+/* Ensure any remaining white backgrounds are fixed */
+.bg-white, .bg-light {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}
+
+.text-dark {
+    color: var(--text-color) !important;
+}
+
+.border-light {
+    border-color: var(--border-color) !important;
+}
+
+/* Nav tabs and pills */
+.nav-tabs .nav-link {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--bg-tertiary) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Toast notifications */
+.toast {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.toast-header {
+    background: var(--bg-tertiary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+/* Sidebar and List Groups - CRITICAL FIX */
+.list-group {
+    background: var(--bg-primary) !important;
+}
+
+.list-group-item {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.list-group-item:first-child {
+    background: var(--bg-secondary) !important;
+}
+
+.list-group-item:last-child {
+    background: var(--bg-secondary) !important;
+}
+
+/* Force all sidebar elements to use dark theme - CRITICAL OVERRIDE */
+.col-md-3 .list-group, 
+.col-lg-2 .list-group,
+.col-lg-4 .card,
+.sidebar .list-group,
+div[class*="col-md-3"] .list-group,
+div[class*="col-lg-4"] .card,
+div[class*="col-lg-2"] .list-group {
+    background: var(--bg-primary) !important;
+}
+
+.col-md-3 .list-group-item, 
+.col-lg-2 .list-group-item,
+.sidebar .list-group-item,
+div[class*="col-md-3"] .list-group-item,
+div[class*="col-lg-2"] .list-group-item {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Nuclear option - override ANY white backgrounds in admin area */
+.container-fluid .row .col-md-3,
+.container-fluid .row .col-lg-2,
+.admin-sidebar,
+[class*="admin"] .list-group,
+[class*="admin"] .list-group-item {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}
+
+/* Force specific admin pages */
+body.admin-page,
+body.admin-page *,
+.admin-container,
+.admin-container * {
+    background-color: var(--bg-primary) !important;
+}
+
+.admin-container .list-group,
+.admin-container .list-group-item {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Checkbox styling fixes */
+input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 4px !important;
+    background: var(--bg-secondary) !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+input[type="checkbox"]:checked {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+input[type="checkbox"]:checked::before {
+    content: "✓" !important;
+    position: absolute !important;
+    top: -2px !important;
+    left: 2px !important;
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+input[type="checkbox"]:hover {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+}
+
+input[type="checkbox"]:focus {
+    outline: none !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Specific fix for upload page - Force dark theme */
+/* Upload page specific fixes */
+body[data-page="upload"] .container-fluid,
+body[data-page="upload"] .row,
+body[data-page="upload"] .col-lg-4,
+.upload-page .container-fluid,
+.upload-page .row,
+.upload-page .col-lg-4 {
+    background: var(--bg-primary) !important;
+}
+
+.upload-page .col-lg-4 .card,
+body[data-page="upload"] .col-lg-4 .card {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Upload area styling */
+.upload-section,
+.dropzone {
+    background: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.border-primary {
+    border-color: var(--primary-color) !important;
+}
+
+.border-info {
+    border-color: var(--info-color) !important;
+}
+
+.border-success {
+    border-color: var(--success-color) !important;
+}
+
+/* Cover preview area */
+.cover-upload-area,
+.cover-preview {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.cover-overlay {
+    background: rgba(0, 0, 0, 0.7) !important;
+    color: var(--text-color) !important;
+}
+
+/* Ultimate fix - Force all elements in upload page to dark theme */
+[data-page="upload"] *,
+.upload-new-page *,
+body:has([action*="upload-new"]) * {
+    background-color: inherit !important;
+}
+
+[data-page="upload"] .container-fluid,
+[data-page="upload"] .row,
+[data-page="upload"] .col-lg-4,
+[data-page="upload"] .col-lg-8,
+.upload-new-page .container-fluid,
+.upload-new-page .row,
+.upload-new-page .col-lg-4,
+.upload-new-page .col-lg-8 {
+    background: var(--bg-primary) !important;
+}
+
+/* Force upload page cards to be dark */
+[data-page="upload"] .card,
+.upload-new-page .card,
+body:has([action*="upload-new"]) .card {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* Specific targeting for problematic white backgrounds */
+.admin-container .col-lg-4,
+.admin-panel .col-lg-4,
+body.admin .col-lg-4 {
+    background: var(--bg-primary) !important;
+}
+
+/* Radio button styling fixes */
+input[type="radio"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 50% !important;
+    background: var(--bg-secondary) !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+input[type="radio"]:checked {
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+input[type="radio"]:checked::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 3px !important;
+    left: 3px !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: white !important;
+}
+
+input[type="radio"]:hover {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2) !important;
+}
+
+input[type="radio"]:focus {
+    outline: none !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.3) !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Admin Sidebar -->
+        <div class="col-md-3 col-lg-2">
+            <div class="list-group sticky-top" style="top: 20px;">
+                <!-- لوحة التحكم - متاحة لجميع المستخدمين المخولين -->
+                {% if current_user.is_admin or current_user.is_publisher or current_user.is_translator %}
+                <a href="{{ url_for('admin_dashboard') }}" class="list-group-item list-group-item-action {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span data-lang="en">Dashboard</span>
+                    <span data-lang="ar">لوحة التحكم</span>
+                </a>
+                {% endif %}
+
+                <!-- قسم الناشر - رفع ونشر المحتوى -->
+                {% if current_user.is_admin or current_user.is_publisher %}
+                <div class="list-group-item list-group-item-action p-0 border-0">
+                    <div class="d-flex align-items-center px-3 py-2 bg-primary text-white">
+                        <i class="fas fa-upload me-2"></i>
+                        <small><strong>
+                            <span data-lang="en">Content Management</span>
+                            <span data-lang="ar">إدارة المحتوى</span>
+                        </strong></small>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_upload_new') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_upload_new' %}active{% endif %}">
+                    <i class="fas fa-upload me-2"></i>
+                    <span data-lang="en">Upload New Manga</span>
+                    <span data-lang="ar">رفع مانجا جديدة</span>
+                </a>
+                <a href="{{ url_for('admin_manage') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_manage' %}active{% endif %}">
+                    <i class="fas fa-cog me-2"></i>
+                    <span data-lang="en">Manage Manga</span>
+                    <span data-lang="ar">إدارة المانجا</span>
+                </a>
+                <a href="{{ url_for('admin_chapters') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_chapters' %}active{% endif %}">
+                    <i class="fas fa-list-alt me-2"></i>
+                    <span data-lang="en">Manage Chapters</span>
+                    <span data-lang="ar">إدارة الفصول</span>
+                </a>
+                <a href="{{ url_for('admin_categories') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_categories' %}active{% endif %}">
+                    <i class="fas fa-tags me-2"></i>
+                    <span data-lang="en">Categories</span>
+                    <span data-lang="ar">التصنيفات</span>
+                </a>
+                {% endif %}
+
+
+                
+                <!-- قسم المدير الكامل - كامل الصلاحيات -->
+                {% if current_user.is_admin %}
+                <div class="list-group-item list-group-item-action p-0 border-0">
+                    <div class="d-flex align-items-center px-3 py-2 bg-danger text-white">
+                        <i class="fas fa-user-shield me-2"></i>
+                        <small><strong>
+                            <span data-lang="en">System Management</span>
+                            <span data-lang="ar">إدارة النظام</span>
+                        </strong></small>
+                    </div>
+                </div>
+                <a href="{{ url_for('admin_users') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_users' %}active{% endif %}">
+                    <i class="fas fa-users me-2"></i>
+                    <span data-lang="en">User Management</span>
+                    <span data-lang="ar">إدارة المستخدمين</span>
+                </a>
+                <a href="{{ url_for('admin_comments') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_comments' %}active{% endif %}">
+                    <i class="fas fa-comments me-2"></i>
+                    <span data-lang="en">Comment Monitoring</span>
+                    <span data-lang="ar">مراقبة التعليقات</span>
+                </a>
+                <a href="{{ url_for('admin_announcements') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint.startswith('admin_announcement') %}active{% endif %}">
+                    <i class="fas fa-bullhorn me-2"></i>
+                    <span data-lang="en">Public Announcements</span>
+                    <span data-lang="ar">الإعلانات العامة</span>
+                </a>
+                <a href="{{ url_for('admin_publisher_requests') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_publisher_requests' %}active{% endif %}">
+                    <i class="fas fa-user-check me-2"></i>
+                    <span data-lang="en">Publisher Requests</span>
+                    <span data-lang="ar">طلبات النشر</span>
+                </a>
+                <a href="{{ url_for('admin_translation_requests') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_translation_requests' %}active{% endif %}">
+                    <i class="fas fa-language me-2"></i>
+                    <span data-lang="en">Translation Requests</span>
+                    <span data-lang="ar">طلبات الترجمة</span>
+                </a>
+                <a href="{{ url_for('admin_chapter_review') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_chapter_review' %}active{% endif %}">
+                    <i class="fas fa-edit me-2"></i>
+                    <span data-lang="en">Chapter Review</span>
+                    <span data-lang="ar">مراجعة الفصول</span>
+                </a>
+                <a href="{{ url_for('admin_analytics') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_analytics' %}active{% endif %}">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    <span data-lang="en">Analytics & Statistics</span>
+                    <span data-lang="ar">التحليلات والإحصائيات</span>
+                </a>
+                <a href="{{ url_for('admin_settings') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_settings' %}active{% endif %}">
+                    <i class="fas fa-cog me-2"></i>
+                    <span data-lang="en">Site Settings</span>
+                    <span data-lang="ar">إعدادات الموقع</span>
+                </a>
+                <a href="{{ url_for('admin_database_connection') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_database_connection' %}active{% endif %}">
+                    <i class="fas fa-database me-2"></i>
+                    <span data-lang="en">Database Connection</span>
+                    <span data-lang="ar">ربط قاعدة البيانات</span>
+                </a>
+                <a href="{{ url_for('admin_static_pages') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint.startswith('admin_static_page') %}active{% endif %}">
+                    <i class="fas fa-file-alt me-2"></i>
+                    <span data-lang="en">Static Pages</span>
+                    <span data-lang="ar">الصفحات الثابتة</span>
+                </a>
+                <a href="{{ url_for('admin_blog') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint.startswith('admin_blog') or request.endpoint.startswith('admin_add_blog') or request.endpoint.startswith('admin_edit_blog') %}active{% endif %}">
+                    <i class="fas fa-blog me-2"></i>
+                    <span data-lang="en">Blog Management</span>
+                    <span data-lang="ar">إدارة المدونة</span>
+                </a>
+
+
+
+                <!-- إدارة المدفوعات - للمديرين فقط -->
+                <div class="list-group-item list-group-item-action p-0 border-0">
+                    <div class="d-flex align-items-center px-3 py-2 bg-warning text-white">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        <small><strong>
+                            <span data-lang="en">Payment Management</span>
+                            <span data-lang="ar">إدارة المدفوعات</span>
+                        </strong></small>
+                    </div>
+                </div>
+                <a href="{{ url_for('premium_plans') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'premium_plans' %}active{% endif %}">
+                    <i class="fas fa-credit-card me-2"></i>
+                    <span data-lang="en">Subscription Plans</span>
+                    <span data-lang="ar">خطط الاشتراك</span>
+                </a>
+                <a href="{{ url_for('admin_payments') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint == 'admin_payments' %}active{% endif %}">
+                    <i class="fas fa-money-bill-wave me-2"></i>
+                    <span data-lang="en">Payment Management</span>
+                    <span data-lang="ar">إدارة المدفوعات</span>
+                </a>
+                <a href="{{ url_for('admin_advertisements') }}" class="list-group-item list-group-item-action border-top-0 {% if request.endpoint.startswith('admin_advertisement') %}active{% endif %}">
+                    <i class="fas fa-ad me-2"></i>
+                    <span data-lang="en">Reader Advertisements</span>
+                    <span data-lang="ar">إعلانات القراءة</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block admin_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

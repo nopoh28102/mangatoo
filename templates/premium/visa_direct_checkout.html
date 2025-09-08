@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر Visa - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fab fa-cc-visa me-2"></i>
+                        دفع آمن بفيزا
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">ملخص الطلب</h5>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span>{{ plan.name_ar or plan.name }}</span>
+                            <strong>${{ payment.amount }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Visa Card Form -->
+                    <div class="card border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-lock me-2"></i>
+                                بيانات بطاقة فيزا
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="visaForm">
+                                <div class="mb-3">
+                                    <label for="cardNumber" class="form-label">رقم بطاقة فيزا</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fab fa-cc-visa text-primary"></i>
+                                        </span>
+                                        <input type="text" class="form-control" id="cardNumber" placeholder="4*** **** **** ****" maxlength="19">
+                                    </div>
+                                    <div class="form-text">ادخل رقم بطاقة فيزا الخاصة بك</div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expiryDate" class="form-label">تاريخ الانتهاء</label>
+                                        <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cvv" class="form-label">رمز الأمان (CVV)</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="3">
+                                        <div class="form-text">الرقم المكون من 3 أرقام خلف البطاقة</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="cardholderName" class="form-label">اسم حامل البطاقة</label>
+                                    <input type="text" class="form-control" id="cardholderName" placeholder="الاسم كما هو مكتوب على البطاقة">
+                                </div>
+
+                                <!-- Billing Address -->
+                                <div class="border-top pt-3 mt-3">
+                                    <h6 class="mb-3">عنوان الفوترة</h6>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="email" class="form-label">البريد الإلكتروني</label>
+                                            <input type="email" class="form-control" id="email" value="{{ current_user.email }}" readonly>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="phone" class="form-label">رقم الهاتف</label>
+                                            <input type="tel" class="form-control" id="phone" placeholder="+966xxxxxxxxx">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="country" class="form-label">الدولة</label>
+                                            <select class="form-select" id="country">
+                                                <option value="SA">السعودية</option>
+                                                <option value="AE">الإمارات</option>
+                                                <option value="US">الولايات المتحدة</option>
+                                                <option value="GB">المملكة المتحدة</option>
+                                                <option value="EG">مصر</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="city" class="form-label">المدينة</label>
+                                            <input type="text" class="form-control" id="city" placeholder="المدينة">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Security Features -->
+                                <div class="alert alert-success">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-shield-alt me-2"></i>
+                                                حماية فيزا المتقدمة
+                                            </h6>
+                                            <small>Verified by Visa • 3D Secure • SSL Encryption</small>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <i class="fab fa-cc-visa fa-3x text-primary"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Button -->
+                                <div class="d-grid mt-4">
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="processVisaPayment()">
+                                        <i class="fas fa-lock me-2"></i>
+                                        ادفع ${{ payment.amount }} بـ Visa
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Visa Benefits -->
+                    <div class="card border-info mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-star me-2"></i>
+                                مميزات فيزا
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            حماية من الاحتيال
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            مقبولة عالمياً
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            دفع فوري
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            حماية المشتري
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <div class="text-muted small">
+                            <i class="fas fa-lock me-1"></i>
+                            محمي بـ SSL
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function processVisaPayment() {
+    const cardNumber = document.getElementById('cardNumber').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    const cardholderName = document.getElementById('cardholderName').value;
+    const phone = document.getElementById('phone').value;
+    const city = document.getElementById('city').value;
+    
+    // Validate Visa card number (starts with 4)
+    if (!cardNumber.startsWith('4')) {
+        alert('رقم البطاقة المدخل ليس بطاقة فيزا صحيحة');
+        return;
+    }
+    
+    if (!cardNumber || !expiryDate || !cvv || !cardholderName || !phone || !city) {
+        alert('يرجى ملء جميع البيانات المطلوبة');
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري المعالجة...';
+    
+    // Simulate 3D Secure verification
+    setTimeout(function() {
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>تأكيد 3D Secure...';
+        
+        setTimeout(function() {
+            const verify3D = confirm('سيتم إرسال رمز تأكيد لهاتفك. هل تريد المتابعة؟');
+            
+            if (verify3D) {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>تأكيد الدفع...';
+                
+                setTimeout(function() {
+                    alert('تم الدفع بنجاح عبر Visa!');
+                    window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+                }, 2000);
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }, 2000);
+    }, 1500);
+}
+
+// Format card number input and validate Visa
+document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+    
+    // Visa validation (starts with 4)
+    if (value.length > 0 && !value.startsWith('4')) {
+        e.target.setCustomValidity('يجب أن تبدأ بطاقة فيزا بالرقم 4');
+    } else {
+        e.target.setCustomValidity('');
+    }
+    
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Format expiry date input
+document.getElementById('expiryDate').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+
+// Format CVV input
+document.getElementById('cvv').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+
+// Format phone number
+document.getElementById('phone').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.startsWith('966')) {
+        value = '+' + value;
+    } else if (value.startsWith('0')) {
+        value = '+966' + value.substring(1);
+    } else if (!value.startsWith('+')) {
+        value = '+966' + value;
+    }
+    e.target.value = value;
+});
+</script>
+{% endblock %}

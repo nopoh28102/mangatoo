@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}تاريخ القراءة - Reading History{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-history text-info"></i>
+                    <span data-lang="en">Reading History</span>
+                    <span data-lang="ar">تاريخ القراءة</span>
+                </h2>
+                <div class="text-muted">
+                    <span data-lang="en">{{ history|length }} manga in history</span>
+                    <span data-lang="ar">{{ history|length }} مانجا في التاريخ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if history %}
+    <div class="row">
+        {% for progress in history %}
+        <div class="col-12 mb-3">
+            <div class="card history-card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=progress.manga.id) }}">
+                                {% if progress.manga.cover_image %}
+                                    <img src="{{ url_for('static', filename=progress.manga.cover_image.replace('static/', '')) }}" 
+                                         alt="{{ progress.manga.title }}" class="img-fluid rounded history-cover">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center history-cover">
+                                        <i class="fas fa-book fa-2x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                            </a>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5 class="card-title mb-1">
+                                <a href="{{ url_for('manga_detail_by_id', manga_id=progress.manga.id) }}" class="text-decoration-none">
+                                    <span data-lang="en">{{ progress.manga.title }}</span>
+                                    <span data-lang="ar">{{ progress.manga.title_ar or progress.manga.title }}</span>
+                                </a>
+                            </h5>
+                            
+                            <p class="text-muted mb-2">{{ progress.manga.author }}</p>
+                            
+                            <div class="d-flex gap-2">
+                                <span class="badge bg-{% if progress.manga.status == 'ongoing' %}success{% elif progress.manga.status == 'completed' %}primary{% else %}secondary{% endif %}">
+                                    {{ progress.manga.status.title() }}
+                                </span>
+                                <span class="badge bg-info">{{ progress.manga.type.title() }}</span>
+                                {% if progress.manga.is_premium %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-crown"></i> Premium
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="progress-info">
+                                <h6 class="mb-1">
+                                    <span data-lang="en">Last Read</span>
+                                    <span data-lang="ar">آخر قراءة</span>
+                                </h6>
+                                <p class="mb-1">
+                                    <strong>
+                                        <span data-lang="en">Chapter {{ progress.chapter.chapter_number }}</span>
+                                        <span data-lang="ar">فصل {{ progress.chapter.chapter_number }}</span>
+                                    </strong>
+                                    {% if progress.chapter.title %}
+                                        <br><small class="text-muted">{{ progress.chapter.title }}</small>
+                                    {% endif %}
+                                </p>
+                                <p class="mb-1">
+                                    <small class="text-muted">
+                                        <span data-lang="en">Page {{ progress.page_number }}</span>
+                                        <span data-lang="ar">صفحة {{ progress.page_number }}</span>
+                                    </small>
+                                </p>
+                                <small class="text-muted">
+                                    {{ progress.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-1 text-end">
+                            <div class="btn-group-vertical">
+                                <a href="{{ url_for('read_chapter_by_id', chapter_id=progress.chapter.id) }}" 
+                                   class="btn btn-sm btn-primary" title="Continue Reading">
+                                    <i class="fas fa-play"></i>
+                                </a>
+                                <a href="{{ url_for('manga_detail_by_id', manga_id=progress.manga.id) }}" 
+                                   class="btn btn-sm btn-outline-secondary" title="View Details">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ (progress.chapter.chapter_number / progress.manga.total_chapters * 100) if progress.manga.total_chapters > 0 else 0 }}%">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <small class="text-muted">
+                                    <span data-lang="en">Progress: {{ progress.chapter.chapter_number }}/{{ progress.manga.total_chapters }} chapters</span>
+                                    <span data-lang="ar">التقدم: {{ progress.chapter.chapter_number }}/{{ progress.manga.total_chapters }} فصل</span>
+                                </small>
+                                <small class="text-muted">
+                                    {{ "%.1f"|format((progress.chapter.chapter_number / progress.manga.total_chapters * 100) if progress.manga.total_chapters > 0 else 0) }}%
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Clear History Button -->
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <button class="btn btn-outline-danger" onclick="clearHistory()">
+                <i class="fas fa-trash"></i>
+                <span data-lang="en">Clear Reading History</span>
+                <span data-lang="ar">مسح تاريخ القراءة</span>
+            </button>
+        </div>
+    </div>
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-history fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">
+            <span data-lang="en">No reading history</span>
+            <span data-lang="ar">لا يوجد تاريخ قراءة</span>
+        </h4>
+        <p class="text-muted">
+            <span data-lang="en">Start reading manga to see your history here!</span>
+            <span data-lang="ar">ابدأ قراءة المانجا لترى تاريخك هنا!</span>
+        </p>
+        <a href="{{ url_for('library') }}" class="btn btn-primary">
+            <i class="fas fa-book"></i>
+            <span data-lang="en">Browse Library</span>
+            <span data-lang="ar">تصفح المكتبة</span>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function clearHistory() {
+    if (confirm('Are you sure you want to clear your entire reading history? This action cannot be undone.')) {
+        // This would make an API call to clear history
+        alert('Clear history functionality would be implemented here');
+    }
+}
+</script>
+
+<style>
+.history-card {
+    transition: all 0.3s ease;
+}
+
+.history-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.history-cover {
+    width: 80px;
+    height: 120px;
+    object-fit: cover;
+}
+
+.progress-info h6 {
+    color: #495057;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.btn-group-vertical .btn {
+    margin-bottom: 2px;
+}
+
+.btn-group-vertical .btn:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .history-cover {
+        width: 60px;
+        height: 90px;
+    }
+    
+    .btn-group-vertical {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+    
+    .btn-group-vertical .btn {
+        margin-bottom: 0;
+    }
+}
+</style>
+{% endblock %}

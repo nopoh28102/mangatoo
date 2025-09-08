@@ -1,0 +1,1092 @@
+{% extends "base.html" %}
+
+{% block title %}
+<span data-lang="en">{{ post.title }}</span>
+<span data-lang="ar">{{ post.title_ar or post.title }}</span>
+{% endblock %}
+
+{% block meta_description %}
+<span data-lang="en">{{ post.meta_description or post.excerpt or post.title }}</span>
+<span data-lang="ar">{{ post.meta_description_ar or post.excerpt_ar or post.title_ar or post.title }}</span>
+{% endblock %}
+
+{% block meta_keywords %}{{ post.meta_keywords }}{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Featured Image -->
+{% if post.featured_image %}
+<div class="blog-hero position-relative">
+    <div class="hero-image">
+        <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="w-100">
+        <div class="hero-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb justify-content-center bg-transparent">
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('index') }}" class="text-white-50">
+                                    <span data-lang="en">Home</span>
+                                    <span data-lang="ar">الرئيسية</span>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('blog') }}" class="text-white-50">
+                                    <span data-lang="en">Blog</span>
+                                    <span data-lang="ar">المدونة</span>
+                                </a>
+                            </li>
+                            {% if post.category %}
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('blog', category=post.category) }}" class="text-white-50">{{ post.category }}</a>
+                            </li>
+                            {% endif %}
+                            <li class="breadcrumb-item active text-white" aria-current="page">
+                                <span data-lang="en">{{ post.title[:30] }}{% if post.title|length > 30 %}...{% endif %}</span>
+                                <span data-lang="ar">{{ (post.title_ar or post.title)[:30] }}{% if (post.title_ar or post.title)|length > 30 %}...{% endif %}</span>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <!-- Category Badge -->
+                    {% if post.category %}
+                    <div class="mb-3">
+                        <span class="category-badge">
+                            <i class="fas fa-folder me-2"></i>
+                            <span data-lang="en">{{ post.category }}</span>
+                            <span data-lang="ar">{{ post.category_ar or post.category }}</span>
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Title -->
+                    <h1 class="hero-title mb-4">
+                        <span data-lang="en">{{ post.title }}</span>
+                        <span data-lang="ar">{{ post.title_ar or post.title }}</span>
+                    </h1>
+
+                    <!-- Excerpt -->
+                    {% if post.excerpt %}
+                    <p class="hero-excerpt mb-4">
+                        <span data-lang="en">{{ post.excerpt }}</span>
+                        <span data-lang="ar">{{ post.excerpt_ar or post.excerpt }}</span>
+                    </p>
+                    {% endif %}
+
+                    <!-- Post Meta -->
+                    <div class="hero-meta d-flex flex-wrap justify-content-center align-items-center gap-4">
+                        <div class="meta-item">
+                            <i class="fas fa-user me-2"></i>
+                            <span data-lang="en">By</span>
+                            <span data-lang="ar">بواسطة</span>
+                            <strong>{{ post.author.username }}</strong>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-calendar me-2"></i>
+                            {{ post.published_at.strftime('%B %d, %Y') if post.published_at else post.created_at.strftime('%B %d, %Y') }}
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock me-2"></i>
+                            {{ post.reading_time }} 
+                            <span data-lang="en">min read</span>
+                            <span data-lang="ar">دقيقة قراءة</span>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-eye me-2"></i>
+                            {{ post.views }} 
+                            <span data-lang="en">views</span>
+                            <span data-lang="ar">مشاهدة</span>
+                        </div>
+                        {% if post.is_featured %}
+                        <div class="meta-item">
+                            <span class="featured-badge">
+                                <i class="fas fa-star me-1"></i>
+                                <span data-lang="en">Featured</span>
+                                <span data-lang="ar">مميز</span>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tags -->
+                    {% if post.get_tags_list() %}
+                    <div class="hero-tags mt-4">
+                        {% for tag in post.get_tags_list() %}
+                        <a href="{{ url_for('blog', tag=tag) }}" class="tag-link">
+                            #{{ tag }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="blog-container">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <article class="blog-post-main">
+                    <!-- Alternative Header for posts without featured image -->
+                    {% if not post.featured_image %}
+                    <header class="post-header mb-5">
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb" class="mb-3">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('index') }}">
+                                        <span data-lang="en">Home</span>
+                                        <span data-lang="ar">الرئيسية</span>
+                                    </a>
+                                </li>
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('blog') }}">
+                                        <span data-lang="en">Blog</span>
+                                        <span data-lang="ar">المدونة</span>
+                                    </a>
+                                </li>
+                                {% if post.category %}
+                                <li class="breadcrumb-item">
+                                    <a href="{{ url_for('blog', category=post.category) }}">{{ post.category }}</a>
+                                </li>
+                                {% endif %}
+                                <li class="breadcrumb-item active" aria-current="page">
+                                    <span data-lang="en">{{ post.title[:30] }}{% if post.title|length > 30 %}...{% endif %}</span>
+                                    <span data-lang="ar">{{ (post.title_ar or post.title)[:30] }}{% if (post.title_ar or post.title)|length > 30 %}...{% endif %}</span>
+                                </li>
+                            </ol>
+                        </nav>
+
+                        <!-- Category -->
+                        {% if post.category %}
+                        <div class="mb-3">
+                            <span class="category-badge-alt">
+                                <i class="fas fa-folder me-2"></i>{{ post.category }}
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Title -->
+                        <h1 class="post-title mb-4">
+                            <span data-lang="en">{{ post.title }}</span>
+                            <span data-lang="ar">{{ post.title_ar or post.title }}</span>
+                        </h1>
+
+                        <!-- Post Meta -->
+                        <div class="post-meta mb-4">
+                            <div class="meta-item">
+                                <i class="fas fa-user me-2"></i>
+                                <span data-lang="en">By</span>
+                                <span data-lang="ar">بواسطة</span>
+                                <strong>{{ post.author.username }}</strong>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-calendar me-2"></i>
+                                {{ post.published_at.strftime('%B %d, %Y') if post.published_at else post.created_at.strftime('%B %d, %Y') }}
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-clock me-2"></i>
+                                {{ post.reading_time }} 
+                                <span data-lang="en">min read</span>
+                                <span data-lang="ar">دقيقة قراءة</span>
+                            </div>
+                            <div class="meta-item">
+                                <i class="fas fa-eye me-2"></i>
+                                {{ post.views }} 
+                                <span data-lang="en">views</span>
+                                <span data-lang="ar">مشاهدة</span>
+                            </div>
+                            {% if post.is_featured %}
+                            <div class="meta-item">
+                                <span class="featured-badge">
+                                    <i class="fas fa-star me-1"></i>
+                                    <span data-lang="en">Featured</span>
+                                    <span data-lang="ar">مميز</span>
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Tags -->
+                        {% if post.get_tags_list() %}
+                        <div class="post-tags mb-4">
+                            {% for tag in post.get_tags_list() %}
+                            <a href="{{ url_for('blog', tag=tag) }}" class="tag-link">
+                                #{{ tag }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Excerpt -->
+                        {% if post.excerpt %}
+                        <div class="post-excerpt mb-4">
+                            <span data-lang="en">{{ post.excerpt }}</span>
+                            <span data-lang="ar">{{ post.excerpt_ar or post.excerpt }}</span>
+                        </div>
+                        {% endif %}
+                    </header>
+                    {% endif %}
+
+                    <!-- Post Content -->
+                    <div class="post-content mb-5">
+                        <div data-lang="en">
+                            {{ post.content | safe }}
+                        </div>
+                        <div data-lang="ar" style="direction: rtl; text-align: right;">
+                            {{ post.content_ar | safe if post.content_ar else post.content | safe }}
+                        </div>
+                    </div>
+
+                    <!-- Share Buttons -->
+                    <div class="share-section mb-5">
+                        <h6 class="share-title mb-4">
+                            <i class="fas fa-share-alt me-2"></i>
+                            <span data-lang="en">Share this post</span>
+                            <span data-lang="ar">شارك هذا المقال</span>
+                        </h6>
+                        <div class="share-buttons d-flex flex-wrap gap-3">
+                            <a href="https://twitter.com/intent/tweet?text={{ post.title | urlencode }}&url={{ request.url | urlencode }}" 
+                               target="_blank" class="share-btn share-twitter">
+                                <i class="fab fa-twitter"></i>
+                                <span data-lang="en">Twitter</span>
+                                <span data-lang="ar">تويتر</span>
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url | urlencode }}" 
+                               target="_blank" class="share-btn share-facebook">
+                                <i class="fab fa-facebook"></i>
+                                <span data-lang="en">Facebook</span>
+                                <span data-lang="ar">فيسبوك</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.url | urlencode }}" 
+                               target="_blank" class="share-btn share-linkedin">
+                                <i class="fab fa-linkedin"></i>
+                                <span data-lang="en">LinkedIn</span>
+                                <span data-lang="ar">لينكد إن</span>
+                            </a>
+                            <button class="share-btn share-copy" onclick="copyToClipboard('{{ request.url }}')">
+                                <i class="fas fa-link"></i>
+                                <span data-lang="en">Copy Link</span>
+                                <span data-lang="ar">نسخ الرابط</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Author Bio -->
+                    <div class="author-section mb-5">
+                        <div class="author-card">
+                            <div class="author-avatar">
+                                {% if post.author.profile_picture %}
+                                <img src="{{ post.author.profile_picture }}" alt="{{ post.author.username }}">
+                                {% else %}
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="author-info">
+                                <h6 class="author-name">{{ post.author.username }}</h6>
+                                <p class="author-title">
+                                    <span data-lang="en">Author</span>
+                                    <span data-lang="ar">كاتب</span>
+                                </p>
+                                {% if post.author.bio %}
+                                <p class="author-bio">
+                                    <span data-lang="en">{{ post.author.bio }}</span>
+                                    <span data-lang="ar">{{ post.author.bio_ar or post.author.bio }}</span>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                <!-- Navigation to Previous/Next Posts -->
+                <nav class="blog-nav mb-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <!-- You can implement previous post logic here -->
+                        </div>
+                        <div class="col-6 text-end">
+                            <!-- You can implement next post logic here -->
+                        </div>
+                    </div>
+                </nav>
+            </article>
+        </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <div class="blog-sidebar sticky-top" style="top: 100px;">
+                    <!-- Related Posts -->
+                    {% if related_posts %}
+                    <div class="sidebar-widget related-posts-widget mb-4">
+                        <div class="widget-header">
+                            <h6 class="widget-title">
+                                <i class="fas fa-list me-2"></i>
+                                <span data-lang="en">Related Posts</span>
+                                <span data-lang="ar">مقالات ذات صلة</span>
+                            </h6>
+                        </div>
+                        <div class="widget-content">
+                            {% for related_post in related_posts %}
+                            <div class="related-post-item {% if not loop.last %}mb-4{% endif %}">
+                                {% if related_post.featured_image %}
+                                <div class="related-post-image">
+                                    <img src="{{ related_post.featured_image }}" alt="{{ related_post.title }}">
+                                    <div class="image-overlay">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="related-post-content">
+                                    <h6 class="related-post-title">
+                                        <a href="{{ url_for('blog_post', slug=related_post.slug) }}">
+                                            <span data-lang="en">{{ related_post.title[:40] }}{% if related_post.title|length > 40 %}...{% endif %}</span>
+                                            <span data-lang="ar">{{ (related_post.title_ar or related_post.title)[:40] }}{% if (related_post.title_ar or related_post.title)|length > 40 %}...{% endif %}</span>
+                                        </a>
+                                    </h6>
+                                    <div class="related-post-meta">
+                                        <span class="meta-date">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ related_post.published_at.strftime('%B %d') if related_post.published_at else related_post.created_at.strftime('%B %d') }}
+                                        </span>
+                                        <span class="meta-views">
+                                            <i class="fas fa-eye me-1"></i>
+                                            {{ related_post.views }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Back to Blog -->
+                    <div class="sidebar-widget back-to-blog-widget">
+                        <div class="widget-content text-center">
+                            <a href="{{ url_for('blog') }}" class="back-to-blog-btn">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                <span data-lang="en">Back to Blog</span>
+                                <span data-lang="ar">العودة للمدونة</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const button = event.target.closest('button');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-check me-1"></i><span data-lang="en">Copied!</span><span data-lang="ar">تم النسخ!</span>';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-secondary');
+        
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    }).catch(function(err) {
+        console.error('Failed to copy: ', err);
+        alert('Failed to copy link');
+    });
+}
+</script>
+
+<style>
+/* Blog Post Modern Dark Theme */
+.blog-container {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    min-height: 100vh;
+    position: relative;
+}
+
+.blog-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 30%, rgba(220, 53, 69, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 193, 7, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 123, 255, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Hero Section */
+.blog-hero {
+    height: 70vh;
+    min-height: 500px;
+    overflow: hidden;
+}
+
+.hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.6);
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, 
+        rgba(0, 0, 0, 0.7) 0%, 
+        rgba(220, 53, 69, 0.3) 50%, 
+        rgba(0, 0, 0, 0.8) 100%);
+}
+
+.hero-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    line-height: 1.2;
+}
+
+.hero-excerpt {
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-meta .meta-item {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hero-meta i {
+    color: #dc3545;
+}
+
+.category-badge {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.featured-badge {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+    color: #1a1a1a;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+}
+
+.hero-tags .tag-link {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    padding: 6px 12px;
+    border-radius: 15px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin: 0 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+}
+
+.hero-tags .tag-link:hover {
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border-color: #dc3545;
+}
+
+/* Alternative Header for posts without image */
+.post-header {
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.post-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    margin-bottom: 20px;
+}
+
+.category-badge-alt {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+}
+
+.post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.post-meta .meta-item {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.post-meta i {
+    color: #dc3545;
+}
+
+.post-tags .tag-link {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    padding: 6px 12px;
+    border-radius: 15px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin: 0 4px 4px 0;
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.post-tags .tag-link:hover {
+    background: rgba(220, 53, 69, 0.8);
+    color: white;
+    border-color: #dc3545;
+}
+
+.post-excerpt {
+    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #dc3545;
+    color: rgba(255,255,255,0.8);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+/* Main Article Content */
+.blog-post-main {
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    border-radius: 20px;
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+}
+
+/* Post Content Styling */
+.post-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.9);
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+    font-weight: 600;
+}
+
+.post-content h2 {
+    font-size: 2rem;
+    border-bottom: 2px solid #dc3545;
+    padding-bottom: 10px;
+}
+
+.post-content h3 {
+    font-size: 1.5rem;
+    color: #dc3545;
+}
+
+.post-content p {
+    margin-bottom: 1.5rem;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    margin: 2rem 0;
+}
+
+.post-content blockquote {
+    border-left: 4px solid #dc3545;
+    padding: 20px;
+    margin: 2rem 0;
+    font-style: italic;
+    background: linear-gradient(145deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.05) 100%);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.9);
+    position: relative;
+}
+
+.post-content blockquote::before {
+    content: '"';
+    font-size: 4rem;
+    color: #dc3545;
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    opacity: 0.3;
+}
+
+.post-content ul,
+.post-content ol {
+    padding-left: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.post-content li {
+    margin-bottom: 0.5rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.post-content strong {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.post-content code {
+    background: rgba(255,255,255,0.1);
+    color: #ffd700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.post-content pre {
+    background: linear-gradient(145deg, #1a1a1a 0%, #0d1117 100%);
+    padding: 20px;
+    border-radius: 10px;
+    overflow-x: auto;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* Share Section */
+.share-section {
+    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.share-title {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.share-title i {
+    color: #dc3545;
+}
+
+.share-btn {
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.share-twitter:hover {
+    background: linear-gradient(145deg, #1da1f2 0%, #0d8bd9 100%);
+    border-color: #1da1f2;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(29, 161, 242, 0.4);
+}
+
+.share-facebook:hover {
+    background: linear-gradient(145deg, #4267B2 0%, #365899 100%);
+    border-color: #4267B2;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(66, 103, 178, 0.4);
+}
+
+.share-linkedin:hover {
+    background: linear-gradient(145deg, #0077b5 0%, #005885 100%);
+    border-color: #0077b5;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 119, 181, 0.4);
+}
+
+.share-copy:hover {
+    background: linear-gradient(145deg, #dc3545 0%, #c82333 100%);
+    border-color: #dc3545;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Author Section */
+.author-section {
+    background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    padding: 30px;
+    border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.author-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.author-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #dc3545;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.author-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.author-name {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.author-title {
+    color: #dc3545;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.author-bio {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Sidebar Styling */
+.blog-sidebar {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-widget {
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.widget-header {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    padding: 15px 20px;
+}
+
+.widget-title {
+    color: white;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.widget-title i {
+    color: rgba(255,255,255,0.8);
+}
+
+.widget-content {
+    padding: 20px;
+}
+
+/* Related Posts */
+.related-post-item {
+    display: flex;
+    gap: 15px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.related-post-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.related-post-image {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.related-post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(220, 53, 69, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.related-post-item:hover .image-overlay {
+    opacity: 1;
+}
+
+.image-overlay i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.related-post-title a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.related-post-title a:hover {
+    color: #dc3545;
+}
+
+.related-post-meta {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.related-post-meta span {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.related-post-meta i {
+    color: #dc3545;
+}
+
+/* Back to Blog Button */
+.back-to-blog-btn {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.back-to-blog-btn:hover {
+    background: linear-gradient(135deg, #e74c3c 0%, #dc3545 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+/* Breadcrumb Styling */
+.breadcrumb {
+    background: transparent;
+    margin-bottom: 0;
+}
+
+.breadcrumb-item a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #dc3545;
+}
+
+.breadcrumb-item.active {
+    color: rgba(255,255,255,0.8);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: rgba(255,255,255,0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-excerpt {
+        font-size: 1.1rem;
+    }
+    
+    .hero-meta {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .post-title {
+        font-size: 2rem;
+    }
+    
+    .blog-post-main {
+        padding: 20px;
+    }
+    
+    .post-content {
+        font-size: 1rem;
+    }
+    
+    .author-card {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .share-buttons {
+        flex-direction: column;
+    }
+    
+    .share-btn {
+        justify-content: center;
+    }
+}
+
+/* Loading animation for images */
+.related-post-image,
+.author-avatar,
+.hero-image img {
+    transition: opacity 0.3s ease;
+}
+
+/* Scroll animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.blog-post-main {
+    animation: fadeInUp 0.8s ease;
+}
+
+.sidebar-widget {
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+</style>
+{% endblock %}

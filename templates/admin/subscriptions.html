@@ -1,0 +1,291 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Subscription Management - إدارة الاشتراكات{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Subscription Management</span>
+            <span data-lang="ar">إدارة الاشتراكات</span>
+        </h2>
+        <a href="{{ url_for('admin_payments') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Payments</span>
+            <span data-lang="ar">العودة للمدفوعات</span>
+        </a>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">
+                                <span data-lang="en">Total Subscriptions</span>
+                                <span data-lang="ar">إجمالي الاشتراكات</span>
+                            </h5>
+                            <h2 class="mb-0">{{ total_subscriptions }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">
+                                <span data-lang="en">Active Subscriptions</span>
+                                <span data-lang="ar">اشتراكات نشطة</span>
+                            </h5>
+                            <h2 class="mb-0">{{ active_subscriptions }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5 class="card-title">
+                                <span data-lang="en">Expired Subscriptions</span>
+                                <span data-lang="ar">اشتراكات منتهية</span>
+                            </h5>
+                            <h2 class="mb-0">{{ expired_subscriptions }}</h2>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-clock fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscriptions Table -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>قائمة الاشتراكات</h5>
+                </div>
+                <div class="card-body">
+                    {% if subscriptions.items %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>رقم الاشتراك</th>
+                                    <th>المستخدم</th>
+                                    <th>الخطة</th>
+                                    <th>الحالة</th>
+                                    <th>تاريخ البداية</th>
+                                    <th>تاريخ الانتهاء</th>
+                                    <th>التجديد التلقائي</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subscription in subscriptions.items %}
+                                <tr>
+                                    <td>#{{ subscription.id }}</td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ subscription.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ subscription.user.email }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>{{ subscription.plan.name_ar or subscription.plan.name }}</strong>
+                                            <br>
+                                            <small class="text-muted">${{ "%.2f"|format(subscription.plan.price) }} - {{ subscription.plan.duration_months }} شهر</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if subscription.status == 'active' %}
+                                        <span class="badge bg-success">نشط</span>
+                                        {% elif subscription.status == 'expired' %}
+                                        <span class="badge bg-warning">منتهي</span>
+                                        {% elif subscription.status == 'cancelled' %}
+                                        <span class="badge bg-danger">ملغي</span>
+                                        {% elif subscription.status == 'suspended' %}
+                                        <span class="badge bg-secondary">معلق</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ subscription.start_date.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        <div>
+                                            {{ subscription.end_date.strftime('%Y-%m-%d') }}
+                                            {% if subscription.end_date > moment %}
+                                            <br><small class="text-success">متبقي {{ (subscription.end_date - moment).days }} يوم</small>
+                                            {% else %}
+                                            <br><small class="text-danger">انتهى منذ {{ (moment - subscription.end_date).days }} يوم</small>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if subscription.auto_renew %}
+                                        <span class="badge bg-info">مفعل</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">معطل</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#subscriptionModal{{ subscription.id }}">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            {% if subscription.status == 'active' %}
+                                            <button class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    {% if subscriptions.pages > 1 %}
+                    <nav aria-label="Subscription pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if subscriptions.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_subscriptions', page=subscriptions.prev_num) }}">السابق</a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for page_num in subscriptions.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != subscriptions.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_subscriptions', page=page_num) }}">{{ page_num }}</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if subscriptions.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_subscriptions', page=subscriptions.next_num) }}">التالي</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                    {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5>لا توجد اشتراكات حتى الآن</h5>
+                        <p>ستظهر الاشتراكات هنا عند اشتراك المستخدمين في الخطط المدفوعة</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subscription Details Modals -->
+{% for subscription in subscriptions.items %}
+<div class="modal fade" id="subscriptionModal{{ subscription.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تفاصيل الاشتراك #{{ subscription.id }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>معلومات المستخدم</h6>
+                        <p><strong>اسم المستخدم:</strong> {{ subscription.user.username }}</p>
+                        <p><strong>البريد الإلكتروني:</strong> {{ subscription.user.email }}</p>
+                        <p><strong>تاريخ التسجيل:</strong> {{ subscription.user.created_at.strftime('%Y-%m-%d') if subscription.user.created_at else 'غير محدد' }}</p>
+                        
+                        <h6 class="mt-4">معلومات الخطة</h6>
+                        <p><strong>اسم الخطة:</strong> {{ subscription.plan.name_ar or subscription.plan.name }}</p>
+                        <p><strong>السعر:</strong> ${{ "%.2f"|format(subscription.plan.price) }}</p>
+                        <p><strong>المدة:</strong> {{ subscription.plan.duration_months }} شهر</p>
+                        {% if subscription.plan.features %}
+                        <p><strong>المميزات:</strong></p>
+                        <ul>
+                            {% for feature in subscription.plan.features %}
+                            <li>{{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>معلومات الاشتراك</h6>
+                        <p><strong>الحالة:</strong> 
+                            {% if subscription.status == 'active' %}
+                            <span class="badge bg-success">نشط</span>
+                            {% elif subscription.status == 'expired' %}
+                            <span class="badge bg-warning">منتهي</span>
+                            {% elif subscription.status == 'cancelled' %}
+                            <span class="badge bg-danger">ملغي</span>
+                            {% elif subscription.status == 'suspended' %}
+                            <span class="badge bg-secondary">معلق</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>تاريخ البداية:</strong> {{ subscription.start_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p><strong>تاريخ الانتهاء:</strong> {{ subscription.end_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p><strong>التجديد التلقائي:</strong> {{ 'مفعل' if subscription.auto_renew else 'معطل' }}</p>
+                        <p><strong>تاريخ الإنشاء:</strong> {{ subscription.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <p><strong>آخر تحديث:</strong> {{ subscription.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        
+                        <h6 class="mt-4">معلومات الدفعة</h6>
+                        <p><strong>رقم الدفعة:</strong> #{{ subscription.payment.id }}</p>
+                        <p><strong>المبلغ المدفوع:</strong> ${{ "%.2f"|format(subscription.payment.amount) }} {{ subscription.payment.currency }}</p>
+                        <p><strong>بوابة الدفع:</strong> {{ subscription.payment.gateway.display_name_ar or subscription.payment.gateway.display_name }}</p>
+                        <p><strong>حالة الدفعة:</strong> 
+                            {% if subscription.payment.status == 'completed' %}
+                            <span class="badge bg-success">مكتملة</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ subscription.payment.status }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                {% if subscription.status == 'active' %}
+                <button type="button" class="btn btn-warning">تعليق الاشتراك</button>
+                <button type="button" class="btn btn-danger">إلغاء الاشتراك</button>
+                {% elif subscription.status == 'suspended' %}
+                <button type="button" class="btn btn-success">إعادة تفعيل الاشتراك</button>
+                {% endif %}
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

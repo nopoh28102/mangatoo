@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}
+<span data-lang="en">Blog</span>
+<span data-lang="ar">المدونة</span>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 text-center mb-3">
+                <span data-lang="en">Blog</span>
+                <span data-lang="ar">المدونة</span>
+            </h1>
+            <p class="lead text-center text-muted">
+                <span data-lang="en">Latest articles and updates from our team</span>
+                <span data-lang="ar">أحدث المقالات والأخبار من فريقنا</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Featured Posts -->
+    {% if featured_posts %}
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <i class="fas fa-star text-warning me-2"></i>
+                <span data-lang="en">Featured Posts</span>
+                <span data-lang="ar">المقالات المميزة</span>
+            </h3>
+            <div class="row">
+                {% for post in featured_posts %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if post.featured_image %}
+                        <img src="{{ post.featured_image }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">
+                                <span data-lang="en">{{ post.title }}</span>
+                                <span data-lang="ar">{{ post.title_ar or post.title }}</span>
+                            </h5>
+                            {% if post.excerpt %}
+                            <p class="card-text text-muted">
+                                <span data-lang="en">{{ post.excerpt }}</span>
+                                <span data-lang="ar">{{ post.excerpt_ar or post.excerpt }}</span>
+                            </p>
+                            {% endif %}
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-user me-1"></i>{{ post.author.username }}
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ post.reading_time }} 
+                                        <span data-lang="en">min read</span>
+                                        <span data-lang="ar">دقيقة</span>
+                                    </small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    {% if post.category %}
+                                    <span class="badge bg-primary">{{ post.category }}</span>
+                                    {% endif %}
+                                    <a href="{{ url_for('blog_post', slug=post.slug) }}" class="btn btn-outline-primary btn-sm">
+                                        <span data-lang="en">Read More</span>
+                                        <span data-lang="ar">قراءة المزيد</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Filter Info -->
+            {% if current_category or current_tag %}
+            <div class="alert alert-info mb-4">
+                {% if current_category %}
+                <span data-lang="en">Showing posts in category: <strong>{{ current_category }}</strong></span>
+                <span data-lang="ar">عرض المقالات في التصنيف: <strong>{{ current_category }}</strong></span>
+                {% endif %}
+                {% if current_tag %}
+                <span data-lang="en">Showing posts tagged: <strong>{{ current_tag }}</strong></span>
+                <span data-lang="ar">عرض المقالات ذات العلامة: <strong>{{ current_tag }}</strong></span>
+                {% endif %}
+                <a href="{{ url_for('blog') }}" class="btn btn-sm btn-outline-secondary ms-2">
+                    <span data-lang="en">Clear Filter</span>
+                    <span data-lang="ar">إزالة الفلتر</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <!-- Blog Posts -->
+            {% if posts.items %}
+            <div class="row">
+                {% for post in posts.items %}
+                <div class="col-12 mb-4">
+                    <div class="card shadow-sm">
+                        <div class="row g-0">
+                            {% if post.featured_image %}
+                            <div class="col-md-4">
+                                <img src="{{ post.featured_image }}" class="img-fluid rounded-start h-100" 
+                                     alt="{{ post.title }}" style="object-fit: cover;">
+                            </div>
+                            <div class="col-md-8">
+                            {% else %}
+                            <div class="col-12">
+                            {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <a href="{{ url_for('blog_post', slug=post.slug) }}" class="text-decoration-none">
+                                            <span data-lang="en">{{ post.title }}</span>
+                                            <span data-lang="ar">{{ post.title_ar or post.title }}</span>
+                                        </a>
+                                    </h5>
+                                    {% if post.excerpt %}
+                                    <p class="card-text">
+                                        <span data-lang="en">{{ post.excerpt }}</span>
+                                        <span data-lang="ar">{{ post.excerpt_ar or post.excerpt }}</span>
+                                    </p>
+                                    {% endif %}
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-user me-1"></i>{{ post.author.username }}
+                                                <span class="mx-2">•</span>
+                                                <i class="fas fa-calendar me-1"></i>{{ post.published_at.strftime('%B %d, %Y') if post.published_at else post.created_at.strftime('%B %d, %Y') }}
+                                                <span class="mx-2">•</span>
+                                                <i class="fas fa-eye me-1"></i>{{ post.views }} 
+                                                <span data-lang="en">views</span>
+                                                <span data-lang="ar">مشاهدة</span>
+                                            </small>
+                                        </div>
+                                        <div>
+                                            {% if post.category %}
+                                            <a href="{{ url_for('blog', category=post.category) }}" class="badge bg-secondary text-decoration-none me-2">
+                                                {{ post.category }}
+                                            </a>
+                                            {% endif %}
+                                            <small class="text-muted">
+                                                {{ post.reading_time }} 
+                                                <span data-lang="en">min read</span>
+                                                <span data-lang="ar">دقيقة</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    {% if post.get_tags_list() %}
+                                    <div class="mt-2">
+                                        {% for tag in post.get_tags_list()[:3] %}
+                                        <a href="{{ url_for('blog', tag=tag) }}" class="badge bg-light text-dark text-decoration-none me-1">
+                                            #{{ tag }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if posts.pages > 1 %}
+            <nav aria-label="Blog pagination" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if posts.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('blog', page=posts.prev_num, category=current_category, tag=current_tag) }}">
+                            <span data-lang="en">Previous</span>
+                            <span data-lang="ar">السابق</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in posts.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != posts.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('blog', page=page_num, category=current_category, tag=current_tag) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if posts.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('blog', page=posts.next_num, category=current_category, tag=current_tag) }}">
+                            <span data-lang="en">Next</span>
+                            <span data-lang="ar">التالي</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-blog fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No blog posts found</span>
+                    <span data-lang="ar">لم يتم العثور على مقالات</span>
+                </h5>
+                <p class="text-muted">
+                    <span data-lang="en">Check back later for new content</span>
+                    <span data-lang="ar">تحقق لاحقاً من المحتوى الجديد</span>
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 100px;">
+                <!-- Categories -->
+                {% if categories %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-folder me-2"></i>
+                            <span data-lang="en">Categories</span>
+                            <span data-lang="ar">التصنيفات</span>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% for category in categories %}
+                        <a href="{{ url_for('blog', category=category) }}" 
+                           class="badge bg-secondary text-decoration-none me-2 mb-2">
+                            {{ category }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Recent Posts -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">
+                            <i class="fas fa-clock me-2"></i>
+                            <span data-lang="en">Recent Posts</span>
+                            <span data-lang="ar">المقالات الحديثة</span>
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        {% for post in posts.items[:5] %}
+                        <div class="mb-3 {% if not loop.last %}border-bottom pb-3{% endif %}">
+                            <h6 class="mb-1">
+                                <a href="{{ url_for('blog_post', slug=post.slug) }}" class="text-decoration-none">
+                                    <span data-lang="en">{{ post.title[:50] }}{% if post.title|length > 50 %}...{% endif %}</span>
+                                    <span data-lang="ar">{{ (post.title_ar or post.title)[:50] }}{% if (post.title_ar or post.title)|length > 50 %}...{% endif %}</span>
+                                </a>
+                            </h6>
+                            <small class="text-muted">
+                                {{ post.published_at.strftime('%B %d') if post.published_at else post.created_at.strftime('%B %d') }}
+                                <span class="mx-1">•</span>
+                                {{ post.views }} 
+                                <span data-lang="en">views</span>
+                                <span data-lang="ar">مشاهدة</span>
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

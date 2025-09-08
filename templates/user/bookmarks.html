@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}إشاراتي المرجعية - My Bookmarks{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-bookmark text-warning"></i>
+                    <span data-lang="en">My Bookmarks</span>
+                    <span data-lang="ar">إشاراتي المرجعية</span>
+                </h2>
+                <div class="text-muted">
+                    <span data-lang="en">{{ bookmarks|length }} bookmarked manga</span>
+                    <span data-lang="ar">{{ bookmarks|length }} مانجا محفوظة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if bookmarks %}
+    <div class="row">
+        {% for bookmark in bookmarks %}
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card manga-bookmark-card h-100">
+                <div class="position-relative">
+                    <a href="{{ url_for('manga_detail', slug=bookmark.manga.slug) if bookmark.manga.slug else url_for('manga_detail_by_id', manga_id=bookmark.manga.id) }}">
+                        {% if bookmark.manga.cover_image %}
+                            <img src="{{ url_for('static', filename=bookmark.manga.cover_image.replace('static/', '')) }}" 
+                                 alt="{{ bookmark.manga.title }}" class="card-img-top">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                <i class="fas fa-book fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    
+                    <!-- Remove bookmark button -->
+                    <button class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" 
+                            onclick="removeBookmark({{ bookmark.manga.id }})"
+                            title="Remove from bookmarks">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    
+                    <!-- Premium badge -->
+                    {% if bookmark.manga.is_premium %}
+                    <span class="badge bg-warning position-absolute top-0 start-0 m-2">
+                        <i class="fas fa-crown"></i> Premium
+                    </span>
+                    {% endif %}
+                    
+                    <!-- Rating badge -->
+                    {% if bookmark.manga.average_rating > 0 %}
+                    <span class="badge bg-success position-absolute" style="bottom: 10px; right: 10px;">
+                        {{ "%.1f"|format(bookmark.manga.average_rating) }} ★
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title">
+                        <a href="{{ url_for('manga_detail', slug=bookmark.manga.slug) if bookmark.manga.slug else url_for('manga_detail_by_id', manga_id=bookmark.manga.id) }}" class="text-decoration-none">
+                            <span data-lang="en">{{ bookmark.manga.title }}</span>
+                            <span data-lang="ar">{{ bookmark.manga.title_ar or bookmark.manga.title }}</span>
+                        </a>
+                    </h6>
+                    
+                    <p class="card-text small text-muted">{{ bookmark.manga.author }}</p>
+                    
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-eye"></i> {{ "{:,}".format(bookmark.manga.views) }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-book-open"></i> {{ bookmark.manga.total_chapters }}
+                            </small>
+                        </div>
+                        
+                        <div class="mt-2">
+                            <span class="badge bg-{% if bookmark.manga.status == 'ongoing' %}success{% elif bookmark.manga.status == 'completed' %}primary{% else %}secondary{% endif %} me-1">
+                                {{ bookmark.manga.status.title() }}
+                            </span>
+                            <span class="badge bg-info">{{ bookmark.manga.type.title() }}</span>
+                        </div>
+                        
+                        <small class="text-muted d-block mt-2">
+                            <i class="fas fa-bookmark"></i>
+                            <span data-lang="en">Bookmarked</span>
+                            <span data-lang="ar">محفوظ</span>
+                            {{ bookmark.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-bookmark fa-5x text-muted mb-3"></i>
+        <h4 class="text-muted">
+            <span data-lang="en">No bookmarks yet</span>
+            <span data-lang="ar">لا توجد إشارات مرجعية بعد</span>
+        </h4>
+        <p class="text-muted">
+            <span data-lang="en">Start bookmarking your favorite manga to see them here!</span>
+            <span data-lang="ar">ابدأ بحفظ المانجا المفضلة لديك لتراها هنا!</span>
+        </p>
+        <a href="{{ url_for('library') }}" class="btn btn-primary">
+            <i class="fas fa-book"></i>
+            <span data-lang="en">Browse Library</span>
+            <span data-lang="ar">تصفح المكتبة</span>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function removeBookmark(mangaId) {
+    if (confirm('Are you sure you want to remove this bookmark?')) {
+        fetch(`/bookmark/${mangaId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            } else {
+                alert('Failed to remove bookmark');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove bookmark');
+        });
+    }
+}
+</script>
+
+<style>
+.manga-bookmark-card {
+    transition: all 0.3s ease;
+}
+
+.manga-bookmark-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+}
+</style>
+{% endblock %}

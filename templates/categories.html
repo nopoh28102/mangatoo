@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}الأنواع والفئات - Categories{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">
+                <span data-lang="ar">تصفح حسب النوع</span>
+                <span data-lang="en">Browse by Category</span>
+            </h1>
+            <p class="text-center text-muted mb-5">
+                <span data-lang="ar">اختر نوع المانجا المفضل لديك واستكشف عالماً من القصص المثيرة</span>
+                <span data-lang="en">Choose your favorite manga genre and explore a world of exciting stories</span>
+            </p>
+        </div>
+    </div>
+    
+    {% if categories %}
+    <div class="row">
+        {% for category in categories %}
+        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="card h-100 border-0 shadow-sm category-card">
+                <div class="card-body text-center p-4">
+                    <div class="category-icon mb-3">
+                        <i class="fas fa-{{ category.icon or 'book' }} fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title mb-2">
+                        <span data-lang="ar">{{ category.name_ar or category.name }}</span>
+                        <span data-lang="en">{{ category.name }}</span>
+                    </h5>
+                    {% if category.description %}
+                    <p class="card-text text-muted small mb-3">
+                        <span data-lang="ar">{{ category.description_ar or category.description }}</span>
+                        <span data-lang="en">{{ category.description }}</span>
+                    </p>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <span class="badge bg-primary">
+                            {{ category.manga|length or 0 }}
+                            <span data-lang="ar">مانجا</span>
+                            <span data-lang="en">manga</span>
+                        </span>
+                    </div>
+                    
+                    <a href="{{ url_for('library', category=category.id) }}" class="btn btn-outline-primary btn-sm">
+                        <span data-lang="ar">تصفح</span>
+                        <span data-lang="en">Browse</span>
+                        <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">
+                    <span data-lang="ar">لا توجد فئات متاحة حالياً</span>
+                    <span data-lang="en">No categories available currently</span>
+                </h4>
+                <p class="text-muted">
+                    <span data-lang="ar">يمكنك تصفح جميع المانجا من المكتبة</span>
+                    <span data-lang="en">You can browse all manga from the library</span>
+                </p>
+                <a href="{{ url_for('library') }}" class="btn btn-primary">
+                    <span data-lang="ar">تصفح المكتبة</span>
+                    <span data-lang="en">Browse Library</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Popular Categories Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <span data-lang="ar">الفئات الشائعة</span>
+                <span data-lang="en">Popular Categories</span>
+            </h3>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('library', type='manga') }}" class="text-decoration-none">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <i class="fas fa-book-open fa-2x text-primary mb-2"></i>
+                                <h6 class="card-title">
+                                    <span data-lang="ar">مانجا</span>
+                                    <span data-lang="en">Manga</span>
+                                </h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('library', type='manhwa') }}" class="text-decoration-none">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <i class="fas fa-scroll fa-2x text-success mb-2"></i>
+                                <h6 class="card-title">
+                                    <span data-lang="ar">مانهوا</span>
+                                    <span data-lang="en">Manhwa</span>
+                                </h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <a href="{{ url_for('library', type='manhua') }}" class="text-decoration-none">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <i class="fas fa-dragon fa-2x text-warning mb-2"></i>
+                                <h6 class="card-title">
+                                    <span data-lang="ar">مانهوا</span>
+                                    <span data-lang="en">Manhua</span>
+                                </h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.category-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.category-icon {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}

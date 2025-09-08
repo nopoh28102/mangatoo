@@ -1,0 +1,561 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة الترجمة - Translation Management{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Translation Management</span>
+            <span data-lang="ar">إدارة الترجمة</span>
+        </h2>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTranslatorModal">
+                <i class="fas fa-user-plus me-2"></i>
+                <span data-lang="en">Add Translator</span>
+                <span data-lang="ar">إضافة مترجم</span>
+            </button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#assignTranslationModal">
+                <i class="fas fa-tasks me-2"></i>
+                <span data-lang="en">Assign Translation</span>
+                <span data-lang="ar">تكليف ترجمة</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Translation Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Active Translators</span>
+                                <span data-lang="ar">المترجمين النشطين</span>
+                            </h6>
+                            <h3>{{ active_translators|length or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-language fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Pending Translations</span>
+                                <span data-lang="ar">الترجمات المعلقة</span>
+                            </h6>
+                            <h3>{{ pending_translations or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Completed Today</span>
+                                <span data-lang="ar">مكتملة اليوم</span>
+                            </h6>
+                            <h3>{{ completed_today or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Under Review</span>
+                                <span data-lang="ar">تحت المراجعة</span>
+                            </h6>
+                            <h3>{{ under_review or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-eye fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Translation Projects -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Translation Projects</span>
+                <span data-lang="ar">مشاريع الترجمة</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <span data-lang="en">Manga</span>
+                                <span data-lang="ar">المانجا</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Chapter</span>
+                                <span data-lang="ar">الفصل</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Language</span>
+                                <span data-lang="ar">اللغة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Translator</span>
+                                <span data-lang="ar">المترجم</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Status</span>
+                                <span data-lang="ar">الحالة</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Deadline</span>
+                                <span data-lang="ar">الموعد النهائي</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Progress</span>
+                                <span data-lang="ar">التقدم</span>
+                            </th>
+                            <th>
+                                <span data-lang="en">Actions</span>
+                                <span data-lang="ar">الإجراءات</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in translation_projects %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ url_for('static', filename=project.manga.cover_image.replace('static/', '') if project.manga.cover_image else 'img/placeholder.png') }}" 
+                                         class="rounded me-2" width="30" height="40" alt="{{ project.manga.title }}">
+                                    <div>
+                                        <strong>{{ project.manga.title }}</strong>
+                                        <br><small class="text-muted">{{ project.manga.author }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">Ch. {{ project.chapter.chapter_number }}</span>
+                                {% if project.chapter.title %}
+                                    <br><small>{{ project.chapter.title }}</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ project.target_language.upper() }}</span>
+                            </td>
+                            <td>
+                                {% if project.translator %}
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2">
+                                            {{ project.translator.username[0].upper() }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ project.translator.username }}</div>
+                                            <small class="text-muted">{{ project.translator.email }}</small>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <span data-lang="en">Unassigned</span>
+                                        <span data-lang="ar">غير مكلف</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if project.status == 'pending' %}
+                                    <span class="badge bg-warning">
+                                        <span data-lang="en">Pending</span>
+                                        <span data-lang="ar">معلق</span>
+                                    </span>
+                                {% elif project.status == 'in_progress' %}
+                                    <span class="badge bg-info">
+                                        <span data-lang="en">In Progress</span>
+                                        <span data-lang="ar">في التقدم</span>
+                                    </span>
+                                {% elif project.status == 'review' %}
+                                    <span class="badge bg-primary">
+                                        <span data-lang="en">Under Review</span>
+                                        <span data-lang="ar">تحت المراجعة</span>
+                                    </span>
+                                {% elif project.status == 'completed' %}
+                                    <span class="badge bg-success">
+                                        <span data-lang="en">Completed</span>
+                                        <span data-lang="ar">مكتمل</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if project.deadline %}
+                                    {{ project.deadline.strftime('%Y-%m-%d') }}
+                                    {% if project.deadline < now %}
+                                        <i class="fas fa-exclamation-triangle text-danger ms-1" title="Overdue"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ project.progress or 0 }}%">
+                                        {{ project.progress or 0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{{ url_for('admin_translation_detail', project_id=project.id) }}" 
+                                       class="btn btn-outline-primary" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    {% if project.status != 'completed' %}
+                                        <button class="btn btn-outline-success" onclick="updateProgress({{ project.id }})" 
+                                                title="Update Progress">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    {% endif %}
+                                    {% if project.status == 'review' %}
+                                        <button class="btn btn-outline-success" onclick="approveTranslation({{ project.id }})" 
+                                                title="Approve">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="fas fa-language fa-3x mb-3"></i>
+                                <p>
+                                    <span data-lang="en">No translation projects found</span>
+                                    <span data-lang="ar">لم يتم العثور على مشاريع ترجمة</span>
+                                </p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Translators -->
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Active Translators</span>
+                <span data-lang="ar">المترجمين النشطين</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for translator in active_translators %}
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card border">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                     style="width: 50px; height: 50px;">
+                                    {{ translator.username[0].upper() }}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ translator.username }}</h6>
+                                    <small class="text-muted">{{ translator.email }}</small>
+                                </div>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <div class="text-primary fw-bold">{{ translator.translations_completed or 0 }}</div>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Completed</span>
+                                        <span data-lang="ar">مكتمل</span>
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-warning fw-bold">{{ translator.translations_pending or 0 }}</div>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Pending</span>
+                                        <span data-lang="ar">معلق</span>
+                                    </small>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-info fw-bold">{{ translator.languages|length if translator.languages else 1 }}</div>
+                                    <small class="text-muted">
+                                        <span data-lang="en">Languages</span>
+                                        <span data-lang="ar">لغات</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-user-slash fa-3x mb-3"></i>
+                        <p>
+                            <span data-lang="en">No active translators found</span>
+                            <span data-lang="ar">لم يتم العثور على مترجمين نشطين</span>
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Translator Modal -->
+<div class="modal fade" id="addTranslatorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Add New Translator</span>
+                    <span data-lang="ar">إضافة مترجم جديد</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_add_translator') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="translator_username" class="form-label">
+                            <span data-lang="en">Username</span>
+                            <span data-lang="ar">اسم المستخدم</span>
+                        </label>
+                        <input type="text" class="form-control" id="translator_username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="translator_email" class="form-label">
+                            <span data-lang="en">Email</span>
+                            <span data-lang="ar">البريد الإلكتروني</span>
+                        </label>
+                        <input type="email" class="form-control" id="translator_email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="translator_languages" class="form-label">
+                            <span data-lang="en">Languages</span>
+                            <span data-lang="ar">اللغات</span>
+                        </label>
+                        <select multiple class="form-select" id="translator_languages" name="languages">
+                            <option value="ar">العربية (Arabic)</option>
+                            <option value="en">English</option>
+                            <option value="es">Español</option>
+                            <option value="fr">Français</option>
+                            <option value="de">Deutsch</option>
+                            <option value="zh">中文 (Chinese)</option>
+                            <option value="ja">日本語 (Japanese)</option>
+                            <option value="ko">한국어 (Korean)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span data-lang="en">Add Translator</span>
+                        <span data-lang="ar">إضافة مترجم</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Translation Modal -->
+<div class="modal fade" id="assignTranslationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Assign Translation Project</span>
+                    <span data-lang="ar">تكليف مشروع ترجمة</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_assign_translation') }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="assign_manga" class="form-label">
+                                    <span data-lang="en">Manga</span>
+                                    <span data-lang="ar">المانجا</span>
+                                </label>
+                                <select class="form-select" id="assign_manga" name="manga_id" required>
+                                    <option value="">
+                                        <span data-lang="en">Select Manga</span>
+                                        <span data-lang="ar">اختر المانجا</span>
+                                    </option>
+                                    {% for manga in all_manga %}
+                                    <option value="{{ manga.id }}">{{ manga.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="assign_chapter" class="form-label">
+                                    <span data-lang="en">Chapter</span>
+                                    <span data-lang="ar">الفصل</span>
+                                </label>
+                                <select class="form-select" id="assign_chapter" name="chapter_id" required>
+                                    <option value="">
+                                        <span data-lang="en">Select Chapter</span>
+                                        <span data-lang="ar">اختر الفصل</span>
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="assign_translator" class="form-label">
+                                    <span data-lang="en">Translator</span>
+                                    <span data-lang="ar">المترجم</span>
+                                </label>
+                                <select class="form-select" id="assign_translator" name="translator_id" required>
+                                    <option value="">
+                                        <span data-lang="en">Select Translator</span>
+                                        <span data-lang="ar">اختر المترجم</span>
+                                    </option>
+                                    {% for translator in active_translators %}
+                                    <option value="{{ translator.id }}">{{ translator.username }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="assign_language" class="form-label">
+                                    <span data-lang="en">Target Language</span>
+                                    <span data-lang="ar">اللغة المستهدفة</span>
+                                </label>
+                                <select class="form-select" id="assign_language" name="target_language" required>
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="fr">Français</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assign_deadline" class="form-label">
+                            <span data-lang="en">Deadline</span>
+                            <span data-lang="ar">الموعد النهائي</span>
+                        </label>
+                        <input type="date" class="form-control" id="assign_deadline" name="deadline">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assign_notes" class="form-label">
+                            <span data-lang="en">Notes</span>
+                            <span data-lang="ar">ملاحظات</span>
+                        </label>
+                        <textarea class="form-control" id="assign_notes" name="notes" rows="3" 
+                                  placeholder-en="Additional instructions..." 
+                                  placeholder-ar="تعليمات إضافية..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <span data-lang="en">Assign Translation</span>
+                        <span data-lang="ar">تكليف الترجمة</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle manga selection to load chapters
+    document.getElementById('assign_manga').addEventListener('change', function() {
+        const mangaId = this.value;
+        const chapterSelect = document.getElementById('assign_chapter');
+        
+        // Clear chapters
+        chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+        
+        if (mangaId) {
+            fetch(`/admin/api/manga/${mangaId}/chapters`)
+                .then(response => response.json())
+                .then(chapters => {
+                    chapters.forEach(chapter => {
+                        const option = document.createElement('option');
+                        option.value = chapter.id;
+                        option.textContent = `Chapter ${chapter.chapter_number}${chapter.title ? ': ' + chapter.title : ''}`;
+                        chapterSelect.appendChild(option);
+                    });
+                });
+        }
+    });
+});
+
+function updateProgress(projectId) {
+    const newProgress = prompt('Enter new progress percentage (0-100):');
+    if (newProgress !== null && !isNaN(newProgress) && newProgress >= 0 && newProgress <= 100) {
+        fetch(`/admin/translation/update-progress/${projectId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({progress: parseInt(newProgress)})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error updating progress');
+            }
+        });
+    }
+}
+
+function approveTranslation(projectId) {
+    if (confirm('Are you sure you want to approve this translation?')) {
+        fetch(`/admin/translation/approve/${projectId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error approving translation');
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

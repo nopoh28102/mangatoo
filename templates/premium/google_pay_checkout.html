@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر Google Pay - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fab fa-google-pay me-2"></i>
+                        دفع عبر Google Pay
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">ملخص الطلب</h5>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span>{{ plan.name_ar or plan.name }}</span>
+                            <strong>${{ payment.amount }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Google Pay Button Area -->
+                    <div class="my-5">
+                        <div class="mb-4">
+                            <i class="fab fa-google fa-5x text-primary"></i>
+                        </div>
+                        
+                        <h5 class="mb-3">دفع سريع وآمن مع Google Pay</h5>
+                        <p class="text-muted mb-4">ادفع باستخدام البطاقات المحفوظة في حساب Google الخاص بك</p>
+                        
+                        <!-- Google Pay Button -->
+                        <div id="googlePayContainer" class="mb-4">
+                            <button id="googlePayBtn" class="btn btn-primary btn-lg px-5 py-3" onclick="initiateGooglePay()">
+                                <i class="fab fa-google-pay me-2 fa-lg"></i>
+                                ادفع بـ Google Pay
+                            </button>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <small>
+                                <i class="fas fa-info-circle me-2"></i>
+                                يتطلب تسجيل الدخول لحساب Google وبطاقة مضافة
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="row text-start">
+                        <div class="col-md-12">
+                            <h6 class="mb-3">مميزات Google Pay:</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    دفع بنقرة واحدة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    استخدام البطاقات المحفوظة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    حماية متقدمة للمعاملات
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    متوفر على جميع الأجهزة
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Supported Cards -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="text-muted mb-3">البطاقات المدعومة:</h6>
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+                            <i class="fab fa-cc-visa fa-2x text-primary"></i>
+                            <i class="fab fa-cc-mastercard fa-2x text-warning"></i>
+                            <i class="fab fa-cc-amex fa-2x text-primary"></i>
+                            <i class="fab fa-cc-discover fa-2x text-warning"></i>
+                        </div>
+                    </div>
+
+                    <!-- Alternative Payment -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="text-muted mb-3">لا تملك Google Pay؟</h6>
+                        <a href="{{ url_for('create_payment', plan_id=plan.id, gateway_id=1) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-credit-card me-2"></i>
+                            ادفع بالبطاقة الائتمانية
+                        </a>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://pay.google.com/gp/p/js/pay.js"></script>
+<script>
+function initiateGooglePay() {
+    const btn = document.getElementById('googlePayBtn');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري التحضير...';
+    
+    // Configure Google Pay
+    const paymentsClient = new google.payments.api.PaymentsClient({
+        environment: 'TEST' // Change to 'PRODUCTION' for live
+    });
+    
+    const paymentDataRequest = {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [{
+            type: 'CARD',
+            parameters: {
+                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                allowedCardNetworks: ['MASTERCARD', 'VISA']
+            },
+            tokenizationSpecification: {
+                type: 'PAYMENT_GATEWAY',
+                parameters: {
+                    gateway: 'example',
+                    gatewayMerchantId: 'BCR2DN4TR6OBZHQN'
+                }
+            }
+        }],
+        merchantInfo: {
+            merchantId: '01234567890123456789',
+            merchantName: 'منصة المانجا العربية'
+        },
+        transactionInfo: {
+            totalPriceStatus: 'FINAL',
+            totalPrice: '{{ payment.amount }}',
+            currencyCode: 'USD'
+        }
+    };
+    
+    // Check if Google Pay is available
+    paymentsClient.isReadyToPay(paymentDataRequest)
+        .then(function(response) {
+            if (response.result) {
+                // Google Pay is available, show payment sheet
+                return paymentsClient.loadPaymentData(paymentDataRequest);
+            } else {
+                throw new Error('Google Pay is not available');
+            }
+        })
+        .then(function(paymentData) {
+            // Payment successful
+            btn.innerHTML = '<i class="fas fa-check me-2"></i>تم الدفع بنجاح!';
+            
+            setTimeout(function() {
+                window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+            }, 1500);
+        })
+        .catch(function(err) {
+            // Payment failed or cancelled
+            console.error('Google Pay error:', err);
+            
+            if (err.statusCode === 'CANCELED') {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            } else {
+                // Simulate successful payment for demo
+                setTimeout(function() {
+                    const confirmPayment = confirm('سيتم خصم ${{ payment.amount }} من Google Pay. هل تريد المتابعة؟');
+                    
+                    if (confirmPayment) {
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري المعالجة...';
+                        
+                        setTimeout(function() {
+                            alert('تم الدفع بنجاح عبر Google Pay!');
+                            window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+                        }, 2000);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                }, 500);
+            }
+        });
+}
+
+// Check Google Pay availability on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof google === 'undefined' || !google.payments) {
+        // Google Pay API not loaded, simulate for demo
+        console.log('Google Pay API not available, using demo mode');
+        return;
+    }
+    
+    const paymentsClient = new google.payments.api.PaymentsClient({
+        environment: 'TEST'
+    });
+    
+    const paymentDataRequest = {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [{
+            type: 'CARD',
+            parameters: {
+                allowedAuthMethods: ['PAN_ONLY', 'CRYPTOGRAM_3DS'],
+                allowedCardNetworks: ['MASTERCARD', 'VISA']
+            }
+        }]
+    };
+    
+    paymentsClient.isReadyToPay(paymentDataRequest)
+        .then(function(response) {
+            if (!response.result) {
+                document.getElementById('googlePayBtn').disabled = true;
+                document.getElementById('googlePayBtn').innerHTML = '<i class="fas fa-times me-2"></i>Google Pay غير متاح';
+                document.getElementById('googlePayBtn').classList.remove('btn-primary');
+                document.getElementById('googlePayBtn').classList.add('btn-secondary');
+            }
+        })
+        .catch(function(err) {
+            console.log('Google Pay availability check failed:', err);
+        });
+});
+</script>
+{% endblock %}

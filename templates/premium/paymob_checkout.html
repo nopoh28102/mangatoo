@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر PayMob - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>
+                        دفع آمن عبر PayMob
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            ملخص الطلب
+                        </h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>الخطة:</strong> {{ plan.name_ar or plan.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>المدة:</strong> {{ plan.duration_days }} يوم
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>السعر:</strong> ${{ payment.amount }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PayMob Payment Form -->
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-lock me-2"></i>
+                                الدفع الآمن
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <!-- Simulated PayMob interface -->
+                            <form id="paymobForm" action="#" method="post">
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cardNumber" class="form-label">رقم البطاقة</label>
+                                        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                                        <div class="form-text">ادخل رقم بطاقتك الائتمانية أو المدينة</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expiryDate" class="form-label">تاريخ الانتهاء</label>
+                                        <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="cvv" class="form-label">CVV</label>
+                                        <input type="text" class="form-control" id="cvv" placeholder="123" maxlength="4">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label for="cardholderName" class="form-label">اسم حامل البطاقة</label>
+                                        <input type="text" class="form-control" id="cardholderName" placeholder="اسم حامل البطاقة كما هو مكتوب على البطاقة">
+                                    </div>
+                                </div>
+
+                                <!-- Payment Method Options -->
+                                <div class="mb-4">
+                                    <h6 class="mb-3">وسيلة الدفع:</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="payment-option">
+                                                <input type="radio" name="paymentMethod" value="card" checked>
+                                                <div class="card text-center">
+                                                    <div class="card-body py-3">
+                                                        <i class="fas fa-credit-card fa-2x text-primary mb-2"></i>
+                                                        <div>بطاقة ائتمانية</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="payment-option">
+                                                <input type="radio" name="paymentMethod" value="wallet">
+                                                <div class="card text-center">
+                                                    <div class="card-body py-3">
+                                                        <i class="fas fa-mobile-alt fa-2x text-success mb-2"></i>
+                                                        <div>محفظة إلكترونية</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="payment-option">
+                                                <input type="radio" name="paymentMethod" value="installment">
+                                                <div class="card text-center">
+                                                    <div class="card-body py-3">
+                                                        <i class="fas fa-calendar-alt fa-2x text-warning mb-2"></i>
+                                                        <div>دفع بالتقسيط</div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Security Notice -->
+                                <div class="alert alert-success">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-shield-alt fa-2x text-success me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">دفع آمن ومحمي</h6>
+                                            <small>جميع المعاملات محمية بتشفير SSL 256-bit</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Button -->
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="button" class="btn btn-primary btn-lg" onclick="processPayment()">
+                                        <i class="fas fa-lock me-2"></i>
+                                        ادفع ${{ payment.amount }} بأمان
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Supported Cards -->
+                    <div class="text-center mt-4">
+                        <h6 class="text-muted">البطاقات المدعومة:</h6>
+                        <div class="d-flex justify-content-center align-items-center gap-3 mt-2">
+                            <i class="fab fa-cc-visa fa-2x text-primary"></i>
+                            <i class="fab fa-cc-mastercard fa-2x text-warning"></i>
+                            <i class="fas fa-credit-card fa-2x text-success"></i>
+                            <span class="text-muted">+ محافظ إلكترونية</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <div class="text-muted small">
+                            <i class="fas fa-lock me-1"></i>
+                            SSL محمي
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-option {
+    cursor: pointer;
+    width: 100%;
+}
+
+.payment-option input[type="radio"] {
+    display: none;
+}
+
+.payment-option .card {
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.payment-option input[type="radio"]:checked + .card {
+    border-color: #0d6efd;
+    background-color: #f8f9ff;
+}
+
+.payment-option:hover .card {
+    border-color: #0d6efd;
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+function processPayment() {
+    // Simulate payment processing
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري المعالجة...';
+    
+    // Simulate payment processing time
+    setTimeout(function() {
+        // In real implementation, this would integrate with PayMob API
+        alert('تم إرسال طلب الدفع بنجاح! سيتم تحويلك لصفحة التأكيد...');
+        
+        // Redirect to success page (simulate successful payment)
+        window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+    }, 3000);
+}
+
+// Format card number input
+document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').replace(/[^0-9]/gi, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Format expiry date input
+document.getElementById('expiryDate').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2, 4);
+    }
+    e.target.value = value;
+});
+
+// Format CVV input
+document.getElementById('cvv').addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, '');
+});
+</script>
+{% endblock %}

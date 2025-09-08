@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}تم إلغاء الدفع - منصة المانجا{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        تم إلغاء عملية الدفع
+                    </h3>
+                </div>
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-warning fa-5x mb-3"></i>
+                        <h4 class="text-warning">لم يتم تأكيد الدفع</h4>
+                        <p class="lead text-muted">تم إلغاء عملية الدفع بناءً على طلبك</p>
+                    </div>
+
+                    {% if payment %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle me-2"></i>تفاصيل العملية الملغية</h6>
+                        <p class="mb-1"><strong>الخطة:</strong> {{ payment.plan.name_ar or payment.plan.name }}</p>
+                        <p class="mb-1"><strong>المبلغ:</strong> ${{ "%.2f"|format(payment.amount) }}</p>
+                        <p class="mb-0"><strong>الحالة:</strong> <span class="badge bg-secondary">ملغية</span></p>
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <h5 class="text-dark">ماذا يمكنك فعله الآن؟</h5>
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <i class="fas fa-redo fa-2x text-primary mb-2"></i>
+                                    <h6>إعادة المحاولة</h6>
+                                    <small class="text-muted">جرب عملية الدفع مرة أخرى</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <i class="fas fa-book fa-2x text-success mb-2"></i>
+                                    <h6>تصفح المحتوى</h6>
+                                    <small class="text-muted">استمتع بالمحتوى المجاني</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <i class="fas fa-question-circle fa-2x text-info mb-2"></i>
+                                    <h6>تواصل معنا</h6>
+                                    <small class="text-muted">إذا كنت تواجه مشاكل</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-primary btn-lg me-md-2">
+                            <i class="fas fa-credit-card me-2"></i>إعادة المحاولة
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-lg me-md-2">
+                            <i class="fas fa-home me-2"></i>العودة للرئيسية
+                        </a>
+                        <a href="{{ url_for('library') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-book me-2"></i>تصفح المكتبة
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why Subscribe Section -->
+            <div class="card mt-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-star me-2"></i>
+                        لماذا تشترك في العضوية المميزة؟
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>قراءة بدون إعلانات:</strong> استمتع بتجربة قراءة سلسة وممتعة
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>محتوى حصري:</strong> وصول كامل للمانجا المميزة والحصرية
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>وصول مبكر:</strong> اقرأ الفصول الجديدة قبل المستخدمين الآخرين
+                                </li>
+                                <li class="mb-3">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <strong>دعم مميز:</strong> خدمة عملاء سريعة وفعالة
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Section -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-headset me-2"></i>
+                        تحتاج مساعدة؟
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">إذا واجهت أي مشاكل في عملية الدفع أو لديك أسئلة حول خطط الاشتراك، لا تتردد في التواصل معنا:</p>
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
+                            <h6>البريد الإلكتروني</h6>
+                            <small class="text-muted">{{ get_setting('admin_email', 'admin@mangaplatform.com') }}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-phone fa-2x text-success mb-2"></i>
+                            <h6>الهاتف</h6>
+                            <small class="text-muted">+1-234-567-8900</small>
+                        </div>
+                        <div class="col-md-4">
+                            <i class="fas fa-comments fa-2x text-info mb-2"></i>
+                            <h6>الدردشة المباشرة</h6>
+                            <small class="text-muted">متاح 24/7</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Optional: Show modal with discount offer after 5 seconds
+    setTimeout(() => {
+        // You can implement a discount modal here
+        console.log('User stayed on cancel page for 5 seconds - opportunity for retention offer');
+    }, 5000);
+});
+</script>
+{% endblock %}

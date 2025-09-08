@@ -1,0 +1,69 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin - Add Category{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Add New Category</span>
+            <span data-lang="ar">إضافة فئة جديدة</span>
+        </h2>
+        <a href="{{ url_for('admin_categories') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Categories</span>
+            <span data-lang="ar">العودة للفئات</span>
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">
+                                <span data-lang="en">Category Name (English) *</span>
+                                <span data-lang="ar">اسم الفئة (إنجليزي) *</span>
+                            </label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="name_ar" class="form-label">
+                                <span data-lang="en">Category Name (Arabic)</span>
+                                <span data-lang="ar">اسم الفئة (عربي)</span>
+                            </label>
+                            <input type="text" class="form-control" id="name_ar" name="name_ar" dir="rtl">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <span data-lang="en">Description (English)</span>
+                                <span data-lang="ar">الوصف (إنجليزي)</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description_ar" class="form-label">
+                                <span data-lang="en">Description (Arabic)</span>
+                                <span data-lang="ar">الوصف (عربي)</span>
+                            </label>
+                            <textarea class="form-control" id="description_ar" name="description_ar" rows="3" dir="rtl"></textarea>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                <span data-lang="en">Add Category</span>
+                                <span data-lang="ar">إضافة فئة</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

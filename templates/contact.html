@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}تواصل معنا - Contact Us{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="text-center mb-4">
+                        <span data-lang="ar">تواصل معنا</span>
+                        <span data-lang="en">Contact Us</span>
+                    </h1>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="contact-info">
+                                <h5 class="mb-3">
+                                    <span data-lang="ar">معلومات التواصل</span>
+                                    <span data-lang="en">Contact Information</span>
+                                </h5>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <span data-lang="ar">البريد الإلكتروني:</span>
+                                    <span data-lang="en">Email:</span>
+                                    <a href="mailto:{{ get_setting('contact_email', 'contact@mangaplatform.com') }}" class="text-decoration-none">{{ get_setting('contact_email', 'contact@mangaplatform.com') }}</a>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-globe text-primary me-2"></i>
+                                    <span data-lang="ar">الموقع الإلكتروني:</span>
+                                    <span data-lang="en">Website:</span>
+                                    <a href="{{ request.url_root }}" class="text-decoration-none">{{ request.url_root }}</a>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    <span data-lang="ar">ساعات العمل: على مدار الساعة</span>
+                                    <span data-lang="en">Working Hours: 24/7</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span data-lang="ar">يمكنك إرسال رسالة مفصلة عبر <a href="/contact" class="text-decoration-none fw-bold">نموذج التواصل المفصل</a></span>
+                                <span data-lang="en">You can send a detailed message via our <a href="/contact" class="text-decoration-none fw-bold">detailed contact form</a></span>
+                            </div>
+                            
+                            <div class="contact-quick-actions">
+                                <h5 class="mb-3">
+                                    <span data-lang="ar">طرق التواصل السريعة</span>
+                                    <span data-lang="en">Quick Contact Methods</span>
+                                </h5>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="/contact" class="btn btn-primary">
+                                        <i class="fas fa-envelope me-2"></i>
+                                        <span data-lang="ar">نموذج التواصل المفصل</span>
+                                        <span data-lang="en">Detailed Contact Form</span>
+                                    </a>
+                                    
+                                    <a href="mailto:{{ get_setting('contact_email', 'contact@mangaplatform.com') }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-at me-2"></i>
+                                        <span data-lang="ar">إرسال بريد مباشر</span>
+                                        <span data-lang="en">Send Direct Email</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إضافة مصدر كشط جديد{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-plus me-2"></i>إضافة مصدر كشط جديد</h2>
+                <a href="{{ url_for('admin_auto_scraping') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right me-2"></i>العودة
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">معلومات مصدر الكشط</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="manga_id" class="form-label">المانجا *</label>
+                                    <select class="form-select" id="manga_id" name="manga_id" required>
+                                        <option value="">اختر المانجا</option>
+                                        {% for manga in manga_list %}
+                                        <option value="{{ manga.id }}">{{ manga.title }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">اختر المانجا التي تريد إضافة مصدر كشط لها</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="website_type" class="form-label">نوع الموقع *</label>
+                                    <select class="form-select" id="website_type" name="website_type" required>
+                                        <option value="">اختر نوع الموقع</option>
+                                        {% for value, label in website_types %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="form-text">نوع الموقع المصدر للكشط</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="source_url" class="form-label">رابط المانجا في الموقع المصدر *</label>
+                            <input type="url" class="form-control" id="source_url" name="source_url" required
+                                   placeholder="https://example.com/manga/manga-name">
+                            <div class="form-text">الرابط الكامل لصفحة المانجا في الموقع المصدر</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="check_interval" class="form-label">فترة الفحص (بالثواني)</label>
+                                    <select class="form-select" id="check_interval" name="check_interval">
+                                        <option value="1800">30 دقيقة</option>
+                                        <option value="3600" selected>ساعة واحدة</option>
+                                        <option value="7200">ساعتان</option>
+                                        <option value="21600">6 ساعات</option>
+                                        <option value="43200">12 ساعة</option>
+                                        <option value="86400">24 ساعة</option>
+                                    </select>
+                                    <div class="form-text">كم مرة يجب فحص المصدر للفصول الجديدة</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">إعدادات إضافية</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="auto_publish" name="auto_publish">
+                                        <label class="form-check-label" for="auto_publish">
+                                            نشر تلقائي للفصول الجديدة
+                                        </label>
+                                        <div class="form-text">إذا كان مفعلاً، سيتم نشر الفصول تلقائياً بدون مراجعة</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Website-specific instructions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle me-2"></i>تعليمات حسب نوع الموقع:</h6>
+                                    <div id="website-instructions">
+                                        <div class="website-instruction" data-type="mangadx" style="display: none;">
+                                            <strong>MangaDx:</strong> استخدم رابط المانجا مثل: <code>https://mangadx.org/title/[id]/[title]</code>
+                                        </div>
+                                        <div class="website-instruction" data-type="manganelo" style="display: none;">
+                                            <strong>Manganelo:</strong> استخدم رابط المانجا مثل: <code>https://manganelo.com/manga/[manga-id]</code>
+                                        </div>
+                                        <div class="website-instruction" data-type="mangakakalot" style="display: none;">
+                                            <strong>Mangakakalot:</strong> استخدم رابط المانجا مثل: <code>https://mangakakalot.com/read-[id]</code>
+                                        </div>
+                                        <div class="website-instruction" data-type="generic" style="display: none;">
+                                            <strong>موقع عام:</strong> تأكد من أن الصفحة تحتوي على قائمة بالفصول مع روابط مباشرة
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('admin_auto_scraping') }}" class="btn btn-secondary me-md-2">إلغاء</a>
+                            <button type="button" class="btn btn-outline-primary me-md-2" onclick="testSource()">
+                                <i class="fas fa-vial me-2"></i>اختبار المصدر
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>إضافة المصدر
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Test Results -->
+            <div id="test-results" class="card mt-3" style="display: none;">
+                <div class="card-header">
+                    <h6 class="mb-0">نتائج الاختبار</h6>
+                </div>
+                <div class="card-body">
+                    <div id="test-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Show instructions based on selected website type
+document.getElementById('website_type').addEventListener('change', function() {
+    const selectedType = this.value;
+    const instructions = document.querySelectorAll('.website-instruction');
+    
+    instructions.forEach(instruction => {
+        instruction.style.display = 'none';
+    });
+    
+    if (selectedType) {
+        const targetInstruction = document.querySelector(`[data-type="${selectedType}"]`);
+        if (targetInstruction) {
+            targetInstruction.style.display = 'block';
+        }
+    }
+});
+
+function testSource() {
+    const websiteType = document.getElementById('website_type').value;
+    const sourceUrl = document.getElementById('source_url').value;
+    
+    if (!websiteType || !sourceUrl) {
+        alert('يرجى اختيار نوع الموقع وإدخال الرابط أولاً');
+        return;
+    }
+    
+    const testResults = document.getElementById('test-results');
+    const testContent = document.getElementById('test-content');
+    
+    testContent.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> جاري اختبار المصدر...</div>';
+    testResults.style.display = 'block';
+    
+    fetch('/admin/test-scrape', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            source_website: websiteType,
+            chapter_url: sourceUrl
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            testContent.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check-circle me-2"></i>نجح الاختبار!</h6>
+                    <p><strong>عنوان الفصل:</strong> ${data.chapter_title || 'غير محدد'}</p>
+                    <p><strong>عدد الصور:</strong> ${data.images ? data.images.length : 0}</p>
+                    ${data.images && data.images.length > 0 ? `
+                        <p><strong>أول صورة:</strong> <a href="${data.images[0]}" target="_blank">عرض</a></p>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            testContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-times-circle me-2"></i>فشل الاختبار</h6>
+                    <p><strong>خطأ:</strong> ${data.error}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        testContent.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-times-circle me-2"></i>خطأ في الاتصال</h6>
+                <p>${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+// Auto-format URL when pasted
+document.getElementById('source_url').addEventListener('input', function() {
+    let url = this.value.trim();
+    if (url && !url.startsWith('http')) {
+        this.value = 'https://' + url;
+    }
+});
+</script>
+{% endblock %}

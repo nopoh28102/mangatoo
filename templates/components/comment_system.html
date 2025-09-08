@@ -1,0 +1,1227 @@
+<!-- Advanced Comment System Component -->
+<div class="advanced-comment-system">
+    <style>
+        .advanced-comment-system {
+            background: rgba(0, 0, 0, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-reactions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-reactions h6 {
+            color: #dc3545;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .reactions-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .reaction-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 80px;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .reaction-btn.active {
+            background: linear-gradient(135deg, #dc3545, #ff6b7a);
+            border-color: #dc3545;
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .reaction-emoji {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .reaction-count {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .comment-editor {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .editor-toolbar {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-tools {
+            display: flex;
+            gap: 10px;
+        }
+
+        .editor-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+            font-weight: bold;
+            min-width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
+            border-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .editor-btn.active {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .emoji-picker {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            max-width: 300px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .emoji-picker.show {
+            display: grid;
+        }
+
+        .emoji-item {
+            font-size: 24px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .emoji-item:hover {
+            background: #f0f0f0;
+            transform: scale(1.2);
+        }
+
+        .file-upload-input {
+            display: none;
+        }
+
+        .comment-input {
+            width: 100%;
+            min-height: 120px;
+            border: none;
+            resize: vertical;
+            font-size: 16px;
+            font-family: inherit;
+            padding: 15px;
+            border-radius: 8px;
+            background: transparent;
+        }
+
+        .comment-input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #dc3545, #ff6b7a);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .comments-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #dc3545, #ff6b7a);
+            color: white;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .tab-badge {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        .comment-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .comment-author {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .comment-time {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        .comment-content {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .comment-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin: 10px 0;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .formatted-text {
+            white-space: pre-wrap;
+        }
+
+        .formatted-text strong {
+            font-weight: bold;
+        }
+
+        .formatted-text em {
+            font-style: italic;
+        }
+
+        .formatted-text u {
+            text-decoration: underline;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .comment-action-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .comment-action-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .comment-reactions-mini {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .reaction-btn-mini {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .reaction-btn-mini:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .reaction-btn-mini.active {
+            background: linear-gradient(135deg, #dc3545, #ff6b7a);
+            border-color: #dc3545;
+        }
+
+        .reaction-emoji-mini {
+            font-size: 16px;
+        }
+
+        .reaction-count-mini {
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .reactions-grid-mini {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .reply-form {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .reply-input {
+            min-height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .reply-submit {
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+
+        .reply-item {
+            border-left: 3px solid #dc3545;
+            margin-bottom: 10px;
+        }
+
+        .replies-section {
+            border-left: 2px solid rgba(220, 53, 69, 0.3);
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .reactions-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .reactions-grid-mini {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .comments-tabs {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .comment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .replies-section {
+                margin-right: 0;
+                padding-left: 15px;
+            }
+        }
+    </style>
+
+    <!-- Manga Reactions -->
+    <div class="comment-reactions">
+        <h6>التفاعلات: <span class="text-danger">{{ (manga_reaction_counts.values() | sum) if manga_reaction_counts else 0 }}</span></h6>
+        
+        <div class="reactions-grid">
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'surprised' else '' }}" data-reaction="surprised" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">😲</div>
+                <div class="reaction-count">{{ manga_reaction_counts.surprised if manga_reaction_counts else 0 }}</div>
+            </div>
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'angry' else '' }}" data-reaction="angry" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">😡</div>
+                <div class="reaction-count">{{ manga_reaction_counts.angry if manga_reaction_counts else 0 }}</div>
+            </div>
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'shocked' else '' }}" data-reaction="shocked" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">😱</div>
+                <div class="reaction-count">{{ manga_reaction_counts.shocked if manga_reaction_counts else 0 }}</div>
+            </div>
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'love' else '' }}" data-reaction="love" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">❤️</div>
+                <div class="reaction-count">{{ manga_reaction_counts.love if manga_reaction_counts else 0 }}</div>
+            </div>
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'laugh' else '' }}" data-reaction="laugh" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">🤣</div>
+                <div class="reaction-count">{{ manga_reaction_counts.laugh if manga_reaction_counts else 0 }}</div>
+            </div>
+            <div class="reaction-btn {{ 'active' if user_manga_reaction == 'thumbs_up' else '' }}" data-reaction="thumbs_up" data-manga-id="{{ manga.id }}">
+                <div class="reaction-emoji">👍</div>
+                <div class="reaction-count">{{ manga_reaction_counts.thumbs_up if manga_reaction_counts else 0 }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Editor -->
+    {% if current_user.is_authenticated %}
+    <div class="comment-editor" style="position: relative;">
+        <div class="editor-toolbar">
+            <div class="editor-tools">
+                <button class="editor-btn" type="button" id="emoji-btn" title="إضافة إيموجي">😀</button>
+                <button class="editor-btn" type="button" id="image-btn" title="رفع صورة">🖼️</button>
+                <button class="editor-btn" type="button" id="underline-btn" title="تسطير">U</button>
+                <button class="editor-btn" type="button" id="italic-btn" title="مائل">I</button>
+                <button class="editor-btn" type="button" id="bold-btn" title="عريض">B</button>
+            </div>
+        </div>
+        
+        <!-- Emoji Picker -->
+        <div class="emoji-picker" id="emoji-picker">
+            <div class="emoji-item" data-emoji="😀">😀</div>
+            <div class="emoji-item" data-emoji="😂">😂</div>
+            <div class="emoji-item" data-emoji="😍">😍</div>
+            <div class="emoji-item" data-emoji="🥰">🥰</div>
+            <div class="emoji-item" data-emoji="👍">👍</div>
+            <div class="emoji-item" data-emoji="👌">👌</div>
+            <div class="emoji-item" data-emoji="🔥">🔥</div>
+            <div class="emoji-item" data-emoji="💯">💯</div>
+            <div class="emoji-item" data-emoji="❤️">❤️</div>
+            <div class="emoji-item" data-emoji="👏">👏</div>
+            <div class="emoji-item" data-emoji="🤔">🤔</div>
+            <div class="emoji-item" data-emoji="😮">😮</div>
+            <div class="emoji-item" data-emoji="😢">😢</div>
+            <div class="emoji-item" data-emoji="😡">😡</div>
+            <div class="emoji-item" data-emoji="🤯">🤯</div>
+            <div class="emoji-item" data-emoji="🙄">🙄</div>
+            <div class="emoji-item" data-emoji="😎">😎</div>
+            <div class="emoji-item" data-emoji="🤩">🤩</div>
+        </div>
+        
+        <form method="POST" action="/manga/{{ manga.id }}/comment" enctype="multipart/form-data">
+            {% if manga %}
+                <input type="hidden" name="manga_id" value="{{ manga.id }}">
+            {% endif %}
+            {% if chapter %}
+                <input type="hidden" name="chapter_id" value="{{ chapter.id }}">
+            {% endif %}
+            
+            <!-- Hidden file input for image upload -->
+            <input type="file" class="file-upload-input" id="image-upload" name="image" accept="image/*">
+            
+            <textarea name="content" class="comment-input" id="comment-textarea"
+                      placeholder="أكتب تعليقك..."></textarea>
+            
+            <div class="text-end mt-3">
+                <button type="submit" class="submit-btn">نشر</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="login-prompt" style="text-align: center; padding: 25px; background: rgba(255, 255, 255, 0.1); border-radius: 15px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.2);">
+        <h5 style="color: white; margin-bottom: 15px;">سجل دخولك للتفاعل مع التعليقات</h5>
+        <p style="margin-bottom: 20px; color: #ccc; font-size: 16px;">تسجيل الدخول يتيح لك إضافة التعليقات والرد على الآخرين والتفاعل مع المحتوى</p>
+        <a href="/login" class="login-btn" style="background: linear-gradient(135deg, #dc3545, #ff6b7a); color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 15px; transition: all 0.3s ease;">
+            تسجيل الدخول
+        </a>
+
+    </div>
+    {% endif %}
+
+    <!-- Comments Tabs -->
+    <div class="comments-tabs">
+        <button class="tab-btn active" data-tab="all">
+            الكل
+        </button>
+        <button class="tab-btn" data-tab="recent">
+            الأحدث
+        </button>
+        <button class="tab-btn" data-tab="popular">
+            الأولوية
+        </button>
+    </div>
+
+    <!-- Comments List -->
+    <div class="comments-list" id="comments-container">
+        {% for comment_data in comments %}
+        {% set comment = comment_data.comment %}
+        {% set reaction_counts = comment_data.reaction_counts %}
+        {% set user_reaction = comment_data.user_reaction %}
+        {% set replies = comment_data.replies %}
+        
+        <div class="comment-item" data-comment-id="{{ comment.id }}">
+            <div class="comment-header">
+                <div class="comment-author">{{ comment.user.username }}</div>
+                <div class="comment-time">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+            </div>
+            
+            <div class="comment-content formatted-text" id="comment-{{ comment.id }}">{{ comment.content }}</div>
+            
+            <!-- Comment Reactions -->
+            <div class="comment-reactions-mini" style="margin: 10px 0;">
+                {% for reaction_type, count in reaction_counts.items() %}
+                    {% if count > 0 %}
+                    <div class="reaction-btn-mini {{ 'active' if user_reaction == reaction_type else '' }}" 
+                         data-reaction="{{ reaction_type }}" data-comment-id="{{ comment.id }}">
+                        <span class="reaction-emoji-mini">
+                            {% if reaction_type == 'surprised' %}😲{% endif %}
+                            {% if reaction_type == 'angry' %}😡{% endif %}
+                            {% if reaction_type == 'shocked' %}😱{% endif %}
+                            {% if reaction_type == 'love' %}❤️{% endif %}
+                            {% if reaction_type == 'laugh' %}🤣{% endif %}
+                            {% if reaction_type == 'thumbs_up' %}👍{% endif %}
+                        </span>
+                        <span class="reaction-count-mini">{{ count }}</span>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            {% if current_user.is_authenticated %}
+            <div class="comment-actions">
+                <button class="comment-action-btn" onclick="toggleReactionPanel({{ comment.id }})">
+                    تفاعل
+                </button>
+                <button class="comment-action-btn" onclick="toggleReply({{ comment.id }})">
+                    رد
+                </button>
+                {% if comment.user_id == current_user.id %}
+                <button class="comment-action-btn" onclick="editComment({{ comment.id }})">
+                    تعديل
+                </button>
+                <button class="comment-action-btn" onclick="deleteComment({{ comment.id }})">
+                    حذف
+                </button>
+                {% endif %}
+            </div>
+            
+            <!-- Reaction Panel -->
+            <div class="reaction-panel" id="reaction-panel-{{ comment.id }}" style="display: none; margin-top: 10px;">
+                <div class="reactions-grid-mini">
+                    <div class="reaction-btn" data-reaction="surprised" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">😲</div>
+                    </div>
+                    <div class="reaction-btn" data-reaction="angry" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">😡</div>
+                    </div>
+                    <div class="reaction-btn" data-reaction="shocked" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">😱</div>
+                    </div>
+                    <div class="reaction-btn" data-reaction="love" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">❤️</div>
+                    </div>
+                    <div class="reaction-btn" data-reaction="laugh" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">🤣</div>
+                    </div>
+                    <div class="reaction-btn" data-reaction="thumbs_up" data-comment-id="{{ comment.id }}">
+                        <div class="reaction-emoji">👍</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reply Form -->
+            <div class="reply-form" id="reply-form-{{ comment.id }}" style="display: none; margin-top: 10px;">
+                <textarea class="comment-input reply-input" placeholder="اكتب ردك..."></textarea>
+                <button class="submit-btn reply-submit" onclick="submitReply({{ comment.id }})">إرسال الرد</button>
+            </div>
+            {% endif %}
+            
+            <!-- Replies -->
+            {% if replies %}
+            <div class="replies-section" style="margin-right: 30px; margin-top: 15px;">
+                {% for reply in replies %}
+                <div class="comment-item reply-item" data-comment-id="{{ reply.id }}">
+                    <div class="comment-header">
+                        <div class="comment-author">{{ reply.user.username }}</div>
+                        <div class="comment-time">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    <div class="comment-content">{{ reply.content }}</div>
+                    {% if current_user.is_authenticated and reply.user_id == current_user.id %}
+                    <div class="comment-actions">
+                        <button class="comment-action-btn" onclick="deleteComment({{ reply.id }})">
+                            حذف
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+// Comment System JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Comment Editor Functionality
+    const emojiBtn = document.getElementById('emoji-btn');
+    const imageBtn = document.getElementById('image-btn');
+    const boldBtn = document.getElementById('bold-btn');
+    const italicBtn = document.getElementById('italic-btn');
+    const underlineBtn = document.getElementById('underline-btn');
+    const emojiPicker = document.getElementById('emoji-picker');
+    const imageUpload = document.getElementById('image-upload');
+    const commentTextarea = document.getElementById('comment-textarea');
+
+    // Emoji Picker Functionality
+    if (emojiBtn && emojiPicker) {
+        emojiBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            emojiPicker.classList.toggle('show');
+        });
+
+        // Handle emoji selection
+        document.querySelectorAll('.emoji-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const emoji = this.dataset.emoji;
+                insertAtCursor(commentTextarea, emoji);
+                emojiPicker.classList.remove('show');
+            });
+        });
+
+        // Close emoji picker when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!emojiBtn.contains(e.target) && !emojiPicker.contains(e.target)) {
+                emojiPicker.classList.remove('show');
+            }
+        });
+    }
+
+    // Image Upload Functionality
+    if (imageBtn && imageUpload) {
+        imageBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            imageUpload.click();
+        });
+
+        imageUpload.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                insertAtCursor(commentTextarea, `[صورة: ${fileName}]`);
+                imageBtn.classList.add('active');
+            } else {
+                imageBtn.classList.remove('active');
+            }
+        });
+    }
+
+    // Text Formatting Functions
+    if (boldBtn) {
+        boldBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleTextFormat(commentTextarea, '**', '**', this);
+        });
+    }
+
+    if (italicBtn) {
+        italicBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleTextFormat(commentTextarea, '*', '*', this);
+        });
+    }
+
+    if (underlineBtn) {
+        underlineBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleTextFormat(commentTextarea, '__', '__', this);
+        });
+    }
+
+    // Helper Functions
+    function insertAtCursor(textarea, text) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+        
+        textarea.value = value.substring(0, start) + text + value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + text.length;
+        textarea.focus();
+    }
+
+    function toggleTextFormat(textarea, startTag, endTag, button) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+        
+        if (selectedText) {
+            // If text is selected, wrap it with formatting
+            const formattedText = startTag + selectedText + endTag;
+            insertAtCursor(textarea, formattedText);
+            button.classList.toggle('active');
+        } else {
+            // If no text selected, insert format tags for user to type between
+            const formatText = startTag + 'النص هنا' + endTag;
+            insertAtCursor(textarea, formatText);
+            // Select the placeholder text
+            textarea.selectionStart = start + startTag.length;
+            textarea.selectionEnd = start + startTag.length + 'النص هنا'.length;
+        }
+    }
+
+    // Process comment formatting on page load
+    processAllCommentFormatting();
+
+    // Function to process all comment formatting
+    function processAllCommentFormatting() {
+        document.querySelectorAll('.comment-content.formatted-text').forEach(element => {
+            processCommentFormatting(element);
+        });
+    }
+
+    // Function to format individual comment
+    function processCommentFormatting(element) {
+        let content = element.textContent;
+        
+        // Process formatting tags
+        content = content
+            // Bold text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // Italic text
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            // Underline text
+            .replace(/__(.*?)__/g, '<u>$1</u>')
+            // Image references
+            .replace(/\[صورة: ([^\]]+)\]/g, '<img src="$1" class="comment-image" alt="صورة مرفقة" onclick="openImageModal(this.src)">');
+        
+        element.innerHTML = content;
+    }
+
+    // Image modal function
+    function openImageModal(imageSrc) {
+        // Create modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
+        `;
+        
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.style.cssText = `
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        `;
+        
+        modal.appendChild(img);
+        document.body.appendChild(modal);
+        
+        // Close modal on click
+        modal.addEventListener('click', function() {
+            document.body.removeChild(modal);
+        });
+    }
+
+    // Handle manga reaction clicks (top level reactions)
+    document.querySelectorAll('.reaction-btn[data-manga-id]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const reaction = this.dataset.reaction;
+            const mangaId = this.dataset.mangaId;
+            
+            fetch(`/manga/${mangaId}/react`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reaction_type: reaction })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateMangaReactions(data.reaction_counts, data.user_reaction);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    // Handle comment reaction clicks (individual comment reactions)
+    document.querySelectorAll('.reaction-btn[data-comment-id]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const reaction = this.dataset.reaction;
+            const commentId = this.dataset.commentId;
+            
+            fetch(`/comment/${commentId}/react`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reaction_type: reaction })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCommentReactions(commentId, data.reaction_counts, data.user_reaction);
+                    // Hide the reaction panel after selecting
+                    const panel = document.getElementById(`reaction-panel-${commentId}`);
+                    if (panel) {
+                        panel.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    // Handle mini reaction clicks (for quick reactions)
+    document.querySelectorAll('.reaction-btn-mini').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const reaction = this.dataset.reaction;
+            const commentId = this.dataset.commentId;
+            
+            fetch(`/comment/${commentId}/react`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ reaction_type: reaction })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCommentReactions(commentId, data.reaction_counts, data.user_reaction);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
+    // Handle tab switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    if (tabButtons.length > 0) {
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const tab = this.dataset.tab;
+                filterComments(tab);
+            });
+        });
+    }
+});
+
+function updateMangaReactions(counts, userReaction) {
+    // Update manga reaction counts and active states
+    document.querySelectorAll('.reaction-btn[data-manga-id]').forEach(btn => {
+        const reaction = btn.dataset.reaction;
+        const countElement = btn.querySelector('.reaction-count');
+        
+        // Update count
+        if (countElement) {
+            countElement.textContent = counts[reaction] || 0;
+        }
+        
+        // Update active state
+        if (userReaction === reaction) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Update total count
+    const totalCount = Object.values(counts).reduce((sum, count) => sum + count, 0);
+    const totalElement = document.querySelector('.comment-reactions h6 .text-danger');
+    if (totalElement) {
+        totalElement.textContent = totalCount;
+    }
+}
+
+function updateCommentReactions(commentId, counts, userReaction) {
+    // Update mini reaction displays
+    const miniContainer = document.querySelector(`[data-comment-id="${commentId}"] .comment-reactions-mini`);
+    if (miniContainer) {
+        miniContainer.innerHTML = '';
+        
+        Object.keys(counts).forEach(reaction => {
+            if (counts[reaction] > 0) {
+                const isActive = userReaction === reaction;
+                const emoji = getEmojiForReaction(reaction);
+                
+                const miniBtn = document.createElement('div');
+                miniBtn.className = `reaction-btn-mini ${isActive ? 'active' : ''}`;
+                miniBtn.dataset.reaction = reaction;
+                miniBtn.dataset.commentId = commentId;
+                miniBtn.innerHTML = `
+                    <span class="reaction-emoji-mini">${emoji}</span>
+                    <span class="reaction-count-mini">${counts[reaction]}</span>
+                `;
+                
+                // Add click handler
+                miniBtn.addEventListener('click', function() {
+                    fetch(`/comment/${commentId}/react`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ reaction_type: reaction })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            updateCommentReactions(commentId, data.reaction_counts, data.user_reaction);
+                        }
+                    });
+                });
+                
+                miniContainer.appendChild(miniBtn);
+            }
+        });
+    }
+    
+    // Update reaction panel active states
+    const reactionPanel = document.getElementById(`reaction-panel-${commentId}`);
+    if (reactionPanel) {
+        reactionPanel.querySelectorAll('.reaction-btn').forEach(btn => {
+            if (btn.dataset.reaction === userReaction) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+}
+
+function getEmojiForReaction(reaction) {
+    const emojis = {
+        'surprised': '😲',
+        'angry': '😡',
+        'shocked': '😱',
+        'love': '❤️',
+        'laugh': '🤣',
+        'thumbs_up': '👍'
+    };
+    return emojis[reaction] || '👍';
+}
+
+function toggleReactionPanel(commentId) {
+    const panel = document.getElementById(`reaction-panel-${commentId}`);
+    if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function toggleReply(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    if (replyForm) {
+        replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+    }
+}
+
+function submitReply(commentId) {
+    const replyForm = document.getElementById(`reply-form-${commentId}`);
+    const textarea = replyForm.querySelector('.reply-input');
+    const content = textarea.value.trim();
+    
+    if (!content) {
+        alert('يرجى كتابة رد أولاً');
+        return;
+    }
+    
+    fetch(`/comment/${commentId}/reply`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: content })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Add the reply to the DOM
+            const repliesSection = document.querySelector(`[data-comment-id="${commentId}"] .replies-section`);
+            if (repliesSection) {
+                const newReply = document.createElement('div');
+                newReply.className = 'comment-item reply-item';
+                newReply.dataset.commentId = data.reply.id;
+                newReply.innerHTML = `
+                    <div class="comment-header">
+                        <div class="comment-author">${data.reply.username}</div>
+                        <div class="comment-time">${data.reply.created_at}</div>
+                    </div>
+                    <div class="comment-content">${data.reply.content}</div>
+                    <div class="comment-actions">
+                        <button class="comment-action-btn" onclick="deleteComment(${data.reply.id})">
+                            حذف
+                        </button>
+                    </div>
+                `;
+                repliesSection.appendChild(newReply);
+            } else {
+                // Create replies section if it doesn't exist
+                const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+                const repliesSection = document.createElement('div');
+                repliesSection.className = 'replies-section';
+                repliesSection.style.marginRight = '30px';
+                repliesSection.style.marginTop = '15px';
+                repliesSection.innerHTML = `
+                    <div class="comment-item reply-item" data-comment-id="${data.reply.id}">
+                        <div class="comment-header">
+                            <div class="comment-author">${data.reply.username}</div>
+                            <div class="comment-time">${data.reply.created_at}</div>
+                        </div>
+                        <div class="comment-content">${data.reply.content}</div>
+                        <div class="comment-actions">
+                            <button class="comment-action-btn" onclick="deleteComment(${data.reply.id})">
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                `;
+                commentItem.appendChild(repliesSection);
+            }
+            
+            // Clear and hide the reply form
+            textarea.value = '';
+            replyForm.style.display = 'none';
+        } else {
+            alert('خطأ في إرسال الرد: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('خطأ في إرسال الرد');
+    });
+}
+
+function editComment(commentId) {
+    const commentContent = document.querySelector(`[data-comment-id="${commentId}"] .comment-content`);
+    const currentContent = commentContent.textContent;
+    
+    const newContent = prompt('تعديل التعليق:', currentContent);
+    if (newContent && newContent.trim() !== currentContent) {
+        fetch(`/comment/${commentId}/edit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: newContent.trim() })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                commentContent.textContent = data.content;
+                // Add edited indicator
+                if (!commentContent.querySelector('.edited-indicator')) {
+                    const editedSpan = document.createElement('span');
+                    editedSpan.className = 'edited-indicator';
+                    editedSpan.style.fontSize = '12px';
+                    editedSpan.style.color = '#999';
+                    editedSpan.textContent = ' (معدل)';
+                    commentContent.appendChild(editedSpan);
+                }
+            } else {
+                alert('خطأ في تعديل التعليق: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطأ في تعديل التعليق');
+        });
+    }
+}
+
+function deleteComment(commentId) {
+    if (confirm('هل أنت متأكد من حذف هذا التعليق؟')) {
+        fetch(`/comment/${commentId}/delete`, {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+                if (commentElement) {
+                    commentElement.remove();
+                }
+            } else {
+                alert('خطأ في حذف التعليق');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('خطأ في حذف التعليق');
+        });
+    }
+}
+
+function filterComments(tab) {
+    const commentsContainer = document.getElementById('comments-container');
+    if (!commentsContainer) {
+        console.log('Comments container not found');
+        return;
+    }
+    
+    const comments = commentsContainer.querySelectorAll('.comment-item:not(.reply-item)');
+    console.log(`Filtering comments by tab: ${tab}, found ${comments.length} comments`);
+    
+    comments.forEach(comment => {
+        let show = true;
+        
+        switch(tab) {
+            case 'all':
+                // عرض جميع التعليقات
+                show = true;
+                break;
+            case 'recent':
+                // عرض التعليقات الحديثة فقط (آخر 7 أيام)
+                const timeElement = comment.querySelector('.comment-time');
+                if (timeElement) {
+                    const timeText = timeElement.textContent.trim();
+                    // التحقق من التواريخ النسبية مثل "منذ ساعة" أو "منذ يوم"
+                    if (timeText.includes('منذ ساعة') || timeText.includes('منذ دقيقة') || 
+                        timeText.includes('منذ يوم') || timeText.includes('منذ يومين') ||
+                        timeText.includes('الآن') || timeText.includes('اليوم')) {
+                        show = true;
+                    } else {
+                        // إذا كان التاريخ أقدم من أسبوع، لا نعرضه
+                        show = false;
+                    }
+                } else {
+                    show = false;
+                }
+                break;
+            case 'popular':
+                // عرض التعليقات التي لها تفاعلات (ردود أو إعجابات)
+                const reactions = comment.querySelector('.comment-reactions-mini');
+                const repliesSection = comment.querySelector('.replies-section');
+                const hasReactions = reactions && reactions.children.length > 0;
+                const hasReplies = repliesSection && repliesSection.children.length > 0;
+                
+                // إذا كان للتعليق ردود أو تفاعلات، فهو شائع
+                show = hasReactions || hasReplies;
+                break;
+            default:
+                show = true;
+        }
+        
+        comment.style.display = show ? 'block' : 'none';
+    });
+    
+    // إظهار رسالة إذا لم توجد تعليقات للتصنيف المحدد
+    const visibleComments = commentsContainer.querySelectorAll('.comment-item:not(.reply-item)[style*="block"], .comment-item:not(.reply-item):not([style*="none"])');
+    
+    if (visibleComments.length === 0 && tab !== 'all') {
+        const noCommentsMsg = commentsContainer.querySelector('.no-comments-message');
+        if (!noCommentsMsg) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'no-comments-message text-center text-muted py-4';
+            messageDiv.style.cssText = 'border: 1px dashed #dee2e6; border-radius: 8px; margin: 20px 0;';
+            
+            let messageText = '';
+            switch(tab) {
+                case 'recent':
+                    messageText = 'لا توجد تعليقات حديثة';
+                    break;
+                case 'popular':
+                    messageText = 'لا توجد تعليقات شائعة حتى الآن';
+                    break;
+                default:
+                    messageText = 'لا توجد تعليقات';
+            }
+            
+            messageDiv.innerHTML = `<i class="fas fa-comments-slash mb-2"></i><br>${messageText}`;
+            commentsContainer.appendChild(messageDiv);
+        }
+    } else {
+        // إزالة رسالة "لا توجد تعليقات" إذا وجدت
+        const noCommentsMsg = commentsContainer.querySelector('.no-comments-message');
+        if (noCommentsMsg) {
+            noCommentsMsg.remove();
+        }
+    }
+}
+</script>

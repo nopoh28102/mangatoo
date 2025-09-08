@@ -1,0 +1,367 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة خطط الاشتراك - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>إدارة خطط الاشتراك</h2>
+        <div>
+            <button class="btn btn-outline-success me-2" onclick="exportPlans()">
+                <i class="fas fa-download me-2"></i>تصدير الخطط
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPlanModal">
+                <i class="fas fa-plus me-2"></i>إضافة خطة جديدة
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <i class="fas fa-layer-group fa-2x text-primary mb-2"></i>
+                    <h5 class="card-title">إجمالي الخطط</h5>
+                    <h3 class="text-primary">{{ plans|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                    <h5 class="card-title">خطط مفعلة</h5>
+                    <h3 class="text-success">{{ plans|selectattr("is_active")|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-info">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x text-info mb-2"></i>
+                    <h5 class="card-title">مشتركين حاليين</h5>
+                    <h3 class="text-info">{{ total_subscribers or 0 }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="fas fa-dollar-sign fa-2x text-warning mb-2"></i>
+                    <h5 class="card-title">إيرادات شهرية</h5>
+                    <h3 class="text-warning">${{ monthly_revenue or 0 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plans Grid -->
+    {% if plans %}
+    <div class="row">
+        {% for plan in plans %}
+        <div class="col-md-6 col-xl-4 mb-4">
+            <div class="card h-100 {{ 'border-success' if plan.is_active else 'border-secondary' }} {{ 'border-3' if plan.is_featured else '' }}">
+                {% if plan.is_featured %}
+                <div class="card-header bg-warning text-dark text-center">
+                    <i class="fas fa-star me-1"></i>الأكثر شيوعاً
+                </div>
+                {% endif %}
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ plan.name_ar or plan.name }}</h5>
+                    <span class="badge bg-{{ 'success' if plan.is_active else 'secondary' }}">
+                        {{ 'مفعلة' if plan.is_active else 'معطلة' }}
+                    </span>
+                </div>
+                <div class="card-body text-center">
+                    <div class="display-6 text-primary mb-2">
+                        ${{ plan.price }}
+                        <small class="fs-6 text-muted">/{{ 'شهر' if plan.duration_months == 1 else plan.duration_months + ' أشهر' }}</small>
+                    </div>
+                    {% if plan.original_price and plan.original_price > plan.price %}
+                    <div class="text-decoration-line-through text-muted mb-2">
+                        الأصلي: ${{ plan.original_price }}
+                    </div>
+                    <div class="badge bg-success mb-3">
+                        وفر ${{ plan.original_price - plan.price }}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-start">
+                        {% if plan.features_ar %}
+                            {% for feature in plan.features_ar %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>{{ feature }}</span>
+                            </div>
+                            {% endfor %}
+                        {% elif plan.features %}
+                            {% for feature in plan.features %}
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-check text-success me-2"></i>
+                                <span>{{ feature }}</span>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center">
+                        <div class="col">
+                            <small class="text-muted">مشتركين</small>
+                            <div class="fw-bold">{{ plan.subscriber_count or 0 }}</div>
+                        </div>
+                        <div class="col">
+                            <small class="text-muted">الإيرادات</small>
+                            <div class="fw-bold">${{ plan.total_revenue or 0 }}</div>
+                        </div>
+                        <div class="col">
+                            <small class="text-muted">التحويل</small>
+                            <div class="fw-bold">{{ plan.conversion_rate or 0 }}%</div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="btn-group w-100" role="group">
+                        <button class="btn btn-outline-primary btn-sm" onclick="editPlan({{ plan.id }})">
+                            <i class="fas fa-edit"></i> تعديل
+                        </button>
+                        <button class="btn btn-outline-{{ 'warning' if plan.is_active else 'success' }} btn-sm" onclick="togglePlan({{ plan.id }})">
+                            <i class="fas fa-{{ 'pause' if plan.is_active else 'play' }}"></i>
+                            {{ 'تعطيل' if plan.is_active else 'تفعيل' }}
+                        </button>
+                        <button class="btn btn-outline-info btn-sm" onclick="duplicatePlan({{ plan.id }})">
+                            <i class="fas fa-copy"></i> نسخ
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="deletePlan({{ plan.id }}, '{{ plan.name_ar or plan.name }}')">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-layer-group fa-5x text-muted mb-4"></i>
+        <h4>لا توجد خطط اشتراك</h4>
+        <p class="text-muted mb-4">ابدأ بإنشاء أول خطة اشتراك لمنصتك</p>
+        <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addPlanModal">
+            <i class="fas fa-plus me-2"></i>إنشاء أول خطة
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add/Edit Plan Modal -->
+<div class="modal fade" id="addPlanModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-plus me-2"></i>إضافة خطة اشتراك جديدة
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="planForm" method="POST" action="{{ url_for('admin_add_subscription_plan') if url_for('admin_add_subscription_plan') else '#' }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">اسم الخطة (عربي)</label>
+                                <input type="text" class="form-control" name="name_ar" placeholder="الخطة الأساسية" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">اسم الخطة (إنجليزي)</label>
+                                <input type="text" class="form-control" name="name" placeholder="Basic Plan" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">السعر ($)</label>
+                                <input type="number" class="form-control" name="price" step="0.01" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">السعر الأصلي (اختياري)</label>
+                                <input type="number" class="form-control" name="original_price" step="0.01" min="0">
+                                <small class="text-muted">للعروض والخصومات</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group mb-3">
+                                <label class="form-label">المدة (أشهر)</label>
+                                <select class="form-control" name="duration_months" required>
+                                    <option value="1">شهر واحد</option>
+                                    <option value="3">3 أشهر</option>
+                                    <option value="6">6 أشهر</option>
+                                    <option value="12">سنة كاملة</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">وصف الخطة</label>
+                        <textarea class="form-control" name="description_ar" rows="3" placeholder="وصف مفصل للخطة وما تتضمنه من ميزات..."></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">ميزات الخطة (واحدة في كل سطر)</label>
+                        <textarea class="form-control" name="features" rows="5" placeholder="قراءة بلا إعلانات
+تحميل الفصول
+جودة صور عالية
+دعم فني أولوية
+مكتبة حفظ غير محدودة"></textarea>
+                        <small class="text-muted">اكتب كل ميزة في سطر منفصل</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="planActive" checked>
+                                <label class="form-check-label" for="planActive">
+                                    خطة مفعلة
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_featured" id="planFeatured">
+                                <label class="form-check-label" for="planFeatured">
+                                    خطة مميزة
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_popular" id="planPopular">
+                                <label class="form-check-label" for="planPopular">
+                                    الأكثر شيوعاً
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>حفظ الخطة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function editPlan(planId) {
+    // Load plan data and show edit modal
+    fetch(`/admin/subscription-plans/${planId}/edit`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate form with plan data
+                const form = document.getElementById('planForm');
+                form.action = `/admin/subscription-plans/${planId}/update`;
+                
+                // Fill form fields
+                Object.keys(data.plan).forEach(key => {
+                    const field = form.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        if (field.type === 'checkbox') {
+                            field.checked = data.plan[key];
+                        } else {
+                            field.value = data.plan[key];
+                        }
+                    }
+                });
+                
+                // Update modal title
+                document.querySelector('#addPlanModal .modal-title').innerHTML = '<i class="fas fa-edit me-2"></i>تعديل خطة الاشتراك';
+                
+                // Show modal
+                new bootstrap.Modal(document.getElementById('addPlanModal')).show();
+            }
+        })
+        .catch(error => {
+            alert('خطأ في تحميل بيانات الخطة');
+        });
+}
+
+function togglePlan(planId) {
+    fetch(`/admin/subscription-plans/${planId}/toggle`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('خطأ في تغيير حالة الخطة');
+        }
+    });
+}
+
+function duplicatePlan(planId) {
+    if (confirm('هل تريد نسخ هذه الخطة؟')) {
+        fetch(`/admin/subscription-plans/${planId}/duplicate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('خطأ في نسخ الخطة');
+            }
+        });
+    }
+}
+
+function deletePlan(planId, planName) {
+    if (confirm(`هل أنت متأكد من حذف خطة "${planName}"؟`)) {
+        fetch(`/admin/subscription-plans/${planId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'خطأ في حذف الخطة');
+            }
+        });
+    }
+}
+
+function exportPlans() {
+    window.location.href = '/admin/subscription-plans/export';
+}
+
+// Reset form when modal is hidden
+document.getElementById('addPlanModal').addEventListener('hidden.bs.modal', function () {
+    document.getElementById('planForm').reset();
+    document.getElementById('planForm').action = "{{ url_for('admin_add_subscription_plan') if url_for('admin_add_subscription_plan') else '#' }}";
+    document.querySelector('#addPlanModal .modal-title').innerHTML = '<i class="fas fa-plus me-2"></i>إضافة خطة اشتراك جديدة';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,786 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إضافة فصل جديد - {{ manga.title }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            إضافة فصل جديد
+                        </h4>
+                        <p class="mb-0 opacity-75">{{ manga.title }}</p>
+                    </div>
+                    {% if manga.slug %}
+                    <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="btn btn-light btn-sm">
+                    {% else %}
+                    <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="btn btn-light btn-sm">
+                    {% endif %}
+                        <i class="fas fa-arrow-right me-2"></i>العودة للمانجا
+                    </a>
+                </div>
+                
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="addChapterForm">
+                        <div class="row">
+                            <!-- Chapter Information -->
+                            <div class="col-lg-6">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-secondary text-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            معلومات الفصل
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label for="chapter_number" class="form-label">رقم الفصل *</label>
+                                            <input type="number" step="0.1" class="form-control" id="chapter_number" 
+                                                   name="chapter_number" value="{{ next_chapter_number }}" required>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="chapter_title" class="form-label">عنوان الفصل</label>
+                                            <input type="text" class="form-control" id="chapter_title" 
+                                                   name="chapter_title" placeholder="اختياري">
+                                        </div>
+                                        
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="is_locked" name="is_locked">
+                                            <label class="form-check-label" for="is_locked">
+                                                فصل مميز (يتطلب اشتراك)
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="early_access_date" class="form-label">تاريخ الوصول المبكر</label>
+                                            <input type="datetime-local" class="form-control" id="early_access_date" 
+                                                   name="early_access_date">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="release_date" class="form-label">تاريخ النشر العام</label>
+                                            <input type="datetime-local" class="form-control" id="release_date" 
+                                                   name="release_date">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Upload Method Selection -->
+                            <div class="col-lg-6">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-header bg-secondary text-light">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-upload me-2"></i>
+                                            طريقة رفع الفصل
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <div class="btn-group w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_files" value="images" checked>
+                                                    <label class="btn btn-outline-primary" for="method_files">
+                                                        <i class="fas fa-images me-2"></i>رفع الصور
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_zip" value="zip">
+                                                    <label class="btn btn-outline-primary" for="method_zip">
+                                                        <i class="fas fa-file-archive me-2"></i>رفع ZIP/CBZ
+                                                    </label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="upload_method" id="method_scrape" value="scrape">
+                                                    <label class="btn btn-outline-primary" for="method_scrape">
+                                                        <i class="fas fa-download me-2"></i>كشط من الويب
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- File Upload Section -->
+                                        <div id="upload_files" class="upload-section">
+                                            <div class="border-2 border-dashed border-primary rounded p-4 text-center">
+                                                <input type="file" class="form-control d-none" id="chapter_images" name="chapter_images" 
+                                                       multiple accept="image/*" onchange="handleFileSelect(this)">
+                                                <div class="dropzone" onclick="document.getElementById('chapter_images').click()">
+                                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                    <h5>انقر لاختيار الصور أو اسحب وأفلت</h5>
+                                                    <p class="text-muted">الصيغ المدعومة: JPG، PNG، WEBP</p>
+                                                </div>
+                                            </div>
+                                            <div id="file_preview" class="mt-3"></div>
+                                        </div>
+
+                                        <!-- ZIP Upload Section -->
+                                        <div id="upload_zip" class="upload-section d-none">
+                                            <div class="alert alert-success mb-3">
+                                                <i class="fas fa-archive me-2"></i>
+                                                <strong>استخراج ZIP محلي</strong><br>
+                                                <small>يتم استخراج ملفات ZIP محلياً على الخادم لمعالجة سريعة وموثوقة.</small>
+                                            </div>
+                                            <div class="border-2 border-dashed border-info rounded p-4 text-center">
+                                                <input type="file" class="form-control d-none" id="chapter_zip" name="chapter_zip" 
+                                                       accept=".zip,.cbz,.rar" onchange="handleZipSelect(this)">
+                                                <div class="dropzone" onclick="document.getElementById('chapter_zip').click()">
+                                                    <i class="fas fa-file-archive fa-3x text-info mb-3"></i>
+                                                    <h5>اختر أرشيف ZIP/CBZ/RAR</h5>
+                                                    <p class="text-muted">انقر على "استخراج ومعاينة" بعد الاختيار لمعاينة الصور</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- ZIP Preview and Extract Button -->
+                                            <div id="zip_preview" class="mt-3"></div>
+                                            
+                                            <!-- Extracted Images Preview -->
+                                            <div id="extracted_images_preview" class="mt-3 d-none">
+                                                <h6>معاينة الصور المستخرجة</h6>
+                                                <p class="text-muted mb-3">اسحب وأفلت لإعادة ترتيب الصور:</p>
+                                                <div id="extracted_images_container" class="sortable-images"></div>
+                                                <input type="hidden" id="extracted_images_data" name="extracted_images_data" value="">
+                                            </div>
+                                        </div>
+
+                                        <!-- Web Scraping Section -->
+                                        <div id="upload_scrape" class="upload-section d-none">
+                                            <div class="border-2 border-dashed border-success rounded p-4">
+                                                <div class="row">
+                                                    <div class="col-md-8 mb-3">
+                                                        <label for="chapter_url" class="form-label fw-bold">رابط الفصل</label>
+                                                        <input type="url" class="form-control form-control-lg" id="chapter_url" name="chapter_url"
+                                                               placeholder="https://olympustaff.com/series/BATE/225">
+                                                        <div class="form-text">المواقع المدعومة: OlympusStaff والمواقع المتوافقة</div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-3 d-flex align-items-end">
+                                                        <button type="button" class="btn btn-success btn-lg w-100" onclick="testScraping()">
+                                                            <i class="fas fa-search me-2"></i>اختبار الرابط
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div id="scrape_preview" class="mt-3"></div>
+                                                
+                                                <!-- Hidden fields to store scraping results -->
+                                                <input type="hidden" id="scraped_data" name="scraped_data" value="">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar Section -->
+                        <div id="progressSection" class="mb-4" style="display: none;">
+                            <div class="card bg-light border-primary">
+                                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-clock me-2"></i>
+                                        جاري إضافة الفصل - الوقت المتبقي: <span id="timeRemaining">--:--</span>
+                                    </h6>
+                                    <button type="button" class="btn btn-sm btn-outline-light" id="hideProgressBtn" style="display: none;">
+                                        <i class="fas fa-eye-slash"></i> إخفاء
+                                    </button>
+                                </div>
+                                <div class="card-body">
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" 
+                                             role="progressbar" style="width: 0%" 
+                                             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                            <span id="progressText">0%</span>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <div class="text-muted">المرحلة الحالية</div>
+                                            <div id="currentStage" class="fw-bold">تحضير العملية...</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-muted">الوقت المنقضي</div>
+                                            <div id="elapsedTime" class="fw-bold">00:00</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="text-muted">السرعة</div>
+                                            <div id="uploadSpeed" class="fw-bold">-- MB/s</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="btn btn-secondary" id="cancelBtn">
+                            {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="btn btn-secondary" id="cancelBtn">
+                            {% endif %}
+                                <i class="fas fa-times me-2"></i>إلغاء
+                            </a>
+                            <button type="submit" class="btn btn-success" id="submitBtn">
+                                <i class="fas fa-plus me-2"></i>إضافة الفصل
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let uploadMethod = 'images';
+
+// Upload method switching
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize upload method handlers
+    const methodInputs = document.querySelectorAll('input[name="upload_method"]');
+    
+    methodInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            if (this.checked) {
+                showUploadSection(this.value);
+            }
+        });
+    });
+    
+    // Show initial section
+    showUploadSection('images');
+    
+    // Initialize form submission handler
+    initializeFormSubmission();
+});
+
+// Form submission with progress bar
+function initializeFormSubmission() {
+    const form = document.getElementById('addChapterForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    form.addEventListener('submit', function(e) {
+        // Don't prevent default, let form submit normally
+        // but show progress bar immediately
+        
+        // Validate required fields first
+        const chapterNumber = document.getElementById('chapter_number').value;
+        const currentMethod = document.querySelector('input[name="upload_method"]:checked').value;
+        
+        if (!chapterNumber) {
+            alert('يرجى إدخال رقم الفصل');
+            e.preventDefault();
+            return false;
+        }
+        
+        // Check method-specific requirements
+        if (currentMethod === 'images') {
+            const fileInput = document.getElementById('chapter_images');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('يرجى اختيار الصور المراد رفعها');
+                e.preventDefault();
+                return false;
+            }
+        } else if (currentMethod === 'zip') {
+            const zipInput = document.getElementById('chapter_zip');
+            if (!zipInput.files || zipInput.files.length === 0) {
+                alert('يرجى اختيار ملف ZIP');
+                e.preventDefault();
+                return false;
+            }
+        } else if (currentMethod === 'scrape') {
+            const chapterUrl = document.getElementById('chapter_url').value.trim();
+            const scrapedData = document.getElementById('scraped_data').value;
+            
+            if (!chapterUrl) {
+                alert('يرجى إدخال رابط الفصل');
+                e.preventDefault();
+                return false;
+            }
+            
+            if (!scrapedData) {
+                alert('يرجى اختبار الرابط أولاً للتأكد من صحته');
+                e.preventDefault();
+                return false;
+            }
+        }
+        
+        // If validation passes, show progress bar
+        const estimatedTime = uploadProgress.estimateUploadTime();
+        uploadProgress.show(estimatedTime);
+        
+        // Change submit button text
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الإرسال...';
+        
+        // Scroll to progress bar
+        setTimeout(() => {
+            document.getElementById('progressSection').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }, 100);
+        
+        return true; // Allow form to submit
+    });
+}
+
+function showUploadSection(method) {
+    uploadMethod = method;
+    
+    // Hide all sections
+    document.querySelectorAll('.upload-section').forEach(section => {
+        section.classList.add('d-none');
+    });
+    
+    // Show selected section
+    if (method === 'images') {
+        document.getElementById('upload_files').classList.remove('d-none');
+    } else if (method === 'zip') {
+        document.getElementById('upload_zip').classList.remove('d-none');
+    } else if (method === 'scrape') {
+        document.getElementById('upload_scrape').classList.remove('d-none');
+    }
+}
+
+// File selection handler
+function handleFileSelect(input) {
+    const preview = document.getElementById('file_preview');
+    preview.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        const fileList = document.createElement('div');
+        fileList.className = 'row';
+        
+        Array.from(input.files).forEach((file, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-md-3 mb-2';
+            
+            const card = document.createElement('div');
+            card.className = 'card h-100';
+            card.innerHTML = `
+                <div class="card-body text-center p-2">
+                    <i class="fas fa-file-image fa-2x text-primary mb-2"></i>
+                    <h6 class="card-title small">${file.name}</h6>
+                    <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                </div>
+            `;
+            
+            col.appendChild(card);
+            fileList.appendChild(col);
+        });
+        
+        preview.appendChild(fileList);
+    }
+}
+
+// ZIP selection handler
+function handleZipSelect(input) {
+    const preview = document.getElementById('zip_preview');
+    preview.innerHTML = '';
+    
+    if (input.files && input.files.length > 0) {
+        const file = input.files[0];
+        preview.innerHTML = `
+            <div class="alert alert-info">
+                <h6><i class="fas fa-file-archive me-2"></i>ملف محدد: ${file.name}</h6>
+                <p class="mb-2">الحجم: ${(file.size / 1024 / 1024).toFixed(2)} ميجابايت</p>
+                <button type="button" class="btn btn-primary" onclick="extractZipPreview()">
+                    <i class="fas fa-expand-arrows-alt me-2"></i>استخراج ومعاينة
+                </button>
+            </div>
+        `;
+    }
+}
+
+// Extract ZIP preview
+function extractZipPreview() {
+    const zipInput = document.getElementById('chapter_zip');
+    const preview = document.getElementById('zip_preview');
+    
+    if (!zipInput.files || zipInput.files.length === 0) {
+        alert('يرجى اختيار ملف ZIP أولاً');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('zip_file', zipInput.files[0]);
+    
+    // Show loading with progress indicator
+    preview.innerHTML = `
+        <div class="alert alert-info" id="extraction-progress">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-spinner fa-spin me-2"></i>
+                <span>جاري استخراج الملف...</span>
+            </div>
+            <div class="progress mt-2" style="height: 20px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%" id="extraction-bar">
+                    <span id="progress-text">0%</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Simulate progress for better UX
+    let progress = 0;
+    const progressBar = document.getElementById('extraction-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    const progressInterval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = Math.round(progress) + '%';
+    }, 300);
+    
+    fetch('/admin/extract-zip-preview', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Clear progress interval
+        clearInterval(progressInterval);
+        
+        // Complete progress
+        progressBar.style.width = '100%';
+        progressText.textContent = '100%';
+        
+        setTimeout(() => {
+            if (data.success) {
+                displayExtractedImages(data.images);
+            } else {
+                preview.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>خطأ في استخراج الملف: ${data.error}
+                    </div>
+                `;
+            }
+        }, 500);
+    })
+    .catch(error => {
+        // Clear progress interval on error
+        clearInterval(progressInterval);
+        
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>خطأ في الشبكة: ${error.message}
+            </div>
+        `;
+    });
+}
+
+// Display extracted images
+function displayExtractedImages(images) {
+    const container = document.getElementById('extracted_images_container');
+    const previewDiv = document.getElementById('extracted_images_preview');
+    const zipPreview = document.getElementById('zip_preview');
+    
+    // Clear previous content and loading messages
+    container.innerHTML = '';
+    
+    // Hide the loading/extraction message completely
+    zipPreview.innerHTML = `
+        <div class="alert alert-success">
+            <i class="fas fa-check me-2"></i>
+            <strong>تم استخراج ${images.length} صورة بنجاح!</strong>
+            <p class="mb-0 mt-2">يمكنك إعادة ترتيب الصور بالسحب والإفلات أدناه.</p>
+        </div>
+    `;
+    
+    images.forEach((image, index) => {
+        const imageDiv = document.createElement('div');
+        imageDiv.className = 'extracted-image-item p-2 border rounded mb-2 d-flex align-items-center';
+        imageDiv.draggable = true;
+        imageDiv.dataset.index = index;
+        
+        imageDiv.innerHTML = `
+            <i class="fas fa-grip-vertical me-3 text-muted"></i>
+            <img src="${image.url}" alt="صفحة ${index + 1}" style="width: 60px; height: 80px; object-fit: cover;" class="me-3">
+            <div>
+                <strong>صفحة ${index + 1}</strong><br>
+                <small class="text-muted">${image.filename}</small>
+            </div>
+        `;
+        
+        container.appendChild(imageDiv);
+    });
+    
+    // Update hidden field
+    document.getElementById('extracted_images_data').value = JSON.stringify(images);
+    
+    // Show preview section
+    previewDiv.classList.remove('d-none');
+}
+
+// Progress Bar Management
+class ChapterUploadProgress {
+    constructor() {
+        this.startTime = null;
+        this.estimatedDuration = 0;
+        this.currentStage = '';
+        this.progressInterval = null;
+        this.elapsedInterval = null;
+    }
+    
+    show(estimatedMinutes = 2) {
+        this.startTime = new Date();
+        this.estimatedDuration = estimatedMinutes * 60 * 1000; // Convert to milliseconds
+        
+        // Show progress section
+        document.getElementById('progressSection').style.display = 'block';
+        
+        // Disable form controls
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('cancelBtn').style.display = 'none';
+        
+        // Start progress simulation
+        this.startProgress();
+        this.startElapsedTimer();
+        
+        // Show hide button after 10 seconds
+        showHideButton();
+    }
+    
+    startProgress() {
+        let progress = 0;
+        const stages = [
+            { progress: 15, text: 'تحضير العملية...', duration: 0.5 },
+            { progress: 30, text: 'معالجة الملفات...', duration: 1 },
+            { progress: 60, text: 'رفع الصور...', duration: 3 },
+            { progress: 85, text: 'حفظ البيانات...', duration: 1 },
+            { progress: 100, text: 'اكتمال العملية...', duration: 0.5 }
+        ];
+        
+        let currentStageIndex = 0;
+        
+        this.progressInterval = setInterval(() => {
+            const elapsed = new Date() - this.startTime;
+            const expectedProgress = (elapsed / this.estimatedDuration) * 100;
+            
+            // Update current stage based on progress
+            if (currentStageIndex < stages.length - 1 && progress >= stages[currentStageIndex].progress) {
+                currentStageIndex++;
+                this.updateStage(stages[currentStageIndex].text);
+            }
+            
+            // Smooth progress increment
+            if (progress < expectedProgress && progress < 95) {
+                progress += Math.random() * 3 + 1;
+            }
+            
+            progress = Math.min(progress, 95); // Don't complete until actually done
+            this.updateProgress(progress);
+            
+        }, 200);
+    }
+    
+    startElapsedTimer() {
+        this.elapsedInterval = setInterval(() => {
+            const elapsed = new Date() - this.startTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            
+            document.getElementById('elapsedTime').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update remaining time
+            const remaining = Math.max(0, this.estimatedDuration - elapsed);
+            const remainingMinutes = Math.floor(remaining / 60000);
+            const remainingSeconds = Math.floor((remaining % 60000) / 1000);
+            
+            document.getElementById('timeRemaining').textContent = 
+                `${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+                
+        }, 1000);
+    }
+    
+    updateProgress(percentage) {
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        
+        progressBar.style.width = percentage + '%';
+        progressBar.setAttribute('aria-valuenow', percentage);
+        progressText.textContent = Math.round(percentage) + '%';
+        
+        // Change color based on progress
+        if (percentage < 50) {
+            progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-info';
+        } else if (percentage < 80) {
+            progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+        } else {
+            progressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-success';
+        }
+    }
+    
+    updateStage(stage) {
+        document.getElementById('currentStage').textContent = stage;
+        this.currentStage = stage;
+    }
+    
+    complete() {
+        clearInterval(this.progressInterval);
+        clearInterval(this.elapsedInterval);
+        
+        this.updateProgress(100);
+        this.updateStage('تم بنجاح! جاري التوجيه...');
+        
+        // Change to success state
+        const progressBar = document.getElementById('progressBar');
+        progressBar.className = 'progress-bar bg-success';
+        
+        setTimeout(() => {
+            document.getElementById('progressSection').style.display = 'none';
+        }, 2000);
+    }
+    
+    estimateUploadTime() {
+        const method = document.querySelector('input[name="upload_method"]:checked').value;
+        let estimatedMinutes = 1;
+        
+        if (method === 'images') {
+            const fileInput = document.getElementById('chapter_images');
+            const fileCount = fileInput.files ? fileInput.files.length : 0;
+            estimatedMinutes = Math.max(1, Math.ceil(fileCount / 10)); // ~10 files per minute
+        } else if (method === 'zip') {
+            const zipInput = document.getElementById('chapter_zip');
+            if (zipInput.files && zipInput.files[0]) {
+                const sizeMB = zipInput.files[0].size / (1024 * 1024);
+                estimatedMinutes = Math.max(1, Math.ceil(sizeMB / 5)); // ~5MB per minute
+            }
+        } else if (method === 'scrape') {
+            const scrapedData = document.getElementById('scraped_data').value;
+            if (scrapedData) {
+                try {
+                    const data = JSON.parse(scrapedData);
+                    const imageCount = data.total_images || 10;
+                    estimatedMinutes = Math.max(2, Math.ceil(imageCount / 8)); // ~8 images per minute for scraping
+                } catch(e) {
+                    estimatedMinutes = 3; // Default for scraping
+                }
+            }
+        }
+        
+        return estimatedMinutes;
+    }
+}
+
+// Initialize progress manager
+const uploadProgress = new ChapterUploadProgress();
+
+// Add hide progress functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const hideBtn = document.getElementById('hideProgressBtn');
+    if (hideBtn) {
+        hideBtn.addEventListener('click', function() {
+            document.getElementById('progressSection').style.display = 'none';
+        });
+    }
+});
+
+// Show hide button after 10 seconds
+function showHideButton() {
+    setTimeout(() => {
+        const hideBtn = document.getElementById('hideProgressBtn');
+        if (hideBtn) {
+            hideBtn.style.display = 'inline-block';
+        }
+    }, 10000);
+}
+
+// Test scraping function
+function testScraping() {
+    const chapterUrl = document.getElementById('chapter_url').value.trim();
+    const preview = document.getElementById('scrape_preview');
+
+    if (!chapterUrl) {
+        alert('يرجى إدخال رابط الفصل أولاً');
+        return;
+    }
+
+    // Check if URL is from supported sites
+    if (!chapterUrl.includes('olympustaff.com')) {
+        alert('حالياً ندعم فقط موقع olympustaff.com');
+        return;
+    }
+
+    preview.innerHTML = `
+        <div class="alert alert-info">
+            <i class="fas fa-spinner fa-spin me-2"></i>
+            جاري اختبار الكشط من الموقع...
+        </div>
+    `;
+
+    // Use the unified scraping endpoint
+    fetch('/test-olympustaff-scraping', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'chapter_url': chapterUrl
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Save scraped data for form submission
+            document.getElementById('scraped_data').value = JSON.stringify(data);
+            
+            preview.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check me-2"></i>نجح اختبار الكشط</h6>
+                    <ul class="mb-0">
+                        <li><strong>الفصل:</strong> ${data.chapter_title || 'غير محدد'}</li>
+                        <li><strong>الصور الموجودة:</strong> ${data.total_images || 0}</li>
+                        <li><strong>نوع الموقع:</strong> <span class="badge bg-info">${data.site_type || 'غير محدد'}</span></li>
+                        <li><strong>الرسالة:</strong> ${data.message || ''}</li>
+                    </ul>
+                    ${data.all_images && data.all_images.length > 0 ? `
+                        <div class="mt-3">
+                            <h6>معاينة الصور:</h6>
+                            <div class="row">
+                                ${data.all_images.slice(0, 8).map((img, index) => `
+                                    <div class="col-3 mb-2">
+                                        <div class="text-center border rounded p-1 bg-secondary text-light">
+                                            <img src="${img}" alt="صورة ${index + 1}" 
+                                                 class="img-fluid rounded" 
+                                                 style="max-height: 80px; width: auto; object-fit: cover;"
+                                                 loading="lazy"
+                                                 onerror="this.style.maxHeight='40px';">
+                                            <br><small class="text-muted">صورة ${index + 1}</small>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${data.all_images.length > 8 ? `<small class="text-muted">و ${data.all_images.length - 8} صورة أخرى...</small>` : ''}
+                            <div class="mt-2 p-2 bg-secondary text-light rounded">
+                                <small class="text-muted">
+                                    <strong>ملاحظة:</strong> عند إضافة الفصل سيتم تحميل جميع الـ ${data.total_images} صورة بالترتيب الصحيح.
+                                </small>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            preview.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-times me-2"></i>فشل اختبار الكشط</h6>
+                    <p class="mb-0">${data.error || 'خطأ غير معروف'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-times me-2"></i>خطأ في الشبكة</h6>
+                <p class="mb-0">${error.message}</p>
+            </div>
+        `;
+    });
+}
+</script>
+{% endblock %}

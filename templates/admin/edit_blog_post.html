@@ -1,0 +1,473 @@
+{% extends "admin/base.html" %}
+
+{% block title %}تحرير المقال - {{ post.title }}{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-edit text-primary me-2"></i>
+        <span data-lang="en">Edit Blog Post</span>
+        <span data-lang="ar">تحرير المقال</span>
+    </h2>
+    <div>
+        {% if post.is_published %}
+        <a href="{{ url_for('blog_post', slug=post.slug) }}" class="btn btn-outline-info me-2" target="_blank">
+            <i class="fas fa-eye me-2"></i>
+            <span data-lang="en">View Post</span>
+            <span data-lang="ar">عرض المقال</span>
+        </a>
+        {% endif %}
+        <a href="{{ url_for('admin_blog') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Blog</span>
+            <span data-lang="ar">العودة للمدونة</span>
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" id="blog-post-form">
+            <div class="row">
+                <!-- Main Content -->
+                <div class="col-md-8">
+                    <!-- Basic Information -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label">
+                            <span data-lang="en">Title (English)</span>
+                            <span data-lang="ar">العنوان (إنجليزي)</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="title" name="title" value="{{ post.title }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="title_ar" class="form-label">
+                            <span data-lang="en">Title (Arabic)</span>
+                            <span data-lang="ar">العنوان (عربي)</span>
+                        </label>
+                        <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ post.title_ar or '' }}" dir="rtl">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="slug" class="form-label">
+                            <span data-lang="en">URL Slug</span>
+                            <span data-lang="ar">رابط المقال</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">/blog/</span>
+                            <input type="text" class="form-control" id="slug" name="slug" value="{{ post.slug }}" required 
+                                   pattern="[a-z0-9-]+" title="Only lowercase letters, numbers and hyphens allowed">
+                        </div>
+                        <div class="form-text">
+                            <span data-lang="en">Only lowercase letters, numbers and hyphens allowed</span>
+                            <span data-lang="ar">حروف صغيرة وأرقام وشرطات فقط</span>
+                        </div>
+                    </div>
+
+                    <!-- Excerpt -->
+                    <div class="mb-3">
+                        <label for="excerpt" class="form-label">
+                            <span data-lang="en">Excerpt (English)</span>
+                            <span data-lang="ar">المقطع التعريفي (إنجليزي)</span>
+                        </label>
+                        <textarea class="form-control" id="excerpt" name="excerpt" rows="3" maxlength="300">{{ post.excerpt or '' }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Short description of the post (max 300 characters)</span>
+                            <span data-lang="ar">وصف مختصر للمقال (300 حرف كحد أقصى)</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="excerpt_ar" class="form-label">
+                            <span data-lang="en">Excerpt (Arabic)</span>
+                            <span data-lang="ar">المقطع التعريفي (عربي)</span>
+                        </label>
+                        <textarea class="form-control" id="excerpt_ar" name="excerpt_ar" rows="3" maxlength="300" dir="rtl">{{ post.excerpt_ar or '' }}</textarea>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <span data-lang="en">Content (English)</span>
+                            <span data-lang="ar">المحتوى (إنجليزي)</span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div id="content-editor" style="height: 400px;"></div>
+                        <button type="button" class="image-upload-btn" onclick="uploadImage(false)">
+                            <i class="fas fa-image"></i> Upload Image
+                        </button>
+                        <textarea id="content" name="content" style="display: none;" required>{{ post.content }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Rich text editor with image upload support</span>
+                            <span data-lang="ar">محرر نصوص متقدم مع دعم رفع الصور</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <span data-lang="en">Content (Arabic)</span>
+                            <span data-lang="ar">المحتوى (عربي)</span>
+                        </label>
+                        <div id="content-editor-rtl" class="rtl-editor" style="height: 400px; direction: rtl;"></div>
+                        <button type="button" class="image-upload-btn" onclick="uploadImage(true)">
+                            <i class="fas fa-image"></i> رفع صورة
+                        </button>
+                        <textarea id="content_ar" name="content_ar" style="display: none;">{{ post.content_ar or '' }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Rich text editor with RTL support</span>
+                            <span data-lang="ar">محرر نصوص متقدم مع دعم الكتابة من اليمين لليسار</span>
+                        </div>
+                    </div>
+
+                    <!-- SEO Section -->
+                    <h5 class="mt-4 mb-3">
+                        <i class="fas fa-search me-2"></i>
+                        <span data-lang="en">SEO Settings</span>
+                        <span data-lang="ar">إعدادات السيو</span>
+                    </h5>
+
+                    <div class="mb-3">
+                        <label for="meta_description" class="form-label">
+                            <span data-lang="en">Meta Description (English)</span>
+                            <span data-lang="ar">وصف السيو (إنجليزي)</span>
+                        </label>
+                        <textarea class="form-control" id="meta_description" name="meta_description" rows="3" maxlength="160">{{ post.meta_description or '' }}</textarea>
+                        <div class="form-text">
+                            <span data-lang="en">Maximum 160 characters for optimal SEO</span>
+                            <span data-lang="ar">160 حرف كحد أقصى للحصول على أفضل نتائج السيو</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meta_description_ar" class="form-label">
+                            <span data-lang="en">Meta Description (Arabic)</span>
+                            <span data-lang="ar">وصف السيو (عربي)</span>
+                        </label>
+                        <textarea class="form-control" id="meta_description_ar" name="meta_description_ar" rows="3" maxlength="160" dir="rtl">{{ post.meta_description_ar or '' }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="meta_keywords" class="form-label">
+                            <span data-lang="en">Keywords</span>
+                            <span data-lang="ar">الكلمات المفتاحية</span>
+                        </label>
+                        <input type="text" class="form-control" id="meta_keywords" name="meta_keywords" value="{{ post.meta_keywords or '' }}">
+                        <div class="form-text">
+                            <span data-lang="en">Separate keywords with commas</span>
+                            <span data-lang="ar">فصل الكلمات بالفواصل</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Sidebar -->
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-cog me-2"></i>
+                                <span data-lang="en">Post Settings</span>
+                                <span data-lang="ar">إعدادات المقال</span>
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Post Stats -->
+                            <div class="mb-3">
+                                <h6>
+                                    <span data-lang="en">Statistics</span>
+                                    <span data-lang="ar">الإحصائيات</span>
+                                </h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li><small class="text-muted">
+                                        <span data-lang="en">Views:</span>
+                                        <span data-lang="ar">المشاهدات:</span>
+                                        {{ post.views }}
+                                    </small></li>
+                                    <li><small class="text-muted">
+                                        <span data-lang="en">Created:</span>
+                                        <span data-lang="ar">تاريخ الإنشاء:</span>
+                                        {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </small></li>
+                                    {% if post.published_at %}
+                                    <li><small class="text-muted">
+                                        <span data-lang="en">Published:</span>
+                                        <span data-lang="ar">تاريخ النشر:</span>
+                                        {{ post.published_at.strftime('%Y-%m-%d %H:%M') }}
+                                    </small></li>
+                                    {% endif %}
+                                    <li><small class="text-muted">
+                                        <span data-lang="en">Reading time:</span>
+                                        <span data-lang="ar">وقت القراءة:</span>
+                                        {{ post.reading_time }} 
+                                        <span data-lang="en">min</span>
+                                        <span data-lang="ar">دقيقة</span>
+                                    </small></li>
+                                </ul>
+                            </div>
+
+                            <hr>
+
+                            <div class="mb-3">
+                                <label for="featured_image" class="form-label">
+                                    <span data-lang="en">Featured Image URL</span>
+                                    <span data-lang="ar">رابط الصورة المميزة</span>
+                                </label>
+                                <input type="url" class="form-control" id="featured_image" name="featured_image" value="{{ post.featured_image or '' }}">
+                                <div class="form-text">
+                                    <span data-lang="en">Upload image using editor and copy URL here</span>
+                                    <span data-lang="ar">ارفع الصورة باستخدام المحرر وانسخ الرابط هنا</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="category" class="form-label">
+                                    <span data-lang="en">Category (English)</span>
+                                    <span data-lang="ar">التصنيف (إنجليزي)</span>
+                                </label>
+                                <input type="text" class="form-control" id="category" name="category" value="{{ post.category or '' }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="category_ar" class="form-label">
+                                    <span data-lang="en">Category (Arabic)</span>
+                                    <span data-lang="ar">التصنيف (عربي)</span>
+                                </label>
+                                <input type="text" class="form-control" id="category_ar" name="category_ar" value="{{ post.category_ar or '' }}" dir="rtl">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">
+                                    <span data-lang="en">Tags (English)</span>
+                                    <span data-lang="ar">العلامات (إنجليزي)</span>
+                                </label>
+                                <input type="text" class="form-control" id="tags" name="tags" value="{{ post.tags or '' }}">
+                                <div class="form-text">
+                                    <span data-lang="en">Separate tags with commas</span>
+                                    <span data-lang="ar">فصل العلامات بالفواصل</span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags_ar" class="form-label">
+                                    <span data-lang="en">Tags (Arabic)</span>
+                                    <span data-lang="ar">العلامات (عربي)</span>
+                                </label>
+                                <input type="text" class="form-control" id="tags_ar" name="tags_ar" value="{{ post.tags_ar or '' }}" dir="rtl">
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_published" name="is_published" {{ 'checked' if post.is_published }}>
+                                    <label class="form-check-label" for="is_published">
+                                        <span data-lang="en">Published</span>
+                                        <span data-lang="ar">منشور</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    <span data-lang="en">Make post visible to readers</span>
+                                    <span data-lang="ar">جعل المقال مرئي للقراء</span>
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" {{ 'checked' if post.is_featured }}>
+                                    <label class="form-check-label" for="is_featured">
+                                        <span data-lang="en">Featured Post</span>
+                                        <span data-lang="ar">مقال مميز</span>
+                                    </label>
+                                </div>
+                                <small class="text-muted">
+                                    <span data-lang="en">Show in featured posts section</span>
+                                    <span data-lang="ar">عرض في قسم المقالات المميزة</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('admin_blog') }}" class="btn btn-secondary">
+                    <i class="fas fa-times me-2"></i>
+                    <span data-lang="en">Cancel</span>
+                    <span data-lang="ar">إلغاء</span>
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save me-2"></i>
+                    <span data-lang="en">Update Post</span>
+                    <span data-lang="ar">تحديث المقال</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Quill.js CDN -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
+<!-- Rich Text Editor Styles -->
+<style>
+.quill-editor {
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.ql-toolbar {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+}
+
+.ql-container {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: 1px solid #ccc;
+    border-top: none;
+    height: 400px;
+}
+
+.ql-editor {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.rtl-editor .ql-editor {
+    direction: rtl;
+    text-align: right;
+}
+
+.image-upload-btn {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.image-upload-btn:hover {
+    opacity: 0.9;
+}
+</style>
+
+<script>
+// Initialize Quill for English content
+var quillEn = new Quill('#content-editor', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['link', 'blockquote', 'code-block'],
+            ['clean']
+        ]
+    },
+    placeholder: 'Enter blog post content in English...'
+});
+
+// Initialize Quill for Arabic content (RTL)
+var quillAr = new Quill('#content-editor-rtl', {
+    theme: 'snow',
+    modules: {
+        toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'align': [] }],
+            ['link', 'blockquote', 'code-block'],
+            ['clean']
+        ]
+    },
+    placeholder: 'أدخل محتوى المقال باللغة العربية...'
+});
+
+// Load existing content
+quillEn.root.innerHTML = document.getElementById('content').value;
+quillAr.root.innerHTML = document.getElementById('content_ar').value;
+
+// Update hidden fields on content change
+quillEn.on('text-change', function() {
+    document.getElementById('content').value = quillEn.root.innerHTML;
+});
+
+quillAr.on('text-change', function() {
+    document.getElementById('content_ar').value = quillAr.root.innerHTML;
+});
+
+// Image upload functionality
+function uploadImage(isArabic = false) {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = function() {
+        const file = input.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/admin/blog/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.location) {
+                    const range = isArabic ? quillAr.getSelection() : quillEn.getSelection();
+                    const editor = isArabic ? quillAr : quillEn;
+                    editor.insertEmbed(range ? range.index : 0, 'image', data.location);
+                } else {
+                    alert('فشل في رفع الصورة: ' + (data.error || 'خطأ غير معروف'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('فشل في رفع الصورة');
+            });
+        }
+    };
+}
+
+// Form submission handler
+document.getElementById('blog-post-form').addEventListener('submit', function(e) {
+    document.getElementById('content').value = quillEn.root.innerHTML;
+    document.getElementById('content_ar').value = quillAr.root.innerHTML;
+});
+
+// Character counter for meta descriptions and excerpts
+function addCharCounter(inputId, maxLength) {
+    const input = document.getElementById(inputId);
+    input.addEventListener('input', function() {
+        const remaining = maxLength - this.value.length;
+        const parent = this.parentNode;
+        let counter = parent.querySelector('.char-counter');
+        if (!counter) {
+            counter = document.createElement('small');
+            counter.className = 'char-counter text-muted d-block';
+            parent.appendChild(counter);
+        }
+        counter.textContent = remaining + ' characters remaining';
+        counter.classList.toggle('text-danger', remaining < 0);
+    });
+}
+
+addCharCounter('excerpt', 300);
+addCharCounter('excerpt_ar', 300);
+addCharCounter('meta_description', 160);
+addCharCounter('meta_description_ar', 160);
+</script>
+{% endblock %}

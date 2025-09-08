@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}
+<span data-lang="en">Edit Manga</span>
+<span data-lang="ar">تحرير المانجا</span>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-edit me-2"></i>
+                    <span data-lang="en">Edit Manga</span>
+                    <span data-lang="ar">تحرير المانجا</span>
+                </h2>
+                <a href="{{ url_for('admin_manage') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    <span data-lang="en">Back to Management</span>
+                    <span data-lang="ar">العودة للإدارة</span>
+                </a>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Edit Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <span data-lang="en">Manga Information</span>
+                        <span data-lang="ar">معلومات المانجا</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <span data-lang="en">Title (English)</span>
+                                        <span data-lang="ar">العنوان (إنجليزي)</span>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="title" name="title" value="{{ manga.title }}" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="title_ar" class="form-label">
+                                        <span data-lang="en">Title (Arabic)</span>
+                                        <span data-lang="ar">العنوان (عربي)</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="title_ar" name="title_ar" value="{{ manga.title_ar or '' }}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="author" class="form-label">
+                                        <span data-lang="en">Author</span>
+                                        <span data-lang="ar">المؤلف</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="author" name="author" value="{{ manga.author or '' }}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="artist" class="form-label">
+                                        <span data-lang="en">Artist</span>
+                                        <span data-lang="ar">الرسام</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="artist" name="artist" value="{{ manga.artist or '' }}">
+                                </div>
+                            </div>
+
+                            <!-- Status and Type -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="type" class="form-label">
+                                        <span data-lang="en">Type</span>
+                                        <span data-lang="ar">النوع</span>
+                                    </label>
+                                    <select class="form-select" id="type" name="type">
+                                        <option value="manga" {{ 'selected' if manga.type == 'manga' else '' }}>
+                                            <span data-lang="en">Manga</span>
+                                            <span data-lang="ar">مانجا</span>
+                                        </option>
+                                        <option value="manhwa" {{ 'selected' if manga.type == 'manhwa' else '' }}>
+                                            <span data-lang="en">Manhwa</span>
+                                            <span data-lang="ar">مانهوا</span>
+                                        </option>
+                                        <option value="manhua" {{ 'selected' if manga.type == 'manhua' else '' }}>
+                                            <span data-lang="en">Manhua</span>
+                                            <span data-lang="ar">مانخوا</span>
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">
+                                        <span data-lang="en">Status</span>
+                                        <span data-lang="ar">الحالة</span>
+                                    </label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="ongoing" {{ 'selected' if manga.status == 'ongoing' else '' }}>
+                                            <span data-lang="en">Ongoing</span>
+                                            <span data-lang="ar">مستمر</span>
+                                        </option>
+                                        <option value="completed" {{ 'selected' if manga.status == 'completed' else '' }}>
+                                            <span data-lang="en">Completed</span>
+                                            <span data-lang="ar">مكتمل</span>
+                                        </option>
+                                        <option value="hiatus" {{ 'selected' if manga.status == 'hiatus' else '' }}>
+                                            <span data-lang="en">Hiatus</span>
+                                            <span data-lang="ar">متوقف</span>
+                                        </option>
+                                        <option value="dropped" {{ 'selected' if manga.status == 'dropped' else '' }}>
+                                            <span data-lang="en">Dropped</span>
+                                            <span data-lang="ar">ملغي</span>
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="age_rating" class="form-label">
+                                        <span data-lang="en">Age Rating</span>
+                                        <span data-lang="ar">التصنيف العمري</span>
+                                    </label>
+                                    <select class="form-select" id="age_rating" name="age_rating">
+                                        <option value="everyone" {{ 'selected' if manga.age_rating == 'everyone' else '' }}>
+                                            <span data-lang="en">Everyone</span>
+                                            <span data-lang="ar">للجميع</span>
+                                        </option>
+                                        <option value="teen" {{ 'selected' if manga.age_rating == 'teen' else '' }}>
+                                            <span data-lang="en">Teen (13+)</span>
+                                            <span data-lang="ar">المراهقين (13+)</span>
+                                        </option>
+                                        <option value="mature" {{ 'selected' if manga.age_rating == 'mature' else '' }}>
+                                            <span data-lang="en">Mature (18+)</span>
+                                            <span data-lang="ar">للبالغين (18+)</span>
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Cover Image -->
+                                <div class="mb-3">
+                                    <label for="cover_image" class="form-label">
+                                        <span data-lang="en">Cover Image</span>
+                                        <span data-lang="ar">صورة الغلاف</span>
+                                    </label>
+                                    <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+                                    {% if manga.cover_image %}
+                                        <div class="mt-2">
+                                            <img src="{{ url_for('static', filename=manga.cover_image) }}" alt="Current Cover" class="img-thumbnail" style="max-width: 150px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">
+                                        <span data-lang="en">Description (English)</span>
+                                        <span data-lang="ar">الوصف (إنجليزي)</span>
+                                    </label>
+                                    <textarea class="form-control" id="description" name="description" rows="5">{{ manga.description or '' }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="description_ar" class="form-label">
+                                        <span data-lang="en">Description (Arabic)</span>
+                                        <span data-lang="ar">الوصف (عربي)</span>
+                                    </label>
+                                    <textarea class="form-control" id="description_ar" name="description_ar" rows="5">{{ manga.description_ar or '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        {% if categories %}
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <span data-lang="en">Categories</span>
+                                <span data-lang="ar">التصنيفات</span>
+                            </label>
+                            <div class="row">
+                                {% for category in categories %}
+                                <div class="col-md-3 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="categories" value="{{ category.id }}" id="category_{{ category.id }}"
+                                               {% if category in manga.categories %}checked{% endif %}>
+                                        <label class="form-check-label" for="category_{{ category.id }}">
+                                            {{ category.name_ar if session.get('language') == 'ar' else category.name }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('admin_manage') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>
+                                <span data-lang="en">Cancel</span>
+                                <span data-lang="ar">إلغاء</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                <span data-lang="en">Update Manga</span>
+                                <span data-lang="ar">تحديث المانجا</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize language manager for dynamic content
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.languageManager) {
+        window.languageManager.updateLanguage();
+    }
+});
+</script>
+{% endblock %}

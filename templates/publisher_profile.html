@@ -1,0 +1,1064 @@
+{% extends "base.html" %}
+
+{% block title %}{{ publisher.username }} - الناشر{% endblock %}
+
+{% block content %}
+<!-- Modern Publisher Hero Section -->
+<div class="publisher-hero-section">
+    <div class="publisher-hero-background"></div>
+    <div class="publisher-hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-8 col-md-7">
+                <div class="publisher-profile-info">
+                    <div class="d-flex align-items-center mb-4">
+                        {% if publisher.profile_picture %}
+                        <div class="publisher-avatar-container">
+                            <img src="{{ publisher.profile_picture }}" 
+                                 class="publisher-avatar" 
+                                 alt="{{ publisher.username }}">
+                            <div class="publisher-avatar-ring"></div>
+                        </div>
+                        {% else %}
+                        <div class="publisher-avatar-container">
+                            <div class="publisher-avatar publisher-avatar-default">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="publisher-avatar-ring"></div>
+                        </div>
+                        {% endif %}
+                        <div class="publisher-details">
+                            <div class="publisher-badge">
+                                <i class="fas fa-crown"></i>
+                                <span data-lang="en">Publisher</span>
+                                <span data-lang="ar">ناشر</span>
+                            </div>
+                            <h1 class="publisher-name">{{ publisher.username }}</h1>
+                            <div class="publisher-meta">
+                                <div class="publisher-meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span data-lang="en">Member since {{ publisher.created_at.strftime('%B %Y') }}</span>
+                                    <span data-lang="ar">عضو منذ {{ publisher.created_at.strftime('%Y/%m') }}</span>
+                                </div>
+                                {% if publisher.country %}
+                                <div class="publisher-meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ publisher.country }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if publisher.bio or publisher.bio_ar %}
+                    <div class="publisher-bio">
+                        <p>
+                            <span data-lang="en">{{ publisher.bio or 'No biography available.' }}</span>
+                            <span data-lang="ar">{{ publisher.bio_ar or publisher.bio or 'لا توجد سيرة متاحة.' }}</span>
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-5">
+                <div class="publisher-stats-container">
+                    <div class="publisher-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon manga-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ total_manga }}</div>
+                                <div class="stat-label">
+                                    <span data-lang="en">Manga</span>
+                                    <span data-lang="ar">مانجا</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon chapters-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ total_chapters }}</div>
+                                <div class="stat-label">
+                                    <span data-lang="en">Chapters</span>
+                                    <span data-lang="ar">فصل</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon views-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-content">
+                                <div class="stat-number">{{ "{:,}".format(total_views) }}</div>
+                                <div class="stat-label">
+                                    <span data-lang="en">Views</span>
+                                    <span data-lang="ar">مشاهدة</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Content Section -->
+<div class="publisher-content-section">
+    <div class="container">
+        <!-- Enhanced Navigation Tabs -->
+        <div class="publisher-nav-container">
+            <ul class="publisher-nav-tabs" id="publisherTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="publisher-nav-link active" id="manga-tab" data-bs-toggle="tab" data-bs-target="#manga" type="button" role="tab">
+                        <i class="fas fa-book"></i>
+                        <span data-lang="en">Published Manga</span>
+                        <span data-lang="ar">المانجا المنشورة</span>
+                        <span class="nav-badge">{{ total_manga }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="publisher-nav-link" id="chapters-tab" data-bs-toggle="tab" data-bs-target="#chapters" type="button" role="tab">
+                        <i class="fas fa-clock"></i>
+                        <span data-lang="en">Recent Updates</span>
+                        <span data-lang="ar">التحديثات الحديثة</span>
+                        <span class="nav-badge">{{ recent_chapters|length }}</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="tab-content publisher-tab-content" id="publisherTabsContent">
+            <!-- Manga Tab -->
+            <div class="tab-pane fade show active" id="manga" role="tabpanel">
+                {% if manga_list %}
+                <div class="manga-grid-header">
+                    <div class="row align-items-center mb-4">
+                        <div class="col-md-6">
+                            <h3 class="section-title">
+                                <span data-lang="en">Published Works</span>
+                                <span data-lang="ar">الأعمال المنشورة</span>
+                            </h3>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <div class="view-controls">
+                                <button class="view-control-btn active" data-view="grid">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                                <button class="view-control-btn" data-view="list">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="publisher-manga-grid" id="mangaGrid">
+                    {% for item in manga_list %}
+                    <div class="publisher-manga-card">
+                        <div class="manga-card-inner">
+                            <div class="manga-cover-container">
+                                {% if item.manga.cover_image %}
+                                <img src="{{ url_for('static', filename=item.manga.cover_image.replace('static/', '')) }}" 
+                                     class="manga-cover-image" 
+                                     alt="{{ item.manga.title }}">
+                                {% else %}
+                                <div class="manga-cover-placeholder">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="manga-overlay">
+                                    <div class="manga-actions">
+                                        <a href="{{ url_for('manga_detail_by_id', manga_id=item.manga.id) }}" 
+                                           class="action-btn read-btn">
+                                            <i class="fas fa-eye"></i>
+                                            <span data-lang="en">View</span>
+                                            <span data-lang="ar">عرض</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <div class="manga-status-badges">
+                                    <span class="manga-type-badge">{{ item.manga.type.title() }}</span>
+                                    <span class="manga-status-badge status-{{ item.manga.status }}">
+                                        {{ item.manga.status.title() }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="manga-info">
+                                <h4 class="manga-title">
+                                    <a href="{{ url_for('manga_detail_by_id', manga_id=item.manga.id) }}">
+                                        {{ item.manga.title }}
+                                    </a>
+                                </h4>
+                                {% if item.manga.title_ar %}
+                                <p class="manga-title-ar" dir="rtl">{{ item.manga.title_ar }}</p>
+                                {% endif %}
+                                
+                                <div class="manga-stats">
+                                    <div class="stat-item">
+                                        <i class="fas fa-list"></i>
+                                        <span>{{ item.chapter_count }}</span>
+                                        <span data-lang="en">chapters</span>
+                                        <span data-lang="ar">فصل</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="fas fa-eye"></i>
+                                        <span>{{ "{:,}".format(item.manga.views) }}</span>
+                                    </div>
+                                </div>
+                                
+                                {% if item.latest_chapter %}
+                                <div class="latest-update">
+                                    <i class="fas fa-clock"></i>
+                                    <span data-lang="en">Ch.{{ item.latest_chapter.chapter_number }}</span>
+                                    <span data-lang="ar">ف.{{ item.latest_chapter.chapter_number }}</span>
+                                    <span class="update-date">{{ item.latest_chapter.created_at.strftime('%Y-%m-%d') }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4 class="empty-title">
+                        <span data-lang="en">No Manga Published</span>
+                        <span data-lang="ar">لم يتم نشر أي مانجا</span>
+                    </h4>
+                    <p class="empty-text">
+                        <span data-lang="en">This publisher hasn't published any manga yet.</span>
+                        <span data-lang="ar">لم يقم هذا الناشر بنشر أي مانجا بعد.</span>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Chapters Tab -->
+            <div class="tab-pane fade" id="chapters" role="tabpanel">
+                {% if recent_chapters %}
+                <div class="recent-chapters-header">
+                    <h3 class="section-title">
+                        <span data-lang="en">Recent Updates</span>
+                        <span data-lang="ar">التحديثات الحديثة</span>
+                    </h3>
+                </div>
+                
+                <div class="chapters-timeline">
+                    {% for chapter in recent_chapters %}
+                    <div class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="chapter-card">
+                                <div class="chapter-info">
+                                    <h5 class="chapter-title">
+                                        <a href="{{ url_for("read_chapter_by_id", chapter_id=chapter.id) }}">
+                                            {{ chapter.manga.title }}
+                                        </a>
+                                    </h5>
+                                    {% if chapter.manga.title_ar %}
+                                    <p class="chapter-title-ar" dir="rtl">{{ chapter.manga.title_ar }}</p>
+                                    {% endif %}
+                                    
+                                    <div class="chapter-meta">
+                                        <span class="chapter-number">
+                                            <span data-lang="en">Chapter {{ chapter.chapter_number }}</span>
+                                            <span data-lang="ar">الفصل {{ chapter.chapter_number }}</span>
+                                        </span>
+                                        {% if chapter.title %}
+                                        <span class="chapter-subtitle">{{ chapter.title }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="chapter-details">
+                                        <span class="pages-count">
+                                            {{ chapter.page_images.count() }}
+                                            <span data-lang="en">pages</span>
+                                            <span data-lang="ar">صفحة</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="chapter-date">
+                                    <div class="date-display">
+                                        <span class="date-day">{{ chapter.created_at.strftime('%d') }}</span>
+                                        <span class="date-month">{{ chapter.created_at.strftime('%b') }}</span>
+                                    </div>
+                                    <div class="date-time">{{ chapter.created_at.strftime('%H:%M') }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4 class="empty-title">
+                        <span data-lang="en">No Recent Updates</span>
+                        <span data-lang="ar">لا توجد تحديثات حديثة</span>
+                    </h4>
+                    <p class="empty-text">
+                        <span data-lang="en">No chapters have been published recently.</span>
+                        <span data-lang="ar">لم يتم نشر أي فصول مؤخراً.</span>
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Publisher Hero Section */
+.publisher-hero-section {
+    position: relative;
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    overflow: hidden;
+    padding: 4rem 0 6rem;
+    min-height: 60vh;
+}
+
+.publisher-hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.08) 0%, transparent 50%);
+}
+
+.publisher-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(0,0,0,0.1) 0%, transparent 100%);
+}
+
+/* Publisher Profile Info */
+.publisher-avatar-container {
+    position: relative;
+    margin-right: 2rem;
+}
+
+.publisher-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.publisher-avatar-default {
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.publisher-avatar-ring {
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.publisher-badge {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.publisher-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.publisher-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.publisher-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.publisher-bio {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.publisher-bio p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Publisher Stats */
+.publisher-stats-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.publisher-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.stat-card:hover::before {
+    left: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.manga-icon { background: var(--gradient-primary); }
+.chapters-icon { background: var(--gradient-success); }
+.views-icon { background: var(--gradient-warning); }
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Content Section */
+.publisher-content-section {
+    background: var(--bg-primary);
+    padding: 4rem 0;
+    margin-top: -3rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Navigation Tabs */
+.publisher-nav-container {
+    margin-bottom: 3rem;
+}
+
+.publisher-nav-tabs {
+    display: flex;
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    list-style: none;
+    margin: 0;
+    box-shadow: var(--shadow-lg);
+}
+
+.publisher-nav-link {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    transition: var(--transition);
+    position: relative;
+    cursor: pointer;
+}
+
+.publisher-nav-link.active {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.publisher-nav-link:hover:not(.active) {
+    background: var(--bg-tertiary);
+    color: var(--text-color);
+}
+
+.nav-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+.publisher-nav-link.active .nav-badge {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin: 0;
+}
+
+/* Manga Grid */
+.manga-grid-header {
+    margin-bottom: 2rem;
+}
+
+.view-controls {
+    display: flex;
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.view-control-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.view-control-btn.active,
+.view-control-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.publisher-manga-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.publisher-manga-card {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    position: relative;
+}
+
+.publisher-manga-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.manga-card-inner {
+    position: relative;
+}
+
+.manga-cover-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.manga-cover-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.manga-cover-placeholder {
+    width: 100%;
+    height: 200px;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 3rem;
+}
+
+.publisher-manga-card:hover .manga-cover-image {
+    transform: scale(1.05);
+}
+
+.manga-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.publisher-manga-card:hover .manga-overlay {
+    opacity: 1;
+}
+
+.action-btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    background: var(--primary-dark);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.manga-status-badges {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.manga-type-badge,
+.manga-status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+
+.manga-type-badge {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.status-ongoing {
+    background: var(--success-color);
+}
+
+.status-completed {
+    background: var(--info-color);
+}
+
+.status-hiatus {
+    background: var(--warning-color);
+}
+
+.manga-info {
+    padding: 1.5rem;
+}
+
+.manga-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.manga-title a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.manga-title a:hover {
+    color: var(--primary-color);
+}
+
+.manga-title-ar {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+}
+
+.manga-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.latest-update {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+}
+
+.update-date {
+    margin-left: auto;
+}
+
+/* Timeline */
+.chapters-timeline {
+    position: relative;
+}
+
+.chapters-timeline::before {
+    content: '';
+    position: absolute;
+    left: 2rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 1.5rem;
+    top: 1rem;
+    width: 1rem;
+    height: 1rem;
+    background: var(--primary-color);
+    border-radius: 50%;
+    border: 3px solid var(--bg-primary);
+    z-index: 2;
+}
+
+.timeline-content {
+    margin-left: 4rem;
+}
+
+.chapter-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: var(--transition);
+}
+
+.chapter-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.chapter-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+
+.chapter-title a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.chapter-title a:hover {
+    color: var(--primary-color);
+}
+
+.chapter-title-ar {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 0.75rem 0;
+}
+
+.chapter-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.chapter-number {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.chapter-subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.chapter-details {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.chapter-date {
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.date-display {
+    background: var(--bg-tertiary);
+    border-radius: var(--border-radius);
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.date-day {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.date-month {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.date-time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+.empty-title {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.empty-text {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .publisher-hero-section {
+        padding: 2rem 0 4rem;
+        min-height: 50vh;
+    }
+    
+    .publisher-name {
+        font-size: 2rem;
+    }
+    
+    .publisher-avatar {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .publisher-stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 1.2rem;
+    }
+    
+    .publisher-manga-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .publisher-nav-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .timeline-content {
+        margin-left: 3rem;
+    }
+    
+    .chapter-card {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .chapter-date {
+        align-self: flex-end;
+    }
+}
+
+@media (max-width: 576px) {
+    .publisher-manga-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .manga-grid-header .row {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .view-controls {
+        justify-content: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View switcher functionality
+    const viewControls = document.querySelectorAll('.view-control-btn');
+    const mangaGrid = document.getElementById('mangaGrid');
+    
+    viewControls.forEach(btn => {
+        btn.addEventListener('click', function() {
+            viewControls.forEach(control => control.classList.remove('active'));
+            this.classList.add('active');
+            
+            const view = this.dataset.view;
+            if (view === 'list') {
+                mangaGrid.classList.add('list-view');
+            } else {
+                mangaGrid.classList.remove('list-view');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

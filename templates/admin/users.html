@@ -1,0 +1,1125 @@
+{% extends "admin/base.html" %}
+
+{% block title %}User Management - إدارة المستخدمين{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <span data-lang="en">User Management</span>
+        <span data-lang="ar">إدارة المستخدمين</span>
+    </h2>
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="fas fa-user-plus me-2"></i>
+            <span data-lang="en">Add User</span>
+            <span data-lang="ar">إضافة مستخدم</span>
+        </button>
+        <button type="button" class="btn btn-info" onclick="exportUsers()">
+            <i class="fas fa-download me-2"></i>
+            <span data-lang="en">Export</span>
+            <span data-lang="ar">تصدير</span>
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Total Users</span>
+                            <span data-lang="ar">إجمالي المستخدمين</span>
+                        </h6>
+                        <h3>{{ total_users or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Active</span>
+                            <span data-lang="ar">نشط</span>
+                        </h6>
+                        <h3>{{ active_users or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-user-check fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Premium</span>
+                            <span data-lang="ar">مدفوع</span>
+                        </h6>
+                        <h3>{{ premium_users or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-crown fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Admins</span>
+                            <span data-lang="ar">المديرون</span>
+                        </h6>
+                        <h3>{{ admin_users or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-user-shield fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" class="form-control" name="search" 
+                       placeholder-en="Search users..." 
+                       placeholder-ar="البحث في المستخدمين..."
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="role">
+                    <option value="">
+                        <span data-lang="en">All Roles</span>
+                        <span data-lang="ar">جميع الأدوار</span>
+                    </option>
+                    <option value="admin" {{ 'selected' if request.args.get('role') == 'admin' }}>
+                        <span data-lang="en">Admin</span>
+                        <span data-lang="ar">مدير</span>
+                    </option>
+                    <option value="user" {{ 'selected' if request.args.get('role') == 'user' }}>
+                        <span data-lang="en">User</span>
+                        <span data-lang="ar">مستخدم</span>
+                    </option>
+                    <option value="premium" {{ 'selected' if request.args.get('role') == 'premium' }}>
+                        <span data-lang="en">Premium</span>
+                        <span data-lang="ar">مدفوع</span>
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="status">
+                    <option value="">
+                        <span data-lang="en">All Status</span>
+                        <span data-lang="ar">جميع الحالات</span>
+                    </option>
+                    <option value="active" {{ 'selected' if request.args.get('status') == 'active' }}>
+                        <span data-lang="en">Active</span>
+                        <span data-lang="ar">نشط</span>
+                    </option>
+                    <option value="inactive" {{ 'selected' if request.args.get('status') == 'inactive' }}>
+                        <span data-lang="en">Inactive</span>
+                        <span data-lang="ar">غير نشط</span>
+                    </option>
+                    <option value="banned" {{ 'selected' if request.args.get('status') == 'banned' }}>
+                        <span data-lang="en">Banned</span>
+                        <span data-lang="ar">محظور</span>
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="sort">
+                    <option value="newest" {{ 'selected' if request.args.get('sort') == 'newest' }}>
+                        <span data-lang="en">Newest First</span>
+                        <span data-lang="ar">الأحدث أولاً</span>
+                    </option>
+                    <option value="oldest" {{ 'selected' if request.args.get('sort') == 'oldest' }}>
+                        <span data-lang="en">Oldest First</span>
+                        <span data-lang="ar">الأقدم أولاً</span>
+                    </option>
+                    <option value="alphabetical" {{ 'selected' if request.args.get('sort') == 'alphabetical' }}>
+                        <span data-lang="en">A-Z</span>
+                        <span data-lang="ar">أبجدي</span>
+                    </option>
+                    <option value="most_active" {{ 'selected' if request.args.get('sort') == 'most_active' }}>
+                        <span data-lang="en">Most Active</span>
+                        <span data-lang="ar">الأكثر نشاطاً</span>
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>
+                    <span data-lang="en">Filter</span>
+                    <span data-lang="ar">فلترة</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>
+                <span data-lang="en">Users List</span>
+                <span data-lang="ar">قائمة المستخدمين</span>
+                {% if users %}
+                    <span class="badge bg-secondary ms-2">{{ users.total }}</span>
+                {% endif %}
+            </h5>
+            <div class="btn-group btn-group-sm">
+                <button type="button" class="btn btn-outline-success" onclick="bulkActivate()">
+                    <i class="fas fa-check me-1"></i>
+                    <span data-lang="en">Activate Selected</span>
+                    <span data-lang="ar">تفعيل المحدد</span>
+                </button>
+                <button type="button" class="btn btn-outline-warning" onclick="bulkDeactivate()">
+                    <i class="fas fa-pause me-1"></i>
+                    <span data-lang="en">Deactivate Selected</span>
+                    <span data-lang="ar">إلغاء تفعيل المحدد</span>
+                </button>
+                <button type="button" class="btn btn-outline-danger" onclick="bulkDelete()">
+                    <i class="fas fa-trash me-1"></i>
+                    <span data-lang="en">Delete Selected</span>
+                    <span data-lang="ar">حذف المحدد</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if users and users.items %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            <input type="checkbox" class="form-check-input" id="selectAll">
+                        </th>
+                        <th>
+                            <span data-lang="en">User</span>
+                            <span data-lang="ar">المستخدم</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Email</span>
+                            <span data-lang="ar">البريد الإلكتروني</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Role</span>
+                            <span data-lang="ar">الدور</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Status</span>
+                            <span data-lang="ar">الحالة</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Activity</span>
+                            <span data-lang="ar">النشاط</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Joined</span>
+                            <span data-lang="ar">تاريخ الانضمام</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Actions</span>
+                            <span data-lang="ar">الإجراءات</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="form-check-input user-checkbox" value="{{ user.id }}">
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ user.avatar_url or '/static/img/default-avatar.svg' }}" 
+                                     class="rounded-circle me-3" width="40" height="40" alt="{{ user.username }}">
+                                <div>
+                                    <h6 class="mb-1">{{ user.username }}</h6>
+                                    {% if user.display_name %}
+                                        <small class="text-muted">{{ user.display_name }}</small>
+                                    {% endif %}
+                                    <div class="mt-1">
+                                        {% if user.is_admin %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-shield-alt me-1"></i>
+                                                <span data-lang="en">Admin</span>
+                                                <span data-lang="ar">مدير</span>
+                                            </span>
+                                        {% endif %}
+                                        {% if user.is_publisher %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-upload me-1"></i>
+                                                <span data-lang="en">Publisher</span>
+                                                <span data-lang="ar">ناشر</span>
+                                            </span>
+                                        {% endif %}
+                                        {% if user.is_translator %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-language me-1"></i>
+                                                <span data-lang="en">Translator</span>
+                                                <span data-lang="ar">مترجم</span>
+                                            </span>
+                                        {% endif %}
+                                        {% if user.is_premium %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-crown me-1"></i>
+                                                <span data-lang="en">Premium</span>
+                                                <span data-lang="ar">مدفوع</span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ user.email }}</div>
+                            {% if user.email_verified %}
+                                <small class="text-success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    <span data-lang="en">Verified</span>
+                                    <span data-lang="ar">مُتحقق</span>
+                                </small>
+                            {% else %}
+                                <small class="text-warning">
+                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                    <span data-lang="en">Unverified</span>
+                                    <span data-lang="ar">غير مُتحقق</span>
+                                </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 flex-wrap">
+                                {% if user.is_admin %}
+                                    <span class="badge bg-danger">
+                                        <span data-lang="en">Admin</span>
+                                        <span data-lang="ar">مدير</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_publisher %}
+                                    <span class="badge bg-info">
+                                        <span data-lang="en">Publisher</span>
+                                        <span data-lang="ar">ناشر</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_translator %}
+                                    <span class="badge bg-success">
+                                        <span data-lang="en">Translator</span>
+                                        <span data-lang="ar">مترجم</span>
+                                    </span>
+                                {% endif %}
+                                {% if user.is_premium %}
+                                    <span class="badge bg-warning">
+                                        <span data-lang="en">Premium</span>
+                                        <span data-lang="ar">مدفوع</span>
+                                    </span>
+                                {% endif %}
+                                {% if not user.is_admin and not user.is_publisher and not user.is_translator and not user.is_premium %}
+                                    <span class="badge bg-secondary">
+                                        <span data-lang="en">Regular User</span>
+                                        <span data-lang="ar">مستخدم عادي</span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">
+                                    <span data-lang="en">Active</span>
+                                    <span data-lang="ar">نشط</span>
+                                </span>
+                            {% elif user.is_banned %}
+                                <span class="badge bg-danger">
+                                    <span data-lang="en">Banned</span>
+                                    <span data-lang="ar">محظور</span>
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <span data-lang="en">Inactive</span>
+                                    <span data-lang="ar">غير نشط</span>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex mb-1">
+                                    <i class="fas fa-book text-primary me-1"></i>
+                                    <span>{{ user.reading_count or 0 }}</span>
+                                </div>
+                                <div class="d-flex mb-1">
+                                    <i class="fas fa-bookmark text-warning me-1"></i>
+                                    <span>{{ user.bookmarks_count or 0 }}</span>
+                                </div>
+                                <div class="d-flex">
+                                    <i class="fas fa-comment text-info me-1"></i>
+                                    <span>{{ user.comments_count or 0 }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ user.created_at.strftime('%Y-%m-%d') }}</div>
+                            <small class="text-muted">{{ user.created_at.strftime('%H:%M') }}</small>
+                            {% if user.last_login %}
+                                <br><small class="text-success">
+                                    <span data-lang="en">Last:</span>
+                                    <span data-lang="ar">آخر دخول:</span>
+                                    {{ user.last_login.strftime('%m/%d') }}
+                                </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('user_profile', user_id=user.id) }}" 
+                                   class="btn btn-outline-primary" target="_blank" title="View Profile">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button class="btn btn-outline-secondary" 
+                                        onclick="editUser({{ user.id }})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-primary dropdown-toggle btn-sm" 
+                                            data-bs-toggle="dropdown" title="Change Role">
+                                        <i class="fas fa-user-cog"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><h6 class="dropdown-header">
+                                            <span data-lang="en">User Roles</span>
+                                            <span data-lang="ar">أدوار المستخدم</span>
+                                        </h6></li>
+                                        <li>
+                                            <button class="dropdown-item {{ 'active' if user.is_admin }}" 
+                                                    onclick="toggleUserRole({{ user.id }}, 'admin', {{ 'true' if user.is_admin else 'false' }})">
+                                                <i class="fas fa-shield-alt me-2 {{ 'text-danger' if user.is_admin else 'text-muted' }}"></i>
+                                                <span data-lang="en">{{ 'Remove Admin' if user.is_admin else 'Make Admin' }}</span>
+                                                <span data-lang="ar">{{ 'إزالة المدير' if user.is_admin else 'جعل مدير' }}</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item {{ 'active' if user.is_publisher }}" 
+                                                    onclick="toggleUserRole({{ user.id }}, 'publisher', {{ 'true' if user.is_publisher else 'false' }})">
+                                                <i class="fas fa-upload me-2 {{ 'text-info' if user.is_publisher else 'text-muted' }}"></i>
+                                                <span data-lang="en">{{ 'Remove Publisher' if user.is_publisher else 'Make Publisher' }}</span>
+                                                <span data-lang="ar">{{ 'إزالة الناشر' if user.is_publisher else 'جعل ناشر' }}</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item {{ 'active' if user.is_translator }}" 
+                                                    onclick="toggleUserRole({{ user.id }}, 'translator', {{ 'true' if user.is_translator else 'false' }})">
+                                                <i class="fas fa-language me-2 {{ 'text-success' if user.is_translator else 'text-muted' }}"></i>
+                                                <span data-lang="en">{{ 'Remove Translator' if user.is_translator else 'Make Translator' }}</span>
+                                                <span data-lang="ar">{{ 'إزالة المترجم' if user.is_translator else 'جعل مترجم' }}</span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button class="btn btn-outline-{{ 'warning' if user.is_active else 'success' }}" 
+                                        onclick="toggleUserStatus({{ user.id }})" 
+                                        title="{{ 'Deactivate' if user.is_active else 'Activate' }}">
+                                    {% if user.is_active %}
+                                        <i class="fas fa-user-slash"></i>
+                                    {% else %}
+                                        <i class="fas fa-user-check"></i>
+                                    {% endif %}
+                                </button>
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" onclick="sendMessage({{ user.id }})">
+                                                <i class="fas fa-envelope me-2"></i>
+                                                <span data-lang="en">Send Message</span>
+                                                <span data-lang="ar">إرسال رسالة</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="resetPassword({{ user.id }})">
+                                                <i class="fas fa-key me-2"></i>
+                                                <span data-lang="en">Reset Password</span>
+                                                <span data-lang="ar">إعادة تعيين كلمة المرور</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="viewActivity({{ user.id }})">
+                                                <i class="fas fa-chart-line me-2"></i>
+                                                <span data-lang="en">View Activity</span>
+                                                <span data-lang="ar">عرض النشاط</span>
+                                            </button>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" onclick="deleteUser({{ user.id }}, '{{ user.username }}', {{ 'true' if user.is_admin else 'false' }})">
+                                                <i class="fas fa-trash me-2"></i>
+                                                <span data-lang="en">Delete</span>
+                                                <span data-lang="ar">حذف</span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if users.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if users.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_users', page=users.prev_num, **request.args) }}">
+                            <span data-lang="en">Previous</span>
+                            <span data-lang="ar">السابق</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in users.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != users.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_users', page=page_num, **request.args) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if users.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_users', page=users.next_num, **request.args) }}">
+                            <span data-lang="en">Next</span>
+                            <span data-lang="ar">التالي</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">
+                <span data-lang="en">No users found</span>
+                <span data-lang="ar">لم يتم العثور على مستخدمين</span>
+            </h5>
+            <p class="text-muted">
+                <span data-lang="en">Try adjusting your search filters</span>
+                <span data-lang="ar">جرب تعديل فلاتر البحث</span>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.user-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+});
+
+function toggleUserStatus(userId) {
+    fetch(`/admin/users/${userId}/toggle-status`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('تم تحديث حالة المستخدم بنجاح', 'success');
+            location.reload();
+        } else {
+            showNotification('حدث خطأ في تحديث حالة المستخدم', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('حدث خطأ في تحديث حالة المستخدم', 'danger');
+    });
+}
+
+function editUser(userId) {
+    // Show edit modal or redirect to edit page
+    const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+    // Load user data into modal
+    fetch(`/admin/users/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Fill modal with user data
+                document.getElementById('editUserId').value = userId;
+                document.getElementById('editUsername').value = data.user.username;
+                document.getElementById('editEmail').value = data.user.email;
+                document.getElementById('editBio').value = data.user.bio || '';
+                document.getElementById('editCountry').value = data.user.country || '';
+                editModal.show();
+            } else {
+                showNotification('حدث خطأ في تحميل بيانات المستخدم', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('حدث خطأ في تحميل بيانات المستخدم', 'danger');
+        });
+}
+
+function deleteUser(userId, username, isAdmin) {
+    let confirmMessage = `هل أنت متأكد من حذف المستخدم "${username}"؟ لا يمكن التراجع عن هذا الإجراء.`;
+    
+    if (isAdmin) {
+        confirmMessage = `⚠️ تحذير: أنت على وشك حذف حساب مدير!\n\nالمستخدم: ${username}\nالنوع: مدير\n\nسيتم التحقق من وجود مدراء آخرين قبل الحذف.\nهل أنت متأكد من المتابعة؟`;
+    }
+    
+    if (confirm(confirmMessage)) {
+        fetch(`/admin/users/${userId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // Handle redirect for self-deletion
+                window.location.href = response.url;
+                return;
+            }
+            
+            if (response.ok) {
+                showNotification('تم حذف المستخدم بنجاح', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotification('حدث خطأ في حذف المستخدم', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('حدث خطأ في حذف المستخدم', 'danger');
+        });
+    }
+}
+
+function sendMessage(userId) {
+    // Implement send message functionality
+    showNotification('Message feature coming soon', 'info');
+}
+
+function resetPassword(userId) {
+    if (confirm('Reset password for this user? They will receive an email with instructions.')) {
+        fetch(`/admin/users/${userId}/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Password reset email sent', 'success');
+            } else {
+                showNotification('Error sending reset email', 'danger');
+            }
+        });
+    }
+}
+
+function viewActivity(userId) {
+    window.location.href = `/admin/users/${userId}/activity`;
+}
+
+function exportUsers() {
+    window.location.href = '/admin/users/export';
+}
+
+function bulkActivate() {
+    const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+    if (selectedUsers.length === 0) {
+        showNotification('Please select users to activate', 'warning');
+        return;
+    }
+    
+    if (confirm(`Activate ${selectedUsers.length} selected users?`)) {
+        fetch('/admin/users/bulk-activate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user_ids: selectedUsers})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Users activated successfully', 'success');
+                location.reload();
+            } else {
+                showNotification('Error activating users', 'danger');
+            }
+        });
+    }
+}
+
+function bulkDeactivate() {
+    const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+    if (selectedUsers.length === 0) {
+        showNotification('Please select users to deactivate', 'warning');
+        return;
+    }
+    
+    if (confirm(`Deactivate ${selectedUsers.length} selected users?`)) {
+        fetch('/admin/users/bulk-deactivate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user_ids: selectedUsers})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Users deactivated successfully', 'success');
+                location.reload();
+            } else {
+                showNotification('Error deactivating users', 'danger');
+            }
+        });
+    }
+}
+
+function bulkDelete() {
+    const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+    if (selectedUsers.length === 0) {
+        showNotification('يرجى اختيار المستخدمين المراد حذفهم', 'warning');
+        return;
+    }
+    
+    const confirmMessage = `هل أنت متأكد من حذف ${selectedUsers.length} مستخدم محدد؟\n\n⚠️ تحذير: لا يمكن التراجع عن هذا الإجراء.\n\nملاحظة: سيتم التحقق من وجود مدير واحد على الأقل قبل حذف أي حساب إداري.`;
+    
+    if (confirm(confirmMessage)) {
+        fetch('/admin/users/bulk-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({user_ids: selectedUsers})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(`تم حذف ${data.deleted_count || selectedUsers.length} مستخدم بنجاح`, 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                showNotification(data.message || 'حدث خطأ في حذف المستخدمين', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('حدث خطأ في حذف المستخدمين', 'danger');
+        });
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Profile picture preview function for admin
+function previewAdminProfileImage(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showNotification('يرجى اختيار ملف صورة صالح (JPG, PNG, GIF)', 'warning');
+            input.value = '';
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification('يجب أن يكون حجم الصورة أقل من 5 ميجابايت', 'warning');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('admin-profile-preview');
+            if (preview) {
+                preview.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <span data-lang="en">Add New User</span>
+                    <span data-lang="ar">إضافة مستخدم جديد</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('admin_create_user') }}" method="POST" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">
+                                    <span data-lang="en">Username</span>
+                                    <span data-lang="ar">اسم المستخدم</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <span data-lang="en">Email</span>
+                                    <span data-lang="ar">البريد الإلكتروني</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password" class="form-label">
+                                    <span data-lang="en">Password</span>
+                                    <span data-lang="ar">كلمة المرور</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="language_preference" class="form-label">
+                                    <span data-lang="en">Language</span>
+                                    <span data-lang="ar">اللغة</span>
+                                </label>
+                                <select class="form-control" id="language_preference" name="language_preference">
+                                    <option value="ar">العربية</option>
+                                    <option value="en">English</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="country" class="form-label">
+                                    <span data-lang="en">Country</span>
+                                    <span data-lang="ar">البلد</span>
+                                </label>
+                                <input type="text" class="form-control" id="country" name="country">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bio" class="form-label">
+                                    <span data-lang="en">Bio</span>
+                                    <span data-lang="ar">نبذة</span>
+                                </label>
+                                <input type="text" class="form-control" id="bio" name="bio">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Picture Upload -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label for="profile_picture" class="form-label">
+                                    <i class="fas fa-image me-2"></i>
+                                    <span data-lang="en">Profile Picture</span>
+                                    <span data-lang="ar">صورة الملف الشخصي</span>
+                                </label>
+                                <div class="profile-upload-container">
+                                    <div class="profile-preview mb-3 text-center">
+                                        <img id="admin-profile-preview" src="/static/img/default-avatar.svg" 
+                                             class="rounded-circle border" width="100" height="100" alt="Profile Preview">
+                                    </div>
+                                    <input type="file" class="form-control" id="admin_profile_picture" 
+                                           name="profile_picture" accept="image/*" onchange="previewAdminProfileImage(this)">
+                                    <div class="form-text">
+                                        <span data-lang="en">Maximum file size: 5MB. Accepted formats: JPG, PNG, GIF</span>
+                                        <span data-lang="ar">الحد الأقصى لحجم الملف: 5 ميجابايت. الصيغ المقبولة: JPG, PNG, GIF</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <span data-lang="en">User Permissions</span>
+                                        <span data-lang="ar">صلاحيات المستخدم</span>
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" id="is_admin" name="is_admin">
+                                                <label class="form-check-label" for="is_admin">
+                                                    <span data-lang="en">Admin</span>
+                                                    <span data-lang="ar">مدير</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" id="is_publisher" name="is_publisher">
+                                                <label class="form-check-label" for="is_publisher">
+                                                    <span data-lang="en">Publisher</span>
+                                                    <span data-lang="ar">ناشر</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="1" id="is_translator" name="is_translator">
+                                                <label class="form-check-label" for="is_translator">
+                                                    <span data-lang="en">Translator</span>
+                                                    <span data-lang="ar">مترجم</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>
+                        <span data-lang="en">Create User</span>
+                        <span data-lang="ar">إنشاء المستخدم</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">
+                    <i class="fas fa-user-edit me-2"></i>
+                    <span data-lang="en">Edit User</span>
+                    <span data-lang="ar">تعديل المستخدم</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editUserForm">
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId" name="user_id">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editUsername" class="form-label">
+                                <span data-lang="en">Username</span>
+                                <span data-lang="ar">اسم المستخدم</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="editUsername" name="username" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmail" class="form-label">
+                                <span data-lang="en">Email</span>
+                                <span data-lang="ar">البريد الإلكتروني</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" class="form-control" id="editEmail" name="email" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editCountry" class="form-label">
+                                <span data-lang="en">Country</span>
+                                <span data-lang="ar">البلد</span>
+                            </label>
+                            <input type="text" class="form-control" id="editCountry" name="country">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editLanguage" class="form-label">
+                                <span data-lang="en">Language</span>
+                                <span data-lang="ar">اللغة</span>
+                            </label>
+                            <select class="form-select" id="editLanguage" name="language_preference">
+                                <option value="ar">العربية</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="editBio" class="form-label">
+                            <span data-lang="en">Bio</span>
+                            <span data-lang="ar">النبذة الشخصية</span>
+                        </label>
+                        <textarea class="form-control" id="editBio" name="bio" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <span data-lang="en">Cancel</span>
+                        <span data-lang="ar">إلغاء</span>
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>
+                        <span data-lang="en">Save Changes</span>
+                        <span data-lang="ar">حفظ التغييرات</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle edit form submission
+document.getElementById('editUserForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const userId = document.getElementById('editUserId').value;
+    const formData = new FormData(this);
+    
+    fetch(`/admin/users/${userId}/edit`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            showNotification('تم تحديث بيانات المستخدم بنجاح', 'success');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+            location.reload();
+        } else {
+            showNotification('حدث خطأ في تحديث بيانات المستخدم', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('حدث خطأ في تحديث بيانات المستخدم', 'danger');
+    });
+});
+
+// Handle role toggling
+function toggleUserRole(userId, roleType, currentStatus) {
+    const roleName = {
+        'admin': { en: 'Admin', ar: 'مدير' },
+        'publisher': { en: 'Publisher', ar: 'ناشر' },
+        'translator': { en: 'Translator', ar: 'مترجم' }
+    };
+    
+    const action = currentStatus ? 'remove' : 'add';
+    const actionText = {
+        'add': { en: 'add', ar: 'إضافة' },
+        'remove': { en: 'remove', ar: 'إزالة' }
+    };
+    
+    const confirmMessage = `${actionText[action].ar} ${roleName[roleType].ar} ${currentStatus ? 'من' : 'إلى'} هذا المستخدم؟`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    fetch(`/admin/users/${userId}/toggle-${roleType}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => {
+        if (response.ok) {
+            const successMessage = currentStatus 
+                ? `تم إزالة دور ${roleName[roleType].ar} بنجاح`
+                : `تم إضافة دور ${roleName[roleType].ar} بنجاح`;
+            showNotification(successMessage, 'success');
+            
+            // Reload the page to reflect changes
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showNotification('حدث خطأ في تغيير دور المستخدم', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('حدث خطأ في تغيير دور المستخدم', 'danger');
+    });
+}
+</script>
+{% endblock %}

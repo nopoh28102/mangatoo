@@ -1,0 +1,336 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة بوابات الدفع - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>إدارة بوابات الدفع</h2>
+        <div>
+            <a href="{{ url_for('admin_add_payment_gateway') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>إضافة بوابة دفع
+            </a>
+        </div>
+    </div>
+
+    {% if gateways %}
+    <div class="row">
+        {% for gateway in gateways %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 {{ 'border-success' if gateway.is_active else 'border-secondary' }}">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">{{ gateway.display_name_ar or gateway.display_name }}</h6>
+                    <div>
+                        <span class="badge bg-{{ 'success' if gateway.is_active else 'secondary' }}">
+                            {{ 'مفعلة' if gateway.is_active else 'معطلة' }}
+                        </span>
+                        {% if gateway.is_default %}
+                        <span class="badge bg-primary ms-1">افتراضية</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        {% if gateway.gateway_type == 'stripe' %}
+                        <i class="fab fa-stripe-s fa-2x text-info me-3"></i>
+                        {% elif gateway.gateway_type == 'paypal' %}
+                        <i class="fab fa-paypal fa-2x text-primary me-3"></i>
+                        {% else %}
+                        <i class="fas fa-credit-card fa-2x text-secondary me-3"></i>
+                        {% endif %}
+                        <div>
+                            <small class="text-muted">{{ gateway.gateway_type|title }}</small>
+                            <br>
+                            <span class="badge bg-{{ 'warning' if gateway.is_sandbox else 'success' }}">
+                                {{ 'تجريبي' if gateway.is_sandbox else 'إنتاج' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    {% if gateway.description_ar or gateway.description %}
+                    <p class="card-text small">{{ gateway.description_ar or gateway.description }}</p>
+                    {% endif %}
+
+                    {% if gateway.supported_currencies %}
+                    <div class="mb-2">
+                        <small class="text-muted">العملات المدعومة:</small>
+                        <div>
+                            {% for currency in gateway.supported_currencies[:3] %}
+                            <span class="badge bg-light text-dark">{{ currency }}</span>
+                            {% endfor %}
+                            {% if gateway.supported_currencies|length > 3 %}
+                            <span class="badge bg-light text-dark">+{{ gateway.supported_currencies|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <div class="btn-group w-100" role="group">
+                        <a href="{{ url_for('admin_edit_payment_gateway', gateway_id=gateway.id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> تعديل
+                        </a>
+                        <form method="POST" action="{{ url_for('admin_toggle_payment_gateway', gateway_id=gateway.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-outline-{{ 'warning' if gateway.is_active else 'success' }} btn-sm">
+                                <i class="fas fa-{{ 'pause' if gateway.is_active else 'play' }}"></i>
+                                {{ 'تعطيل' if gateway.is_active else 'تفعيل' }}
+                            </button>
+                        </form>
+                        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal{{ gateway.id }}">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal{{ gateway.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-exclamation-triangle me-2"></i>تأكيد الحذف
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>هل أنت متأكد من حذف بوابة <strong>{{ gateway.display_name_ar or gateway.display_name }}</strong>؟</p>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>تحذير:</strong> إذا لم تكن هناك عمليات دفع مرتبطة، ستُحذف البوابة نهائياً!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                        <form method="POST" action="{{ url_for('admin_delete_payment_gateway', gateway_id=gateway.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>حذف نهائياً
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% else %}
+    <!-- Quick Setup Section for New Users -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>إعداد سريع - بوابات الدفع الشائعة</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">اختر من بوابات الدفع الأكثر استخداماً واضبطها بسرعة:</p>
+                    <div class="row">
+                        <!-- Stripe Setup Card -->
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-info">
+                                <div class="card-header bg-info text-white text-center">
+                                    <i class="fab fa-stripe-s fa-2x mb-2"></i>
+                                    <h6 class="mb-0">Stripe</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <small class="text-muted">الأكثر شيوعاً عالمياً</small>
+                                    <p class="small mt-2">دعم جميع البطاقات والمحافظ الرقمية</p>
+                                    <button class="btn btn-info btn-sm" onclick="setupStripe()">
+                                        <i class="fas fa-cog me-1"></i>إعداد سريع
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PayPal Setup Card -->
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white text-center">
+                                    <i class="fab fa-paypal fa-2x mb-2"></i>
+                                    <h6 class="mb-0">PayPal</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <small class="text-muted">مشهور عالمياً</small>
+                                    <p class="small mt-2">محافظ PayPal والبطاقات</p>
+                                    <button class="btn btn-primary btn-sm" onclick="setupPayPal()">
+                                        <i class="fas fa-cog me-1"></i>إعداد سريع
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Regional Payment Card -->
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning text-dark text-center">
+                                    <i class="fas fa-globe-asia fa-2x mb-2"></i>
+                                    <h6 class="mb-0">دفع إقليمي</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <small class="text-muted">للأسواق المحلية</small>
+                                    <p class="small mt-2">Fawry, PayTabs, وغيرها</p>
+                                    <button class="btn btn-warning btn-sm" onclick="setupRegional()">
+                                        <i class="fas fa-cog me-1"></i>تصفح الخيارات
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Custom Setup Card -->
+                        <div class="col-md-6 col-lg-3 mb-3">
+                            <div class="card h-100 border-secondary">
+                                <div class="card-header bg-secondary text-white text-center">
+                                    <i class="fas fa-tools fa-2x mb-2"></i>
+                                    <h6 class="mb-0">إعداد مخصص</h6>
+                                </div>
+                                <div class="card-body text-center">
+                                    <small class="text-muted">للخبراء</small>
+                                    <p class="small mt-2">إعداد بوابة مخصصة بالكامل</p>
+                                    <a href="{{ url_for('admin_add_payment_gateway') }}" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-plus me-1"></i>إعداد متقدم
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center py-5">
+        <i class="fas fa-credit-card fa-5x text-muted mb-4"></i>
+        <h4>لا توجد بوابات دفع مُعدة</h4>
+        <p class="text-muted mb-4">ابدأ بإضافة بوابة دفع لتمكين المدفوعات على موقعك</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Stripe Quick Setup Modal -->
+<div class="modal fade" id="stripeSetupModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="fab fa-stripe-s me-2"></i>إعداد Stripe السريع
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="stripeSetupForm" method="POST" action="{{ url_for('admin_quick_setup_stripe') }}">
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        ستحتاج للحصول على مفاتيح API من <a href="https://dashboard.stripe.com/apikeys" target="_blank" class="text-decoration-none">لوحة تحكم Stripe</a>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">اسم البوابة</label>
+                                <input type="text" class="form-control" name="display_name" value="Stripe - بطاقات الدفع" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">البيئة</label>
+                                <select class="form-control" name="environment" required>
+                                    <option value="sandbox">تجريبية (للاختبار)</option>
+                                    <option value="production">إنتاج (حقيقية)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Publishable Key</label>
+                        <input type="text" class="form-control" name="publishable_key" placeholder="pk_test_..." required>
+                        <small class="text-muted">المفتاح العام - يظهر في الواجهة الأمامية</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Secret Key</label>
+                        <input type="password" class="form-control" name="secret_key" placeholder="sk_test_..." required>
+                        <small class="text-muted">المفتاح السري - يُحفظ آمناً في الخادم</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Webhook Secret (اختياري)</label>
+                        <input type="password" class="form-control" name="webhook_secret" placeholder="whsec_...">
+                        <small class="text-muted">لتأمين الإشعارات من Stripe</small>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label class="form-label">العملات المدعومة</label>
+                                <select class="form-control" name="currencies" multiple>
+                                    <option value="USD" selected>دولار أمريكي (USD)</option>
+                                    <option value="EUR">يورو (EUR)</option>
+                                    <option value="GBP">جنيه إسترليني (GBP)</option>
+                                    <option value="AED">درهم إماراتي (AED)</option>
+                                    <option value="SAR">ريال سعودي (SAR)</option>
+                                    <option value="EGP">جنيه مصري (EGP)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mt-4">
+                                <input class="form-check-input" type="checkbox" name="is_active" id="stripeActive" checked>
+                                <label class="form-check-label" for="stripeActive">
+                                    تفعيل البوابة مباشرة
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_default" id="stripeDefault">
+                                <label class="form-check-label" for="stripeDefault">
+                                    جعلها البوابة الافتراضية
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-info">
+                        <i class="fas fa-save me-2"></i>حفظ وتفعيل Stripe
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function setupStripe() {
+    var modal = new bootstrap.Modal(document.getElementById('stripeSetupModal'));
+    modal.show();
+}
+
+function setupPayPal() {
+    window.location.href = "{{ url_for('admin_add_payment_gateway') }}?type=paypal";
+}
+
+function setupRegional() {
+    window.location.href = "{{ url_for('admin_add_payment_gateway') }}?type=regional";
+}
+
+// Handle Stripe form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const stripeForm = document.getElementById('stripeSetupForm');
+    if (stripeForm) {
+        stripeForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الحفظ...';
+            submitBtn.disabled = true;
+            
+            // Submit the form normally
+            this.submit();
+        });
+    }
+});
+</script>
+{% endblock %}

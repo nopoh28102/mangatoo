@@ -1,0 +1,19 @@
+{
+  "deployment_info": {
+    "platform": "replit",
+    "database_preference": "sqlite",
+    "read_only_filesystem": false,
+    "environment": "production"
+  },
+  "database_type": "sqlite",
+  "setup_timestamp": "2025-09-04T21:53:05.152553",
+  "features_enabled": {
+    "local_uploads": true,
+    "cloudinary": false,
+    "postgresql": false,
+    "background_uploads": true,
+    "content_scraping": true,
+    "payment_processing": true,
+    "premium_features": true
+  }
+}

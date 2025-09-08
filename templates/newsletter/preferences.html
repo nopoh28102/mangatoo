@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}
+<span data-lang="en">Newsletter Preferences</span>
+<span data-lang="ar">إعدادات النشرة الإخبارية</span>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h1 class="mb-0">
+                        <i class="fas fa-envelope-open-text me-2"></i>
+                        <span data-lang="en">Newsletter Preferences</span>
+                        <span data-lang="ar">إعدادات النشرة الإخبارية</span>
+                    </h1>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <p class="text-muted">
+                            <span data-lang="en">Manage your email notifications for</span>
+                            <span data-lang="ar">إدارة إشعارات البريد الإلكتروني لـ</span>
+                            <strong>{{ subscription.email }}</strong>
+                        </p>
+                    </div>
+                    
+                    <form method="POST" id="preferences-form">
+                        <!-- Language Preference -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                <i class="fas fa-language me-2"></i>
+                                <span data-lang="en">Email Language</span>
+                                <span data-lang="ar">لغة البريد الإلكتروني</span>
+                            </label>
+                            <select name="language" class="form-select">
+                                <option value="ar" {% if subscription.language_preference == 'ar' %}selected{% endif %}>
+                                    العربية (Arabic)
+                                </option>
+                                <option value="en" {% if subscription.language_preference == 'en' %}selected{% endif %}>
+                                    English (إنجليزي)
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <!-- Notification Preferences -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-bell me-2"></i>
+                                <span data-lang="en">Email Notifications</span>
+                                <span data-lang="ar">إشعارات البريد الإلكتروني</span>
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <!-- New Chapters -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="form-check form-switch d-flex justify-content-center mb-2">
+                                                <input class="form-check-input fs-4" type="checkbox" 
+                                                       name="new_chapters" id="new_chapters"
+                                                       {% if subscription.preferences and subscription.preferences.get('new_chapters', True) %}checked{% endif %}>
+                                            </div>
+                                            <label class="form-check-label fw-bold" for="new_chapters">
+                                                <i class="fas fa-book-open text-primary mb-2"></i>
+                                                <div>
+                                                    <span data-lang="en">New Chapters</span>
+                                                    <span data-lang="ar">الفصول الجديدة</span>
+                                                </div>
+                                            </label>
+                                            <p class="text-muted small mt-2">
+                                                <span data-lang="en">Get notified when new chapters are published</span>
+                                                <span data-lang="ar">احصل على إشعار عند نشر فصول جديدة</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- New Manga -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="form-check form-switch d-flex justify-content-center mb-2">
+                                                <input class="form-check-input fs-4" type="checkbox" 
+                                                       name="new_manga" id="new_manga"
+                                                       {% if subscription.preferences and subscription.preferences.get('new_manga', True) %}checked{% endif %}>
+                                            </div>
+                                            <label class="form-check-label fw-bold" for="new_manga">
+                                                <i class="fas fa-plus-circle text-success mb-2"></i>
+                                                <div>
+                                                    <span data-lang="en">New Manga</span>
+                                                    <span data-lang="ar">مانجا جديدة</span>
+                                                </div>
+                                            </label>
+                                            <p class="text-muted small mt-2">
+                                                <span data-lang="en">Get notified about new manga releases</span>
+                                                <span data-lang="ar">احصل على إشعار عن إصدارات المانجا الجديدة</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Announcements -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="form-check form-switch d-flex justify-content-center mb-2">
+                                                <input class="form-check-input fs-4" type="checkbox" 
+                                                       name="announcements" id="announcements"
+                                                       {% if subscription.preferences and subscription.preferences.get('announcements', True) %}checked{% endif %}>
+                                            </div>
+                                            <label class="form-check-label fw-bold" for="announcements">
+                                                <i class="fas fa-bullhorn text-warning mb-2"></i>
+                                                <div>
+                                                    <span data-lang="en">Announcements</span>
+                                                    <span data-lang="ar">الإعلانات</span>
+                                                </div>
+                                            </label>
+                                            <p class="text-muted small mt-2">
+                                                <span data-lang="en">Important platform updates and news</span>
+                                                <span data-lang="ar">تحديثات وأخبار المنصة المهمة</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Weekly Digest -->
+                                <div class="col-md-6">
+                                    <div class="card h-100 border-0 bg-light">
+                                        <div class="card-body text-center">
+                                            <div class="form-check form-switch d-flex justify-content-center mb-2">
+                                                <input class="form-check-input fs-4" type="checkbox" 
+                                                       name="weekly_digest" id="weekly_digest"
+                                                       {% if subscription.preferences and subscription.preferences.get('weekly_digest', True) %}checked{% endif %}>
+                                            </div>
+                                            <label class="form-check-label fw-bold" for="weekly_digest">
+                                                <i class="fas fa-calendar-week text-info mb-2"></i>
+                                                <div>
+                                                    <span data-lang="en">Weekly Digest</span>
+                                                    <span data-lang="ar">الملخص الأسبوعي</span>
+                                                </div>
+                                            </label>
+                                            <p class="text-muted small mt-2">
+                                                <span data-lang="en">Weekly summary of all updates</span>
+                                                <span data-lang="ar">ملخص أسبوعي لجميع التحديثات</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Save Button -->
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>
+                                <span data-lang="en">Save Preferences</span>
+                                <span data-lang="ar">حفظ الإعدادات</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Subscription Info -->
+                        <div class="alert alert-info" role="alert">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="alert-heading mb-1">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        <span data-lang="en">Subscription Information</span>
+                                        <span data-lang="ar">معلومات الاشتراك</span>
+                                    </h6>
+                                    <p class="mb-0 small">
+                                        <span data-lang="en">Subscribed on:</span>
+                                        <span data-lang="ar">مشترك منذ:</span>
+                                        {{ subscription.subscribed_at.strftime('%Y-%m-%d') }}
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <a href="{{ url_for('newsletter_unsubscribe', token=subscription.unsubscribe_token) }}" 
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('{{ 'Are you sure you want to unsubscribe?' if get_language() == 'en' else 'هل أنت متأكد من إلغاء الاشتراك؟' }}')">
+                                        <i class="fas fa-unlink me-1"></i>
+                                        <span data-lang="en">Unsubscribe</span>
+                                        <span data-lang="ar">إلغاء الاشتراك</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form validation and enhanced UX
+    const form = document.getElementById('preferences-form');
+    
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>' + 
+                             (getCurrentLanguage() === 'ar' ? 'جاري الحفظ...' : 'Saving...');
+    });
+});
+</script>
+{% endblock %}

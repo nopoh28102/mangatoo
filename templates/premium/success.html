@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}تم تفعيل الاشتراك بنجاح - منصة المانجا{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>
+                        تم تفعيل اشتراكك بنجاح!
+                    </h3>
+                </div>
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-crown text-warning fa-5x mb-3"></i>
+                        <h4 class="text-success">مرحباً بك في العضوية المميزة!</h4>
+                        <p class="lead text-muted">يمكنك الآن الاستمتاع بجميع المزايا الحصرية</p>
+                    </div>
+
+                    {% if payment %}
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded">
+                                <h6 class="text-muted">الخطة المختارة</h6>
+                                <p class="mb-0 fw-bold">{{ payment.plan.name_ar or payment.plan.name }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bg-light p-3 rounded">
+                                <h6 class="text-muted">المبلغ المدفوع</h6>
+                                <p class="mb-0 fw-bold">${{ "%.2f"|format(payment.amount) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if subscription %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-calendar-alt me-2"></i>تفاصيل الاشتراك</h6>
+                        <p class="mb-1"><strong>تاريخ البداية:</strong> {{ subscription.start_date.strftime('%d/%m/%Y') }}</p>
+                        <p class="mb-0"><strong>تاريخ الانتهاء:</strong> {{ subscription.end_date.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-eye-slash fa-2x text-primary mb-2"></i>
+                                <h6>بدون إعلانات</h6>
+                                <small class="text-muted">استمتع بالقراءة دون مقاطعات</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                                <h6>محتوى مميز</h6>
+                                <small class="text-muted">وصول كامل للمانجا المميزة</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                <i class="fas fa-bolt fa-2x text-success mb-2"></i>
+                                <h6>وصول مبكر</h6>
+                                <small class="text-muted">اقرأ الفصول قبل الآخرين</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-md-2">
+                            <i class="fas fa-home me-2"></i>العودة للرئيسية
+                        </a>
+                        <a href="{{ url_for('library') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-book me-2"></i>تصفح المكتبة
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="card mt-4 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        نصائح للاستفادة القصوى من اشتراكك
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-bookmark text-primary me-2"></i>
+                                    احفظ المانجا المفضلة لديك في العلامات المرجعية
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-download text-success me-2"></i>
+                                    حمل الفصول للقراءة دون اتصال بالإنترنت
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-bell text-warning me-2"></i>
+                                    فعل الإشعارات لتبقى محدثاً بالفصول الجديدة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-headset text-info me-2"></i>
+                                    تواصل مع الدعم الفني المميز عند الحاجة
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Celebration animation
+    const crown = document.querySelector('.fa-crown');
+    if (crown) {
+        crown.style.animation = 'bounce 2s infinite';
+    }
+    
+    // Auto-redirect after 10 seconds (optional)
+    // setTimeout(() => {
+    //     window.location.href = "{{ url_for('index') }}";
+    // }, 10000);
+});
+</script>
+
+<style>
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+</style>
+{% endblock %}

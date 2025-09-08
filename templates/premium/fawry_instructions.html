@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}كود فوري للدفع - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-store me-2"></i>
+                        ادفع عبر فوري
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Details -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>
+                            تفاصيل الدفع
+                        </h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>الخطة:</strong> {{ plan.name_ar or plan.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>المبلغ:</strong> {{ payment.amount }} جنيه مصري
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>التاريخ:</strong> {{ payment.created_at.strftime('%Y-%m-%d %H:%M') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fawry Code Display -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning text-dark text-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-qrcode me-2"></i>
+                                كود فوري الخاص بك
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="display-3 text-primary fw-bold mb-3" style="font-family: monospace;">
+                                {{ fawry_code }}
+                            </div>
+                            <p class="text-muted">استخدم هذا الكود في أي منفذ فوري أو ماكينة فوري</p>
+                            
+                            <!-- QR Code Placeholder -->
+                            <div class="border rounded p-3 d-inline-block mb-3" style="width: 200px; height: 200px; background-color: #f8f9fa;">
+                                <div class="d-flex align-items-center justify-content-center h-100">
+                                    <div class="text-center">
+                                        <i class="fas fa-qrcode fa-4x text-muted"></i>
+                                        <p class="mt-2 text-muted small">QR Code</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                <strong>تنبيه:</strong> احتفظ بهذا الكود لإتمام الدفع في منافذ فوري
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions Steps -->
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list-ol me-2"></i>
+                                خطوات الدفع عبر فوري
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">اذهب لأقرب منفذ فوري</div>
+                                        ستجد منافذ فوري في الصيدليات والمتاجر والمولات
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">1</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">أخبر الكاشير بأنك تريد دفع فاتورة</div>
+                                        قل أنك تريد دفع فاتورة أونلاين عبر فوري
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">أعطِ كود الدفع</div>
+                                        اعط الكاشير الكود: <code>{{ fawry_code }}</code>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">3</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">ادفع المبلغ واحصل على الإيصال</div>
+                                        ادفع {{ payment.amount }} جنيه واحتفظ بالإيصال
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">4</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Fawry Locations -->
+                    <div class="card border-info mt-4">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                أماكن منافذ فوري
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>صيدليات (19019، العزبي، النهدي)</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>محطات الوقود</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>سوبر ماركت</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>مولات التسوق</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>مكاتب البريد</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>ماكينات فوري الذاتية</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="alert alert-light mt-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-clock me-2"></i>
+                            معلومات إضافية
+                        </h6>
+                        <ul class="mb-0">
+                            <li>وقت المعالجة: 10-30 دقيقة بعد الدفع</li>
+                            <li>رسوم فوري: 3 جنيه إضافية</li>
+                            <li>الكود صالح لمدة 24 ساعة</li>
+                            <li>سيتم تفعيل اشتراكك تلقائياً بعد تأكيد الدفع</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button class="btn btn-outline-secondary" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>
+                            طباعة الكود
+                        </button>
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>
+                            العودة للصفحة الرئيسية
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-refresh page every 5 minutes to check payment status
+setTimeout(function() {
+    location.reload();
+}, 300000); // 5 minutes
+</script>
+{% endblock %}

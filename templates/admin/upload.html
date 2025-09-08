@@ -1,0 +1,1402 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+<span data-lang="en">Upload New Manga - Admin Panel</span>
+<span data-lang="ar">رفع مانجا جديدة - لوحة التحكم</span>
+{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid upload-new-page"
+     style="background: var(--bg-primary) !important; min-height: 100vh;"
+     data-page="upload">
+    <div class="d-flex justify-content-between align-items-center mb-4" 
+         style="background: var(--bg-primary) !important;">
+        <h2 style="color: var(--text-color) !important;">
+            <span data-lang="en">Upload New Manga</span>
+            <span data-lang="ar">رفع مانجا جديدة</span>
+        </h2>
+        <a href="{{ url_for('admin_manage') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Manga List</span>
+            <span data-lang="ar">العودة إلى قائمة المانجا</span>
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="row" style="background: var(--bg-primary) !important;">
+            <div class="col-lg-8" style="background: var(--bg-primary) !important;">
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Basic Information</span>
+                            <span data-lang="ar">المعلومات الأساسية</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label">
+                                    <span data-lang="en">Title</span>
+                                    <span data-lang="ar">العنوان</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="title" name="title" required 
+                                       placeholder-en="Enter manga title..." 
+                                       placeholder-ar="أدخل عنوان المانجا...">
+                                <div class="invalid-feedback">
+                                    <span data-lang="en">Please provide a title</span>
+                                    <span data-lang="ar">يرجى إدخال العنوان</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="alternative_title" class="form-label">
+                                    <span data-lang="en">Alternative Title</span>
+                                    <span data-lang="ar">العنوان البديل</span>
+                                </label>
+                                <input type="text" class="form-control" id="alternative_title" name="alternative_title"
+                                       placeholder-en="Alternative or original title..." 
+                                       placeholder-ar="العنوان البديل أو الأصلي...">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="author" class="form-label">
+                                    <span data-lang="en">Author</span>
+                                    <span data-lang="ar">المؤلف</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="author" name="author" required
+                                       placeholder-en="Author name..." 
+                                       placeholder-ar="اسم المؤلف...">
+                                <div class="invalid-feedback">
+                                    <span data-lang="en">Please provide an author</span>
+                                    <span data-lang="ar">يرجى إدخال اسم المؤلف</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="artist" class="form-label">
+                                    <span data-lang="en">Artist</span>
+                                    <span data-lang="ar">الرسام</span>
+                                </label>
+                                <input type="text" class="form-control" id="artist" name="artist"
+                                       placeholder-en="Artist name..." 
+                                       placeholder-ar="اسم الرسام...">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">
+                                <span data-lang="en">Description</span>
+                                <span data-lang="ar">الوصف</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required
+                                      placeholder-en="Enter manga description..." 
+                                      placeholder-ar="أدخل وصف المانجا..."></textarea>
+                            <div class="invalid-feedback">
+                                <span data-lang="en">Please provide a description</span>
+                                <span data-lang="ar">يرجى إدخال الوصف</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categories and Tags -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Categories & Tags</span>
+                            <span data-lang="ar">التصنيفات والعلامات</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">
+                                    <span data-lang="en">Categories</span>
+                                    <span data-lang="ar">التصنيفات</span>
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <div class="row">
+                                    {% for category in categories %}
+                                    <div class="col-md-4 col-sm-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input category-checkbox" type="checkbox" 
+                                                   name="categories" value="{{ category.id }}" 
+                                                   id="category_{{ category.id }}">
+                                            <label class="form-check-label" for="category_{{ category.id }}">
+                                                {{ category.name }}
+                                                {% if category.name_ar %}
+                                                    <small class="text-muted">({{ category.name_ar }})</small>
+                                                {% endif %}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="invalid-feedback d-block" id="categories-error" style="display: none !important;">
+                                    <span data-lang="en">Please select at least one category</span>
+                                    <span data-lang="ar">يرجى اختيار تصنيف واحد على الأقل</span>
+                                </div>
+                                <div class="form-text">
+                                    <span data-lang="en">Select one or more categories that best describe this manga</span>
+                                    <span data-lang="ar">اختر تصنيف أو أكثر يصف هذه المانجا بأفضل شكل</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="status" class="form-label">
+                                    <span data-lang="en">Publication Status</span>
+                                    <span data-lang="ar">حالة النشر</span>
+                                </label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="ongoing">
+                                        <span data-lang="en">Ongoing</span>
+                                        <span data-lang="ar">مستمر</span>
+                                    </option>
+                                    <option value="completed">
+                                        <span data-lang="en">Completed</span>
+                                        <span data-lang="ar">مكتمل</span>
+                                    </option>
+                                    <option value="hiatus">
+                                        <span data-lang="en">On Hiatus</span>
+                                        <span data-lang="ar">متوقف مؤقتاً</span>
+                                    </option>
+                                    <option value="cancelled">
+                                        <span data-lang="en">Cancelled</span>
+                                        <span data-lang="ar">ملغي</span>
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="tags" class="form-label">
+                                <span data-lang="en">Tags</span>
+                                <span data-lang="ar">العلامات</span>
+                            </label>
+                            <input type="text" class="form-control" id="tags" name="tags"
+                                   placeholder-en="action, adventure, romance (separate with commas)" 
+                                   placeholder-ar="أكشن، مغامرة، رومانسية (افصل بفواصل)">
+                            <div class="form-text">
+                                <span data-lang="en">Separate tags with commas</span>
+                                <span data-lang="ar">افصل العلامات بفواصل</span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="release_year" class="form-label">
+                                    <span data-lang="en">Release Year</span>
+                                    <span data-lang="ar">سنة الإصدار</span>
+                                </label>
+                                <input type="number" class="form-control" id="release_year" name="release_year" 
+                                       min="1900" max="{{ current_year }}" value="{{ current_year }}">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="language" class="form-label">
+                                    <span data-lang="en">Original Language</span>
+                                    <span data-lang="ar">اللغة الأصلية</span>
+                                </label>
+                                <select class="form-select" id="language" name="language">
+                                    <option value="japanese">
+                                        <span data-lang="en">Japanese (Manga)</span>
+                                        <span data-lang="ar">اليابانية (مانجا)</span>
+                                    </option>
+                                    <option value="korean">
+                                        <span data-lang="en">Korean (Manhwa)</span>
+                                        <span data-lang="ar">الكورية (مانهوا)</span>
+                                    </option>
+                                    <option value="chinese">
+                                        <span data-lang="en">Chinese (Manhua)</span>
+                                        <span data-lang="ar">الصينية (مانهوا)</span>
+                                    </option>
+                                    <option value="english">
+                                        <span data-lang="en">English</span>
+                                        <span data-lang="ar">الإنجليزية</span>
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="rating" class="form-label">
+                                    <span data-lang="en">Content Rating</span>
+                                    <span data-lang="ar">تصنيف المحتوى</span>
+                                </label>
+                                <select class="form-select" id="rating" name="rating">
+                                    <option value="all_ages">
+                                        <span data-lang="en">All Ages</span>
+                                        <span data-lang="ar">لجميع الأعمار</span>
+                                    </option>
+                                    <option value="teen">
+                                        <span data-lang="en">Teen (13+)</span>
+                                        <span data-lang="ar">المراهقين (13+)</span>
+                                    </option>
+                                    <option value="mature" selected>
+                                        <span data-lang="en">Mature (17+)</span>
+                                        <span data-lang="ar">ناضج (17+)</span>
+                                    </option>
+                                    <option value="adult">
+                                        <span data-lang="en">Adult (18+)</span>
+                                        <span data-lang="ar">بالغين (18+)</span>
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Methods -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Upload Method</span>
+                            <span data-lang="ar">طريقة الرفع</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="upload_method" id="method_files" value="files" checked>
+                                    <label class="btn btn-outline-primary" for="method_files">
+                                        <i class="fas fa-images me-2"></i>
+                                        <span data-lang="en">Upload Images</span>
+                                        <span data-lang="ar">رفع الصور</span>
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="upload_method" id="method_zip" value="zip">
+                                    <label class="btn btn-outline-primary" for="method_zip">
+                                        <i class="fas fa-file-archive me-2"></i>
+                                        <span data-lang="en">Upload ZIP/CBZ</span>
+                                        <span data-lang="ar">رفع ZIP/CBZ</span>
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="upload_method" id="method_scrape" value="scrape">
+                                    <label class="btn btn-outline-primary" for="method_scrape">
+                                        <i class="fas fa-download me-2"></i>
+                                        <span data-lang="en">Web Scraping</span>
+                                        <span data-lang="ar">الكشط من الويب</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- File Upload Section -->
+                        <div id="upload_files" class="upload-section">
+                            <div class="border-2 border-dashed border-primary rounded p-4 text-center">
+                                <input type="file" class="form-control d-none" id="chapter_images" name="chapter_images" 
+                                       multiple accept="image/*" onchange="handleFileSelect(this)">
+                                <div class="dropzone" onclick="document.getElementById('chapter_images').click()">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                    <h5>
+                                        <span data-lang="en">Click to select images or drag & drop</span>
+                                        <span data-lang="ar">انقر لاختيار الصور أو اسحب وأفلت</span>
+                                    </h5>
+                                    <p class="text-muted">
+                                        <span data-lang="en">Supported formats: JPG, PNG, WEBP</span>
+                                        <span data-lang="ar">الصيغ المدعومة: JPG، PNG، WEBP</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div id="file_preview" class="mt-3"></div>
+                        </div>
+
+                        <!-- ZIP Upload Section -->
+                        <div id="upload_zip" class="upload-section d-none">
+                            <div class="alert alert-success mb-3">
+                                <i class="fas fa-archive me-2"></i>
+                                <strong>
+                                    <span data-lang="en">Local ZIP Extraction</span>
+                                    <span data-lang="ar">استخراج ZIP محلي</span>
+                                </strong><br>
+                                <small>
+                                    <span data-lang="en">ZIP files are extracted locally on the server for fast and reliable processing.</span>
+                                    <span data-lang="ar">يتم استخراج ملفات ZIP محلياً على الخادم لمعالجة سريعة وموثوقة.</span>
+                                </small>
+                            </div>
+                            <div class="border-2 border-dashed border-info rounded p-4 text-center">
+                                <input type="file" class="form-control d-none" id="chapter_zip" name="chapter_zip" 
+                                       accept=".zip,.cbz,.rar" onchange="handleZipSelect(this)">
+                                <div class="dropzone" onclick="document.getElementById('chapter_zip').click()">
+                                    <i class="fas fa-file-archive fa-3x text-info mb-3"></i>
+                                    <h5>
+                                        <span data-lang="en">Select ZIP/CBZ/RAR archive</span>
+                                        <span data-lang="ar">اختر أرشيف ZIP/CBZ/RAR</span>
+                                    </h5>
+                                    <p class="text-muted">
+                                        <span data-lang="en">Click "Extract Preview" after selecting to preview images</span>
+                                        <span data-lang="ar">انقر على "استخراج ومعاينة" بعد الاختيار لمعاينة الصور</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- ZIP Preview and Extract Button -->
+                            <div id="zip_preview" class="mt-3"></div>
+                            
+                            <!-- Extracted Images Preview -->
+                            <div id="extracted_images_preview" class="mt-3 d-none">
+                                <h6>
+                                    <span data-lang="en">Extracted Images Preview</span>
+                                    <span data-lang="ar">معاينة الصور المستخرجة</span>
+                                </h6>
+                                <p class="text-muted mb-3">
+                                    <span data-lang="en">Drag and drop to reorder images:</span>
+                                    <span data-lang="ar">اسحب وأفلت لإعادة ترتيب الصور:</span>
+                                </p>
+                                <div id="extracted_images_container" class="sortable-images"></div>
+                                <input type="hidden" id="extracted_images_data" name="extracted_images_data" value="">
+                            </div>
+                        </div>
+
+                        <!-- Web Scraping Section -->
+                        <div id="upload_scrape" class="upload-section d-none">
+                            <div class="border-2 border-dashed border-success rounded p-4">
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label for="chapter_url" class="form-label fw-bold">
+                                            <span data-lang="en">Manga URL</span>
+                                            <span data-lang="ar">رابط المانجا</span>
+                                        </label>
+                                        <input type="url" class="form-control form-control-lg" id="chapter_url" name="chapter_url"
+                                               placeholder-en="https://olympustaff.com/series/BATE/225" 
+                                               placeholder-ar="https://olympustaff.com/series/BATE/225">
+                                        <div class="form-text">
+                                            <span data-lang="en">Supported Sites: OlympusStaff and compatible sites</span>
+                                            <span data-lang="ar">المواقع المدعومة: OlympusStaff والمواقع المتوافقة</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3 d-flex align-items-end">
+                                        <button type="button" class="btn btn-success btn-lg w-100" onclick="testScraping()">
+                                            <i class="fas fa-search me-2"></i>
+                                            <span data-lang="en">Test URL</span>
+                                            <span data-lang="ar">اختبار الرابط</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="scrape_preview" class="mt-3"></div>
+                                
+                                <!-- Hidden fields to store scraping results -->
+                                <input type="hidden" id="scraped_images" name="scraped_images" value="">
+                                <input type="hidden" id="scraped_title" name="scraped_title" value="">
+                                <input type="hidden" id="scraping_tested" name="scraping_tested" value="false">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4" style="background: var(--bg-primary) !important;">
+                <!-- Cover Upload -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Cover Image</span>
+                            <span data-lang="ar">صورة الغلاف</span>
+                        </h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="cover-upload-area">
+                            <input type="file" class="form-control d-none" id="cover_image" name="cover_image" 
+                                   accept="image/*" onchange="previewCover(this)">
+                            <div class="cover-preview" onclick="document.getElementById('cover_image').click()">
+                                <img id="cover_preview_img" src="/static/img/no-cover.png" alt="Cover Preview" 
+                                     class="img-fluid rounded" style="max-height: 300px; cursor: pointer;">
+                                <div class="cover-overlay">
+                                    <i class="fas fa-camera fa-2x"></i>
+                                    <p class="mt-2 mb-0">
+                                        <span data-lang="en">Click to upload cover</span>
+                                        <span data-lang="ar">انقر لرفع الغلاف</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chapter Scheduling -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Chapter Release Schedule</span>
+                            <span data-lang="ar">جدولة إصدار الفصل</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <span data-lang="en">Control when your chapter becomes available to different user types</span>
+                            <span data-lang="ar">تحكم في متى يصبح الفصل متاحاً لأنواع المستخدمين المختلفة</span>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="is_locked" name="is_locked" onchange="toggleScheduleFields(this)">
+                            <label class="form-check-label" for="is_locked">
+                                <span data-lang="en">Lock Chapter for Free Users</span>
+                                <span data-lang="ar">قفل الفصل للمستخدمين المجانيين</span>
+                                <br>
+                                <small class="text-muted">
+                                    <span data-lang="en">Premium users get immediate access, free users wait until release date</span>
+                                    <span data-lang="ar">المستخدمون المدفوعون يحصلون على وصول فوري، المجانيون ينتظرون حتى تاريخ الإصدار</span>
+                                </small>
+                            </label>
+                        </div>
+
+                        <div id="schedule-fields" class="row" style="display: none;">
+                            <div class="col-md-6 mb-3">
+                                <label for="early_access_date" class="form-label">
+                                    <span data-lang="en">Premium Access Date</span>
+                                    <span data-lang="ar">تاريخ الوصول المميز</span>
+                                    <i class="fas fa-crown text-warning ms-1"></i>
+                                </label>
+                                <input type="datetime-local" class="form-control" id="early_access_date" name="early_access_date">
+                                <small class="form-text text-muted">
+                                    <span data-lang="en">When premium users can access this chapter</span>
+                                    <span data-lang="ar">متى يمكن للمستخدمين المدفوعين الوصول لهذا الفصل</span>
+                                </small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="release_date" class="form-label">
+                                    <span data-lang="en">Public Release Date</span>
+                                    <span data-lang="ar">تاريخ الإصدار العام</span>
+                                    <i class="fas fa-users text-info ms-1"></i>
+                                </label>
+                                <input type="datetime-local" class="form-control" id="release_date" name="release_date">
+                                <small class="form-text text-muted">
+                                    <span data-lang="en">When free users can access this chapter</span>
+                                    <span data-lang="ar">متى يمكن للمستخدمين المجانيين الوصول لهذا الفصل</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="chapter_title" class="form-label">
+                                <span data-lang="en">Chapter Title</span>
+                                <span data-lang="ar">عنوان الفصل</span>
+                            </label>
+                            <input type="text" class="form-control" id="chapter_title" name="chapter_title" 
+                                   placeholder-en="Enter chapter title (optional)..." 
+                                   placeholder-ar="أدخل عنوان الفصل (اختياري)...">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="chapter_number" class="form-label">
+                                <span data-lang="en">Chapter Number</span>
+                                <span data-lang="ar">رقم الفصل</span>
+                            </label>
+                            <input type="number" class="form-control" id="chapter_number" name="chapter_number" 
+                                   value="1" min="0.1" step="0.1">
+                            <small class="form-text text-muted">
+                                <span data-lang="en">Use decimals for special chapters (e.g., 1.5 for side stories)</span>
+                                <span data-lang="ar">استخدم الأرقام العشرية للفصول الخاصة (مثل 1.5 للقصص الجانبية)</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publishing Options -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>
+                            <span data-lang="en">Publishing Options</span>
+                            <span data-lang="ar">خيارات النشر</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured">
+                            <label class="form-check-label" for="is_featured">
+                                <span data-lang="en">Featured Manga</span>
+                                <span data-lang="ar">مانجا مميزة</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="is_premium" name="is_premium">
+                            <label class="form-check-label" for="is_premium">
+                                <span data-lang="en">Premium Content</span>
+                                <span data-lang="ar">محتوى مدفوع</span>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="allow_comments" name="allow_comments" checked>
+                            <label class="form-check-label" for="allow_comments">
+                                <span data-lang="en">Allow Comments</span>
+                                <span data-lang="ar">السماح بالتعليقات</span>
+                            </label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="visibility" class="form-label">
+                                <span data-lang="en">Visibility</span>
+                                <span data-lang="ar">الظهور</span>
+                            </label>
+                            <select class="form-select" id="visibility" name="visibility">
+                                <option value="public">
+                                    <span data-lang="en">Public</span>
+                                    <span data-lang="ar">عام</span>
+                                </option>
+                                <option value="unlisted">
+                                    <span data-lang="en">Unlisted</span>
+                                    <span data-lang="ar">غير مدرج</span>
+                                </option>
+                                <option value="private">
+                                    <span data-lang="en">Private</span>
+                                    <span data-lang="ar">خاص</span>
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="card">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-success w-100 mb-2" id="uploadBtn">
+                            <i class="fas fa-upload me-2"></i>
+                            <span data-lang="en">Upload Manga</span>
+                            <span data-lang="ar">رفع المانجا</span>
+                        </button>
+
+                        <!-- Upload Progress Bar -->
+                        <div id="uploadProgressContainer" class="mb-3" style="display: none;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <small class="text-muted">
+                                    <span data-lang="en">Uploading images...</span>
+                                    <span data-lang="ar">جاري رفع الصور...</span>
+                                </small>
+                                <small class="text-muted" id="uploadProgressText">0%</small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                                     role="progressbar" style="width: 0%" id="uploadProgressBar">
+                                </div>
+                            </div>
+                            <div class="text-center mt-2">
+                                <small class="text-muted" id="uploadStatusText">
+                                    <span data-lang="en">Preparing upload...</span>
+                                    <span data-lang="ar">جاري تحضير الرفع...</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="saveDraft()">
+                            <i class="fas fa-save me-2"></i>
+                            <span data-lang="en">Save as Draft</span>
+                            <span data-lang="ar">حفظ كمسودة</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-section {
+    transition: all 0.3s ease;
+}
+
+.dropzone {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dropzone:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.cover-upload-area {
+    position: relative;
+}
+
+.cover-preview {
+    position: relative;
+    display: inline-block;
+}
+
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 0.375rem;
+}
+
+.cover-preview:hover .cover-overlay {
+    opacity: 1;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.file-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.progress {
+    height: 4px;
+}
+
+/* Extracted Images Styles */
+.sortable-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.extracted-image-item {
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: grab;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.extracted-image-item:active {
+    cursor: grabbing;
+}
+
+.extracted-image-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.image-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.image-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.image-overlay {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.image-info {
+    text-align: center;
+}
+
+.image-info small {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+}
+
+.extracted-image-item[dragging] {
+    opacity: 0.5;
+    transform: rotate(2deg);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Chapter scheduling toggle
+function toggleScheduleFields(checkbox) {
+    const scheduleFields = document.getElementById('schedule-fields');
+    const now = new Date();
+    const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+    const nextDay = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    
+    if (checkbox.checked) {
+        scheduleFields.style.display = 'block';
+        
+        // Set default times
+        document.getElementById('early_access_date').value = nextHour.toISOString().slice(0, 16);
+        document.getElementById('release_date').value = nextDay.toISOString().slice(0, 16);
+    } else {
+        scheduleFields.style.display = 'none';
+        
+        // Clear the date fields
+        document.getElementById('early_access_date').value = '';
+        document.getElementById('release_date').value = '';
+    }
+}
+
+// Auto-set public release date when premium date changes
+document.getElementById('early_access_date').addEventListener('change', function() {
+    const earlyDate = new Date(this.value);
+    const publicDate = new Date(earlyDate.getTime() + 24 * 60 * 60 * 1000); // Add 24 hours
+    
+    if (this.value && !document.getElementById('release_date').value) {
+        document.getElementById('release_date').value = publicDate.toISOString().slice(0, 16);
+    }
+});
+
+// Upload method switching
+document.querySelectorAll('input[name="upload_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.upload-section').forEach(section => {
+            section.classList.add('d-none');
+        });
+        document.getElementById('upload_' + this.value).classList.remove('d-none');
+    });
+});
+
+// File handling
+function handleFileSelect(input) {
+    const files = Array.from(input.files);
+    const preview = document.getElementById('file_preview');
+    
+    preview.innerHTML = '';
+    
+    files.forEach((file, index) => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <img src="${e.target.result}" alt="${file.name}">
+                    <div class="flex-grow-1">
+                        <div class="fw-bold">${file.name}</div>
+                        <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                preview.appendChild(fileItem);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    if (files.length > 0) {
+        showNotification(`${files.length} files selected`, 'success');
+    }
+}
+
+function handleZipSelect(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('zip_preview');
+    const extractedPreview = document.getElementById('extracted_images_preview');
+    
+    if (file) {
+        preview.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-file-archive me-2"></i>
+                <strong>${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)
+                <div class="mt-3">
+                    <button type="button" class="btn btn-primary" onclick="extractZipPreview(this)">
+                        <i class="fas fa-expand-arrows-alt me-2"></i>
+                        <span data-lang="en">Extract & Preview Images</span>
+                        <span data-lang="ar">استخراج ومعاينة الصور</span>
+                    </button>
+                    <small class="d-block mt-2 text-muted">
+                        <span data-lang="en">Extract the archive to preview and reorder images before upload</span>
+                        <span data-lang="ar">استخرج الأرشيف لمعاينة وترتيب الصور قبل الرفع</span>
+                    </small>
+                </div>
+            </div>
+        `;
+        // Hide extracted preview
+        extractedPreview.classList.add('d-none');
+    }
+}
+
+function extractZipPreview(button) {
+    const fileInput = document.getElementById('chapter_zip');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showNotification('Please select a ZIP file first', 'warning');
+        return;
+    }
+    
+    // Show loading state
+    button.disabled = true;
+    button.innerHTML = `
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+        <span data-lang="en">Extracting...</span>
+        <span data-lang="ar">جاري الاستخراج...</span>
+    `;
+    
+    const formData = new FormData();
+    formData.append('chapter_zip', file);
+    
+    // Add timeout and better error handling - increased for larger files
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout for larger files
+    
+    fetch('/admin/extract-zip-preview', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearTimeout(timeoutId);
+        if (data.success) {
+            displayExtractedImages(data.images);
+            showNotification(`Extracted ${data.images.length} images successfully`, 'success');
+            
+            // Reset button to success state
+            button.disabled = false;
+            button.innerHTML = `
+                <i class="fas fa-check me-2"></i>
+                <span data-lang="en">Images Extracted Successfully</span>
+                <span data-lang="ar">تم الاستخراج بنجاح</span>
+            `;
+            button.classList.remove('btn-primary', 'btn-warning');
+            button.classList.add('btn-success');
+        } else {
+            showNotification(data.error || 'Failed to extract ZIP file', 'error');
+            
+            // Reset button to error state
+            button.disabled = false;
+            button.innerHTML = `
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span data-lang="en">Extraction Failed</span>
+                <span data-lang="ar">فشل الاستخراج</span>
+            `;
+            button.classList.remove('btn-primary', 'btn-warning');
+            button.classList.add('btn-danger');
+        }
+    })
+    .catch(error => {
+        console.error('ZIP extraction error:', error);
+        clearTimeout(timeoutId);
+        
+        let errorMessage = 'Extraction failed';
+        let errorMessageAr = 'فشل الاستخراج';
+        
+        if (error.name === 'AbortError') {
+            errorMessage = 'Timeout - file too large';
+            errorMessageAr = 'انتهت المهلة - الملف كبير جداً';
+        } else if (error.message && error.message.includes('Failed to fetch')) {
+            errorMessage = 'Connection error';
+            errorMessageAr = 'خطأ في الاتصال';
+        }
+        
+        button.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <span data-lang="en">${errorMessage}</span>
+            <span data-lang="ar">${errorMessageAr}</span>
+        `;
+        button.disabled = false;
+        button.classList.remove('btn-warning');
+        button.classList.add('btn-danger');
+        
+        showNotification(errorMessage, 'error');
+    })
+    .finally(() => {
+        clearTimeout(timeoutId);
+        // Ensure button is always enabled after operation completes
+        // (Individual success/error handlers above will set the correct state)
+    });
+}
+
+function displayExtractedImages(images) {
+    const container = document.getElementById('extracted_images_container');
+    const preview = document.getElementById('extracted_images_preview');
+    const dataInput = document.getElementById('extracted_images_data');
+    
+    container.innerHTML = '';
+    
+    images.forEach((image, index) => {
+        const imageItem = document.createElement('div');
+        imageItem.className = 'extracted-image-item';
+        imageItem.draggable = true;
+        imageItem.dataset.index = index;
+        imageItem.innerHTML = `
+            <div class="image-thumbnail">
+                <img src="${image.preview_url}" alt="Page ${index + 1}" loading="lazy">
+                <div class="image-overlay">
+                    <span class="page-number">${index + 1}</span>
+                </div>
+            </div>
+            <div class="image-info">
+                <small class="text-muted">${image.filename}</small>
+                <small class="text-muted">${image.size}</small>
+            </div>
+        `;
+        container.appendChild(imageItem);
+    });
+    
+    // Store images data
+    dataInput.value = JSON.stringify(images);
+    
+    // Show preview
+    preview.classList.remove('d-none');
+    
+    // Initialize drag and drop sorting
+    initializeSortableImages();
+}
+
+function initializeSortableImages() {
+    const container = document.getElementById('extracted_images_container');
+    let draggedElement = null;
+    
+    container.addEventListener('dragstart', function(e) {
+        draggedElement = e.target.closest('.extracted-image-item');
+        if (draggedElement) {
+            draggedElement.style.opacity = '0.5';
+        }
+    });
+    
+    container.addEventListener('dragend', function(e) {
+        if (draggedElement) {
+            draggedElement.style.opacity = '1';
+            draggedElement = null;
+        }
+    });
+    
+    container.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+    
+    container.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const targetElement = e.target.closest('.extracted-image-item');
+        
+        if (draggedElement && targetElement && draggedElement !== targetElement) {
+            const rect = targetElement.getBoundingClientRect();
+            const nextSibling = (e.clientY > rect.top + rect.height / 2) 
+                ? targetElement.nextSibling 
+                : targetElement;
+            
+            container.insertBefore(draggedElement, nextSibling);
+            updateImageOrder();
+        }
+    });
+}
+
+function updateImageOrder() {
+    const container = document.getElementById('extracted_images_container');
+    const items = container.querySelectorAll('.extracted-image-item');
+    const dataInput = document.getElementById('extracted_images_data');
+    
+    let originalData = JSON.parse(dataInput.value || '[]');
+    let newOrder = [];
+    
+    items.forEach((item, newIndex) => {
+        const originalIndex = parseInt(item.dataset.index);
+        newOrder.push(originalData[originalIndex]);
+        
+        // Update page number display
+        const pageNumber = item.querySelector('.page-number');
+        if (pageNumber) {
+            pageNumber.textContent = newIndex + 1;
+        }
+    });
+    
+    // Update stored data
+    dataInput.value = JSON.stringify(newOrder);
+}
+
+function previewCover(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('cover_preview_img');
+    
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function testScraping() {
+    const url = document.getElementById('chapter_url').value;
+    if (!url) {
+        showNotification('Please enter a URL to test', 'warning');
+        return;
+    }
+    
+    const preview = document.getElementById('scrape_preview');
+    preview.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+    
+    fetch('/admin/test-scrape', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            chapter_url: url
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // حفظ نتائج الكشط في الحقول المخفية
+            document.getElementById('scraped_images').value = JSON.stringify(data.all_images || data.sample_images || []);
+            document.getElementById('scraped_title').value = data.chapter_title || '';
+            document.getElementById('scraping_tested').value = 'true';
+            
+            preview.innerHTML = `
+                <div class="alert alert-success">
+                    <h6><i class="fas fa-check me-2"></i>
+                        <span data-lang="en">Scraping Test Successful</span>
+                        <span data-lang="ar">نجح اختبار الكشط</span>
+                    </h6>
+                    <ul class="mb-0">
+                        <li><strong>
+                            <span data-lang="en">Chapter:</span>
+                            <span data-lang="ar">الفصل:</span>
+                        </strong> ${data.chapter_title || 'غير محدد'}</li>
+                        <li><strong>
+                            <span data-lang="en">Images Found:</span>
+                            <span data-lang="ar">الصور الموجودة:</span>
+                        </strong> ${data.total_images || 0}</li>
+                        <li><strong>
+                            <span data-lang="en">Site Type:</span>
+                            <span data-lang="ar">نوع الموقع:</span>
+                        </strong> <span class="badge bg-info">${data.site_type || 'غير محدد'}</span></li>
+                        <li><strong>
+                            <span data-lang="en">Message:</span>
+                            <span data-lang="ar">الرسالة:</span>
+                        </strong> ${data.message || ''}</li>
+                    </ul>
+                    ${data.all_images && data.all_images.length > 0 ? `
+                        <div class="mt-3">
+                            <h6><span data-lang="en">Preview Images:</span><span data-lang="ar">معاينة الصور:</span></h6>
+                            <div class="row">
+                                ${data.all_images.slice(0, 12).map((img, index) => `
+                                    <div class="col-2 mb-2">
+                                        <div class="text-center border rounded p-1 bg-secondary text-light">
+                                            <img src="${img}" alt="صورة ${index + 1}" 
+                                                 class="img-fluid rounded" 
+                                                 style="max-height: 120px; width: auto; object-fit: cover;"
+                                                 loading="lazy"
+                                                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMiAyMEwyOCAyME0yMCAxMkwyMCAyOCIgc3Ryb2tlPSIjOUI5QkExIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4='; this.style.maxHeight='40px';">
+                                            <br><small class="text-muted">صورة ${index + 1}</small>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${data.all_images.length > 12 ? `<small class="text-muted">و ${data.all_images.length - 12} صورة أخرى...</small>` : ''}
+                            <div class="mt-2 p-2 bg-secondary text-light rounded">
+                                <small class="text-muted">
+                                    <strong>ملاحظة:</strong> الصور أعلاه هي معاينة مباشرة من الموقع المصدر. 
+                                    عند الرفع الفعلي سيتم تحميل جميع الـ ${data.total_images} صورة بالترتيب الصحيح.
+                                </small>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            preview.innerHTML = `
+                <div class="alert alert-danger">
+                    <h6><i class="fas fa-times me-2"></i>
+                        <span data-lang="en">Scraping Test Failed</span>
+                        <span data-lang="ar">فشل اختبار الكشط</span>
+                    </h6>
+                    <p class="mb-0">${data.error || 'خطأ غير معروف'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Scraping test error:', error);
+        preview.innerHTML = `
+            <div class="alert alert-danger">
+                <h6><i class="fas fa-times me-2"></i>
+                    <span data-lang="en">Connection Error</span>
+                    <span data-lang="ar">خطأ في الاتصال</span>
+                </h6>
+                <p class="mb-0">
+                    <span data-lang="en">Could not connect to test the URL. Please check the URL and try again.</span>
+                    <span data-lang="ar">لا يمكن الاتصال لاختبار الرابط. يرجى التحقق من الرابط والمحاولة مرة أخرى.</span>
+                </p>
+            </div>
+        `;
+    });
+}
+
+function removeFile(index) {
+    // Implementation to remove file from selection
+    showNotification('File removed', 'info');
+}
+
+function saveDraft() {
+    showNotification('Draft saved successfully', 'success');
+}
+
+function showNotification(message, type) {
+    // Create and show notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Upload progress management
+function showUploadProgress() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    const progressContainer = document.getElementById('uploadProgressContainer');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressText = document.getElementById('uploadProgressText');
+    const statusText = document.getElementById('uploadStatusText');
+    
+    // Show progress bar and disable button
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i><span data-lang="en">Processing...</span><span data-lang="ar">جاري المعالجة...</span>';
+    progressContainer.style.display = 'block';
+    
+    // Get upload method
+    const uploadMethod = document.querySelector('input[name="upload_method"]:checked').value;
+    
+    // Start progress simulation based on upload method
+    startProgressSimulation(uploadMethod);
+    
+    // We'll get chapter_id from form response after submission
+    // For now, simulate progress while waiting for real chapter_id
+}
+
+function startProgressSimulation(uploadMethod) {
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressText = document.getElementById('uploadProgressText');
+    const statusText = document.getElementById('uploadStatusText');
+    
+    let progress = 0;
+    let maxProgress = 95; // Don't go to 100% until we confirm completion
+    let increment = uploadMethod === 'zip' ? 3 : uploadMethod === 'scrape' ? 2 : 1;
+    
+    const interval = setInterval(() => {
+        if (progress < maxProgress) {
+            progress += increment;
+            updateProgressBar(progress, getStatusMessage(uploadMethod, progress));
+            
+            // Slow down as we approach the max
+            if (progress > 70) {
+                increment = Math.max(0.5, increment * 0.8);
+            }
+        } else {
+            clearInterval(interval);
+        }
+    }, 800);
+}
+
+function updateProgressBar(progress, status) {
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressText = document.getElementById('uploadProgressText');
+    const statusText = document.getElementById('uploadStatusText');
+    
+    progress = Math.min(100, Math.max(0, progress));
+    
+    progressBar.style.width = progress + '%';
+    progressText.textContent = Math.round(progress) + '%';
+    
+    if (status) {
+        statusText.innerHTML = status;
+    }
+}
+
+function getStatusMessage(uploadMethod, progress) {
+    const lang = document.documentElement.lang || 'ar';
+    
+    if (progress < 20) {
+        return lang === 'ar' ? 'جاري تحضير الملفات...' : 'Preparing files...';
+    } else if (progress < 50) {
+        if (uploadMethod === 'images' || uploadMethod === 'files') {
+            return lang === 'ar' ? 'جاري حفظ الصور مؤقتاً...' : 'Saving images temporarily...';
+        } else if (uploadMethod === 'zip') {
+            return lang === 'ar' ? 'جاري استخراج الصور من ZIP...' : 'Extracting images from ZIP...';
+        } else {
+            return lang === 'ar' ? 'جاري كشط الصور...' : 'Scraping images...';
+        }
+    } else if (progress < 80) {
+        return lang === 'ar' ? 'جاري رفع الصور إلى Cloudinary...' : 'Uploading images to Cloudinary...';
+    } else {
+        return lang === 'ar' ? 'جاري إنهاء الرفع...' : 'Finalizing upload...';
+    }
+}
+
+function checkUploadProgress(chapterId) {
+    if (!chapterId) return;
+    
+    const interval = setInterval(() => {
+        fetch(`/api/upload-progress/${chapterId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    updateProgressBar(100, document.documentElement.lang === 'ar' ? 'تم الرفع بنجاح!' : 'Upload completed!');
+                    clearInterval(interval);
+                    
+                    // Hide progress after showing completion
+                    setTimeout(() => {
+                        document.getElementById('uploadProgressContainer').style.display = 'none';
+                        // Redirect to manga list or show success message
+                        showNotification(
+                            document.documentElement.lang === 'ar' ? 'تم رفع المانجا بنجاح' : 'Manga uploaded successfully',
+                            'success'
+                        );
+                    }, 2000);
+                } else if (data.status === 'error') {
+                    clearInterval(interval);
+                    updateProgressBar(data.percentage || 0, document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء الرفع' : 'Upload error occurred');
+                } else if (data.status === 'uploading') {
+                    const message = `${document.documentElement.lang === 'ar' ? 'تم رفع' : 'Uploaded'} ${data.uploaded_images}/${data.total_images} ${document.documentElement.lang === 'ar' ? 'صور' : 'images'}`;
+                    updateProgressBar(data.percentage, message);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking upload progress:', error);
+                // Continue checking even if there's an error
+            });
+    }, 1500);
+}
+
+function submitFormWithProgress(form) {
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (response.redirected) {
+            // If redirected to success page, extract chapter_id from URL if possible
+            const url = response.url;
+            const chapterMatch = url.match(/chapter\/(\d+)/);
+            if (chapterMatch) {
+                const chapterId = parseInt(chapterMatch[1]);
+                checkUploadProgress(chapterId);
+                return;
+            }
+            // If no chapter_id found, simulate progress for 10 seconds then redirect
+            setTimeout(() => {
+                updateProgressBar(100, document.documentElement.lang === 'ar' ? 'تم الرفع بنجاح!' : 'Upload completed!');
+                setTimeout(() => {
+                    window.location.href = response.url;
+                }, 1000);
+            }, 8000);
+        } else {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (data && data.chapter_id) {
+            checkUploadProgress(data.chapter_id);
+        } else if (data && data.error) {
+            updateProgressBar(0, document.documentElement.lang === 'ar' ? 'خطأ: ' + data.error : 'Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Form submission error:', error);
+        updateProgressBar(0, document.documentElement.lang === 'ar' ? 'حدث خطأ أثناء الرفع' : 'Upload error occurred');
+    });
+}
+
+// Categories validation
+function validateCategories() {
+    const checkboxes = document.querySelectorAll('.category-checkbox');
+    const checkedBoxes = document.querySelectorAll('.category-checkbox:checked');
+    const errorDiv = document.getElementById('categories-error');
+    
+    if (checkedBoxes.length === 0) {
+        errorDiv.style.display = 'block';
+        checkboxes[0].setCustomValidity('Please select at least one category');
+        return false;
+    } else {
+        errorDiv.style.display = 'none';
+        checkboxes.forEach(cb => cb.setCustomValidity(''));
+        return true;
+    }
+}
+
+// Add change event listeners to category checkboxes
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.category-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', validateCategories);
+    });
+});
+
+// Form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                // Validate categories first
+                const categoriesValid = validateCategories();
+                
+                if (form.checkValidity() === false || !categoriesValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    form.classList.add('was-validated');
+                } else {
+                    // Prevent default form submission
+                    event.preventDefault();
+                    
+                    // Show progress bar immediately
+                    showUploadProgress();
+                    
+                    // Submit form via AJAX to get chapter_id
+                    submitFormWithProgress(form);
+                    
+                    form.classList.add('was-validated');
+                }
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

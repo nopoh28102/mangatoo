@@ -1,0 +1,1590 @@
+{% extends "base.html" %}
+
+{% block title %}Help Center - مركز المساعدة{% endblock %}
+
+{% block extra_meta %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Modern Help Center Styling */
+@keyframes sparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(180deg); }
+}
+:root {
+    --help-primary: #4f46e5;
+    --help-secondary: #7c3aed;
+    --help-accent: #ec4899;
+    --help-success: #10b981;
+    --help-warning: #f59e0b;
+    --help-danger: #ef4444;
+    --help-gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --help-gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --help-gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --help-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --help-card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.help-hero {
+    background: var(--help-gradient-1);
+    color: white;
+    padding: 5rem 0;
+    margin-bottom: 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.help-hero::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: floatAnimation 6s ease-in-out infinite;
+}
+
+@keyframes floatAnimation {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.7; }
+    50% { transform: translateY(-20px) rotate(180deg); opacity: 1; }
+}
+
+.help-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='m0 40l40-40h-40v40zm10-10l30-30h-30v30z'/%3E%3C/g%3E%3C/svg%3E") repeat;
+}
+
+.help-hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.help-search-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.help-search {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 1rem 1.5rem 1rem 3rem;
+    font-size: 1.1rem;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+.help-search::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.help-search:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.02);
+}
+
+.help-category {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--help-card-shadow);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transform: translateY(0);
+}
+
+.help-category::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--help-gradient-1);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+}
+
+.help-category:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--help-card-shadow-hover);
+    border-color: var(--help-primary);
+}
+
+.help-category:hover::before {
+    transform: scaleX(1);
+}
+
+.help-category:hover .icon-wrapper {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.help-category:hover .card-body {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.02) 0%, rgba(124, 58, 237, 0.02) 100%);
+}
+
+.help-category .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.help-category .icon-wrapper i {
+    font-size: 2rem;
+    color: white;
+}
+
+.category-reading .icon-wrapper { background: linear-gradient(45deg, #667eea, #764ba2); }
+.category-account .icon-wrapper { background: linear-gradient(45deg, #4facfe, #00f2fe); }
+.category-premium .icon-wrapper { background: linear-gradient(45deg, #43e97b, #38f9d7); }
+.category-upload .icon-wrapper { background: linear-gradient(45deg, #fa709a, #fee140); }
+.category-community .icon-wrapper { background: linear-gradient(45deg, #a8edea, #fed6e3); }
+.category-technical .icon-wrapper { background: linear-gradient(45deg, #ff9a9e, #fecfef); }
+
+.help-stats {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 3rem 0;
+    margin: 4rem 0;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-item .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--help-primary);
+}
+
+.help-accordion .accordion-item {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.help-accordion .accordion-button {
+    font-weight: 600;
+    background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+    border: none;
+    padding: 1.2rem 1.5rem;
+}
+
+.help-accordion .accordion-button:not(.collapsed) {
+    background: linear-gradient(45deg, var(--help-primary), var(--help-secondary));
+    color: white;
+    box-shadow: none;
+}
+
+.quick-links {
+    background: #f8f9fa;
+    padding: 2rem 0;
+    margin: 3rem 0;
+}
+
+.quick-link-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.quick-link-card:hover {
+    border-color: var(--help-primary);
+    transform: translateY(-3px);
+}
+
+.contact-section {
+    background: linear-gradient(135deg, var(--help-primary) 0%, var(--help-secondary) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-top: 4rem;
+    position: relative;
+}
+
+.contact-method {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.contact-method:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+}
+
+.feature-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .help-hero {
+        padding: 2rem 0;
+    }
+    
+    .help-category .icon-wrapper {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .help-category .icon-wrapper i {
+        font-size: 1.5rem;
+    }
+    
+    .stat-item .stat-number {
+        font-size: 2rem;
+    }
+}
+
+.loading-animation {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+.modern-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--help-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-suggestion {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.2s;
+}
+
+.search-suggestion:hover {
+    background-color: #f8fafc;
+}
+
+.search-suggestion:last-child {
+    border-bottom: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-slide-up {
+    animation: slideInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-scale {
+    animation: fadeInScale 0.5s ease-out forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+.help-video-preview {
+    position: relative;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.help-video-preview:hover {
+    transform: scale(1.02);
+}
+
+.help-video-preview .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--help-primary);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="help-hero">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <div class="alert alert-warning text-center mb-3" style="background: linear-gradient(135deg, #ff6b6b, #feca57); border: none; color: white; border-radius: 15px; font-weight: bold;">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                </div>
+                <h1 class="display-4 mb-4">
+                    <span data-lang="ar">🎯 مركز المساعدة </span>
+                    <span data-lang="en">🎯  Help Center</span>
+                </h1>
+                <p class="lead mb-4">
+                    <span data-lang="ar">دليلك الشامل لاستخدام منصة المانجا الأكثر تطوراً</span>
+                    <span data-lang="en">Your complete guide to using the most advanced manga platform</span>
+                </p>
+                <div class="d-flex justify-content-center">
+                    <div class="help-search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="help-search" placeholder="ابحث عن موضوع معين... | Search for specific topic..." id="helpSearch">
+                        <div class="search-suggestions" id="searchSuggestions"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Statistics Section -->
+    <div class="help-stats">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" data-count="50">0</div>
+                    <p>
+                        <span data-lang="ar">دليل مفصل</span>
+                        <span data-lang="en">Detailed Guides</span>
+                    </p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" data-count="1000">0</div>
+                    <p>
+                        <span data-lang="ar">سؤال وجواب</span>
+                        <span data-lang="en">Q&A Items</span>
+                    </p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" data-count="24">0</div>
+                    <p>
+                        <span data-lang="ar">ساعة دعم يومياً</span>
+                        <span data-lang="en">Hours Daily Support</span>
+                    </p>
+                </div>
+                <div class="col-md-3 stat-item">
+                    <div class="stat-number" data-count="99">0</div>
+                    <p>
+                        <span data-lang="ar">% نسبة الرضا</span>
+                        <span data-lang="en">% Satisfaction Rate</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modern FAQ Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5 animate-slide-up">
+                <span data-lang="ar">الأسئلة الأكثر شيوعاً</span>
+                <span data-lang="en">Frequently Asked Questions</span>
+            </h2>
+            <div class="accordion help-accordion animate-fade-scale" id="modernFAQ">
+                <!-- Reading FAQ -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-reading">
+                            <i class="fas fa-book-open me-3 text-primary"></i>
+                            <span data-lang="ar">كيف أبدأ في قراءة المانجا على الموقع؟</span>
+                            <span data-lang="en">How do I start reading manga on the site?</span>
+                        </button>
+                    </h2>
+                    <div id="faq-reading" class="accordion-collapse collapse" data-bs-parent="#modernFAQ">
+                        <div class="accordion-body">
+                            <div data-lang="ar">
+                                <p><strong>خطوات بسيطة للبدء:</strong></p>
+                                <ol>
+                                    <li>تصفح المكتبة أو استخدم البحث للعثور على المانجا المفضلة</li>
+                                    <li>انقر على غلاف المانجا لعرض التفاصيل</li>
+                                    <li>اختر الفصل الذي تريد قراءته</li>
+                                    <li>استخدم أسهم التنقل أو اضغط على الصفحات للتقدم</li>
+                                    <li>يمكنك حفظ تقدمك تلقائياً عند تسجيل الدخول</li>
+                                </ol>
+                                <p class="text-muted"><i class="fas fa-lightbulb me-2"></i>نصيحة: استخدم اختصارات لوحة المفاتيح للقراءة الأسرع!</p>
+                            </div>
+                            <div data-lang="en">
+                                <p><strong>Simple steps to get started:</strong></p>
+                                <ol>
+                                    <li>Browse the library or use search to find your favorite manga</li>
+                                    <li>Click on manga cover to view details</li>
+                                    <li>Choose the chapter you want to read</li>
+                                    <li>Use navigation arrows or click pages to progress</li>
+                                    <li>Your progress saves automatically when logged in</li>
+                                </ol>
+                                <p class="text-muted"><i class="fas fa-lightbulb me-2"></i>Tip: Use keyboard shortcuts for faster reading!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account FAQ -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-account">
+                            <i class="fas fa-user-circle me-3 text-success"></i>
+                            <span data-lang="ar">كيف أقوم بإنشاء حساب وإدارة ملفي الشخصي؟</span>
+                            <span data-lang="en">How do I create an account and manage my profile?</span>
+                        </button>
+                    </h2>
+                    <div id="faq-account" class="accordion-collapse collapse" data-bs-parent="#modernFAQ">
+                        <div class="accordion-body">
+                            <div data-lang="ar">
+                                <p><strong>إنشاء حساب جديد:</strong></p>
+                                <ul>
+                                    <li>انقر على "التسجيل" في أعلى الصفحة</li>
+                                    <li>املأ البيانات المطلوبة (اسم المستخدم، البريد، كلمة المرور)</li>
+                                    <li>أو استخدم تسجيل الدخول السريع بحساب Google</li>
+                                </ul>
+                                <p><strong>إدارة الملف الشخصي:</strong></p>
+                                <ul>
+                                    <li>اذهب إلى "ملفي الشخصي" من القائمة</li>
+                                    <li>يمكنك تغيير الصورة الشخصية والمعلومات</li>
+                                    <li>تخصيص إعدادات القراءة والإشعارات</li>
+                                </ul>
+                            </div>
+                            <div data-lang="en">
+                                <p><strong>Creating a new account:</strong></p>
+                                <ul>
+                                    <li>Click "Register" at the top of the page</li>
+                                    <li>Fill in required information (username, email, password)</li>
+                                    <li>Or use quick sign-in with Google account</li>
+                                </ul>
+                                <p><strong>Managing your profile:</strong></p>
+                                <ul>
+                                    <li>Go to "My Profile" from the menu</li>
+                                    <li>You can change profile picture and information</li>
+                                    <li>Customize reading settings and notifications</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Premium FAQ -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-premium">
+                            <i class="fas fa-crown me-3 text-warning"></i>
+                            <span data-lang="ar">ما هي مميزات الاشتراك المدفوع؟</span>
+                            <span data-lang="en">What are the premium subscription benefits?</span>
+                        </button>
+                    </h2>
+                    <div id="faq-premium" class="accordion-collapse collapse" data-bs-parent="#modernFAQ">
+                        <div class="accordion-body">
+                            <div data-lang="ar">
+                                <p><strong>مميزات الاشتراك المميز:</strong></p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>قراءة بدون إعلانات</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>الوصول المبكر للفصول الجديدة</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>جودة صور عالية</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>تحميل الفصول للقراءة بلا إنترنت</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>دعم تقني أولوية</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>شارة مميزة في الملف الشخصي</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-lang="en">
+                                <p><strong>Premium subscription benefits:</strong></p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Ad-free reading experience</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Early access to new chapters</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>High-quality images</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <ul>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Download chapters for offline reading</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Priority technical support</li>
+                                            <li><i class="fas fa-check-circle text-success me-2"></i>Premium badge on profile</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technical FAQ -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq-technical">
+                            <i class="fas fa-cog me-3 text-info"></i>
+                            <span data-lang="ar">أواجه مشاكل تقنية، كيف أحلها؟</span>
+                            <span data-lang="en">I'm experiencing technical issues, how to fix them?</span>
+                        </button>
+                    </h2>
+                    <div id="faq-technical" class="accordion-collapse collapse" data-bs-parent="#modernFAQ">
+                        <div class="accordion-body">
+                            <div data-lang="ar">
+                                <p><strong>حلول للمشاكل الشائعة:</strong></p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>الصور لا تظهر:</strong> امسح ذاكرة التخزين المؤقت للمتصفح أو جرب متصفحاً آخر
+                                </div>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>بطء في التحميل:</strong> تأكد من اتصال الإنترنت أو جرب في وقت أقل ازدحاماً
+                                </div>
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-times-circle me-2"></i>
+                                    <strong>خطأ في تسجيل الدخول:</strong> تأكد من صحة البيانات أو اطلب إعادة تعيين كلمة المرور
+                                </div>
+                            </div>
+                            <div data-lang="en">
+                                <p><strong>Solutions for common issues:</strong></p>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Images not loading:</strong> Clear browser cache or try a different browser
+                                </div>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Slow loading:</strong> Check internet connection or try during less busy hours
+                                </div>
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-times-circle me-2"></i>
+                                    <strong>Login error:</strong> Verify credentials or request password reset
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Categories -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h2 class="text-center mb-5 animate-slide-up">
+                <span data-lang="ar">مواضيع المساعدة</span>
+                <span data-lang="en">Help Topics</span>
+            </h2>
+        </div>
+        
+        <!-- Reading Guide -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-reading" data-category="reading">
+                <div class="card-body p-4 text-center position-relative">
+                    <div class="feature-badge">
+                        <span data-lang="ar">الأكثر شيوعاً</span>
+                        <span data-lang="en">Most Popular</span>
+                    </div>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">دليل القراءة</span>
+                        <span data-lang="en">Reading Guide</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">تعلم كيفية قراءة المانجا والاستفادة من جميع الميزات</span>
+                        <span data-lang="en">Learn how to read manga and use all features</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary me-2">25 مقال</span>
+                        <span class="badge bg-success">متوفر بالفيديو</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Account Management -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-account" data-category="account">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-user-cog"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">إدارة الحساب</span>
+                        <span data-lang="en">Account Management</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">تخصيص حسابك وإدارة الملف الشخصي والإعدادات</span>
+                        <span data-lang="en">Customize your account and manage profile settings</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-info me-2">18 مقال</span>
+                        <span class="badge bg-warning">محدث حديثاً</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Premium Features -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-premium" data-category="premium">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">المميزات المدفوعة</span>
+                        <span data-lang="en">Premium Features</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">اكتشف مميزات الاشتراك المدفوع والمحتوى الحصري</span>
+                        <span data-lang="en">Discover premium subscription and exclusive content</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-warning me-2">12 مقال</span>
+                        <span class="badge bg-danger">مميز</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Publishing Guide -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-upload" data-category="upload">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">دليل النشر</span>
+                        <span data-lang="en">Publishing Guide</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">تعلم كيفية رفع ونشر المانجا والفصول الجديدة</span>
+                        <span data-lang="en">Learn how to upload and publish manga and new chapters</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-success me-2">15 مقال</span>
+                        <span class="badge bg-info">للناشرين</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Community -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-community" data-category="community">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">المجتمع والتفاعل</span>
+                        <span data-lang="en">Community & Interaction</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">التعليقات والتقييمات والتفاعل مع المجتمع</span>
+                        <span data-lang="en">Comments, ratings and community interaction</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-primary me-2">20 مقال</span>
+                        <span class="badge bg-success">نشط</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Technical Support -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="help-category category-technical" data-category="technical">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h5>
+                        <span data-lang="ar">الدعم التقني</span>
+                        <span data-lang="en">Technical Support</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">حل المشاكل التقنية ومشاكل الأداء والتوافق</span>
+                        <span data-lang="en">Solve technical issues, performance and compatibility problems</span>
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-danger me-2">22 مقال</span>
+                        <span class="badge bg-warning">عاجل</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="quick-links">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-4">
+                    <h3>
+                        <span data-lang="ar">روابط سريعة</span>
+                        <span data-lang="en">Quick Links</span>
+                    </h3>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="quick-link-card">
+                        <i class="fas fa-video text-primary mb-3" style="font-size: 2rem;"></i>
+                        <h6>
+                            <span data-lang="ar">دروس فيديو</span>
+                            <span data-lang="en">Video Tutorials</span>
+                        </h6>
+                        <p class="text-muted small">
+                            <span data-lang="ar">شاهد دروساً مصورة</span>
+                            <span data-lang="en">Watch visual tutorials</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="quick-link-card">
+                        <i class="fas fa-download text-success mb-3" style="font-size: 2rem;"></i>
+                        <h6>
+                            <span data-lang="ar">تحميل التطبيق</span>
+                            <span data-lang="en">Download App</span>
+                        </h6>
+                        <p class="text-muted small">
+                            <span data-lang="ar">للجوال والكمبيوتر</span>
+                            <span data-lang="en">For mobile and desktop</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="quick-link-card">
+                        <i class="fas fa-keyboard text-warning mb-3" style="font-size: 2rem;"></i>
+                        <h6>
+                            <span data-lang="ar">اختصارات لوحة المفاتيح</span>
+                            <span data-lang="en">Keyboard Shortcuts</span>
+                        </h6>
+                        <p class="text-muted small">
+                            <span data-lang="ar">قراءة أسرع وأسهل</span>
+                            <span data-lang="en">Faster and easier reading</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-3">
+                    <div class="quick-link-card">
+                        <i class="fas fa-bug text-danger mb-3" style="font-size: 2rem;"></i>
+                        <h6>
+                            <span data-lang="ar">الإبلاغ عن مشكلة</span>
+                            <span data-lang="en">Report Issue</span>
+                        </h6>
+                        <p class="text-muted small">
+                            <span data-lang="ar">ساعدنا في التحسين</span>
+                            <span data-lang="en">Help us improve</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Content Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <span data-lang="ar">المحتوى المميز</span>
+                <span data-lang="en">Featured Content</span>
+            </h3>
+        </div>
+        
+        <!-- Video Tutorials -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="help-video-preview">
+                    <img src="/static/img/video-thumbnail-reading.jpg" class="card-img-top" alt="Reading Tutorial" style="height: 200px; object-fit: cover;">
+                    <div class="play-btn">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h5>
+                        <span data-lang="ar">كيفية القراءة بالطريقة الصحيحة</span>
+                        <span data-lang="en">How to Read Properly</span>
+                    </h5>
+                    <p class="text-muted">
+                        <span data-lang="ar">فيديو تعليمي مفصل يوضح أفضل طرق القراءة</span>
+                        <span data-lang="en">Detailed tutorial showing the best reading methods</span>
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">5:30 دقيقة</small>
+                        <span class="badge bg-primary">جديد</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Feature Highlights -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5>
+                        <span data-lang="ar">الميزات الجديدة</span>
+                        <span data-lang="en">New Features</span>
+                    </h5>
+                    <div class="feature-list">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-magic text-primary me-3"></i>
+                            <div>
+                                <h6 class="mb-1">
+                                    <span data-lang="ar">القراءة الذكية</span>
+                                    <span data-lang="en">Smart Reading</span>
+                                </h6>
+                                <small class="text-muted">
+                                    <span data-lang="ar">تجربة قراءة محسنة بالذكاء الاصطناعي</span>
+                                    <span data-lang="en">AI-enhanced reading experience</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-palette text-success me-3"></i>
+                            <div>
+                                <h6 class="mb-1">
+                                    <span data-lang="ar">السمات المخصصة</span>
+                                    <span data-lang="en">Custom Themes</span>
+                                </h6>
+                                <small class="text-muted">
+                                    <span data-lang="ar">خصص مظهر القراءة حسب ذوقك</span>
+                                    <span data-lang="en">Customize reading appearance</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-sync text-warning me-3"></i>
+                            <div>
+                                <h6 class="mb-1">
+                                    <span data-lang="ar">المزامنة السحابية</span>
+                                    <span data-lang="en">Cloud Sync</span>
+                                </h6>
+                                <small class="text-muted">
+                                    <span data-lang="ar">تزامن تقدمك عبر جميع الأجهزة</span>
+                                    <span data-lang="en">Sync progress across all devices</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Accordion -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <span data-lang="ar">الأسئلة الشائعة</span>
+                <span data-lang="en">Frequently Asked Questions</span>
+            </h3>
+            
+            <div class="help-accordion accordion" id="helpAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#reading-basics">
+                            <span data-lang="ar">كيف أبدأ القراءة على المنصة؟</span>
+                            <span data-lang="en">How do I start reading on the platform?</span>
+                        </button>
+                    </h2>
+                    <div id="reading-basics" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                            <ol class="mb-3">
+                                <li>
+                                    <span data-lang="ar">تصفح المكتبة الضخمة أو استخدم البحث المتقدم</span>
+                                    <span data-lang="en">Browse our vast library or use advanced search</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">اختر المانجا وانقر على الغلاف لعرض التفاصيل</span>
+                                    <span data-lang="en">Select manga and click cover for details</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">ابدأ بالفصل الأول أو تابع من حيث توقفت</span>
+                                    <span data-lang="en">Start with first chapter or continue where you left</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">استخدم عناصر التحكم للتنقل والتخصيص</span>
+                                    <span data-lang="en">Use controls for navigation and customization</span>
+                                </li>
+                            </ol>
+                            <div class="alert alert-info">
+                                <i class="fas fa-lightbulb me-2"></i>
+                                <span data-lang="ar">نصيحة: أنشئ حساباً لحفظ تقدمك والاستفادة من جميع المميزات</span>
+                                <span data-lang="en">Tip: Create an account to save progress and enjoy all features</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#premium-benefits">
+                            <span data-lang="ar">ما فوائد الاشتراك المميز؟</span>
+                            <span data-lang="en">What are the premium subscription benefits?</span>
+                        </button>
+                    </h2>
+                    <div id="premium-benefits" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-primary">
+                                        <span data-lang="ar">مميزات القراءة:</span>
+                                        <span data-lang="en">Reading Features:</span>
+                                    </h6>
+                                    <ul>
+                                        <li>
+                                            <span data-lang="ar">قراءة بدون إعلانات</span>
+                                            <span data-lang="en">Ad-free reading</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">وصول مبكر للفصول</span>
+                                            <span data-lang="en">Early chapter access</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">جودة صور عالية</span>
+                                            <span data-lang="en">High-quality images</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">تحميل للقراءة دون اتصال</span>
+                                            <span data-lang="en">Offline reading downloads</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-success">
+                                        <span data-lang="ar">مميزات إضافية:</span>
+                                        <span data-lang="en">Additional Features:</span>
+                                    </h6>
+                                    <ul>
+                                        <li>
+                                            <span data-lang="ar">مكتبة شخصية متقدمة</span>
+                                            <span data-lang="en">Advanced personal library</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">دعم فني أولوية</span>
+                                            <span data-lang="en">Priority technical support</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">إحصائيات قراءة مفصلة</span>
+                                            <span data-lang="en">Detailed reading statistics</span>
+                                        </li>
+                                        <li>
+                                            <span data-lang="ar">محتوى حصري</span>
+                                            <span data-lang="en">Exclusive content</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('premium_plans') }}" class="btn btn-gradient-primary">
+                                    <span data-lang="ar">اشترك الآن</span>
+                                    <span data-lang="en">Subscribe Now</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#publishing-guide">
+                            <span data-lang="ar">كيف يمكنني نشر مانجا أو فصول؟</span>
+                            <span data-lang="en">How can I publish manga or chapters?</span>
+                        </button>
+                    </h2>
+                    <div id="publishing-guide" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <span data-lang="ar">يجب أن تكون ناشراً معتمداً للرفع</span>
+                                <span data-lang="en">You must be an approved publisher to upload</span>
+                            </div>
+                            
+                            <h6>
+                                <span data-lang="ar">خطوات النشر:</span>
+                                <span data-lang="en">Publishing Steps:</span>
+                            </h6>
+                            <ol>
+                                <li>
+                                    <span data-lang="ar">قدم طلب ناشر من حسابك</span>
+                                    <span data-lang="en">Submit publisher request from your account</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">انتظر الموافقة من الإدارة</span>
+                                    <span data-lang="en">Wait for admin approval</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">ادخل لوحة تحكم الناشر</span>
+                                    <span data-lang="en">Access publisher dashboard</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">ارفع الملفات واملأ المعلومات</span>
+                                    <span data-lang="en">Upload files and fill information</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">اتبع إرشادات الجودة والمحتوى</span>
+                                    <span data-lang="en">Follow quality and content guidelines</span>
+                                </li>
+                            </ol>
+                            
+                            <div class="mt-3">
+                                <a href="{{ url_for('publisher_request') }}" class="btn btn-success me-2">
+                                    <span data-lang="ar">طلب ناشر</span>
+                                    <span data-lang="en">Publisher Request</span>
+                                </a>
+                                <a href="{{ url_for('publisher_guidelines') }}" class="btn btn-outline-primary">
+                                    <span data-lang="ar">إرشادات النشر</span>
+                                    <span data-lang="en">Publishing Guidelines</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#technical-issues">
+                            <span data-lang="ar">ماذا أفعل عند مواجهة مشاكل تقنية؟</span>
+                            <span data-lang="en">What to do when facing technical issues?</span>
+                        </button>
+                    </h2>
+                    <div id="technical-issues" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body">
+                            <h6 class="text-danger">
+                                <span data-lang="ar">الحلول السريعة:</span>
+                                <span data-lang="en">Quick Solutions:</span>
+                            </h6>
+                            <ul>
+                                <li>
+                                    <span data-lang="ar">أعد تحميل الصفحة (Ctrl+F5)</span>
+                                    <span data-lang="en">Refresh the page (Ctrl+F5)</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">امسح ذاكرة التخزين المؤقت</span>
+                                    <span data-lang="en">Clear browser cache</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">تأكد من سرعة الاتصال</span>
+                                    <span data-lang="en">Check internet connection</span>
+                                </li>
+                                <li>
+                                    <span data-lang="ar">جرب متصفحاً مختلفاً</span>
+                                    <span data-lang="en">Try a different browser</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="alert alert-info mt-3">
+                                <h6>
+                                    <span data-lang="ar">لا زالت المشكلة قائمة؟</span>
+                                    <span data-lang="en">Problem still persists?</span>
+                                </h6>
+                                <p class="mb-2">
+                                    <span data-lang="ar">تواصل معنا بالتفاصيل التالية:</span>
+                                    <span data-lang="en">Contact us with the following details:</span>
+                                </p>
+                                <ul class="mb-0">
+                                    <li>
+                                        <span data-lang="ar">نوع المتصفح والإصدار</span>
+                                        <span data-lang="en">Browser type and version</span>
+                                    </li>
+                                    <li>
+                                        <span data-lang="ar">وصف المشكلة بالتفصيل</span>
+                                        <span data-lang="en">Detailed problem description</span>
+                                    </li>
+                                    <li>
+                                        <span data-lang="ar">لقطة شاشة إذا أمكن</span>
+                                        <span data-lang="en">Screenshot if possible</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Section -->
+<div class="contact-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-12 mb-4">
+                <h3>
+                    <span data-lang="ar">تحتاج مساعدة إضافية؟</span>
+                    <span data-lang="en">Need Additional Help?</span>
+                </h3>
+                <p class="lead">
+                    <span data-lang="ar">فريق الدعم متاح 24/7 لمساعدتك</span>
+                    <span data-lang="en">Support team available 24/7 to help you</span>
+                </p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-4 mb-3">
+                <div class="contact-method">
+                    <i class="fab fa-telegram-plane fa-2x mb-3"></i>
+                    <h6>Telegram</h6>
+                    <p class="mb-2">
+                        <span data-lang="ar">الأسرع في الرد</span>
+                        <span data-lang="en">Fastest Response</span>
+                    </p>
+                    <a href="https://t.me/N0B0H" target="_blank" class="btn btn-light btn-sm">
+                        <span data-lang="ar">راسلنا</span>
+                        <span data-lang="en">Message Us</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <div class="contact-method">
+                    <i class="fab fa-whatsapp fa-2x mb-3"></i>
+                    <h6>WhatsApp</h6>
+                    <p class="mb-2">
+                        <span data-lang="ar">دعم مباشر</span>
+                        <span data-lang="en">Direct Support</span>
+                    </p>
+                    <a href="https://wa.me/201112519818" target="_blank" class="btn btn-light btn-sm">
+                        <span data-lang="ar">اتصل بنا</span>
+                        <span data-lang="en">Contact Us</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <div class="contact-method">
+                    <i class="fas fa-envelope fa-2x mb-3"></i>
+                    <h6>
+                        <span data-lang="ar">البريد الإلكتروني</span>
+                        <span data-lang="en">Email Support</span>
+                    </h6>
+                    <p class="mb-2">
+                        <span data-lang="ar">للاستفسارات المفصلة</span>
+                        <span data-lang="en">For detailed inquiries</span>
+                    </p>
+                    <a href="{{ url_for('contact') }}" class="btn btn-light btn-sm">
+                        <span data-lang="ar">أرسل رسالة</span>
+                        <span data-lang="en">Send Message</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Help Center Interactive Features
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate statistics counters
+    function animateCounter(element) {
+        const target = parseInt(element.getAttribute('data-count'));
+        let current = 0;
+        const increment = target / 100;
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = Math.ceil(current);
+            if (current >= target) {
+                element.textContent = target;
+                clearInterval(timer);
+            }
+        }, 20);
+    }
+
+    // Trigger counter animation when in view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+                entry.target.classList.add('animated');
+                animateCounter(entry.target);
+            }
+        });
+    });
+
+    document.querySelectorAll('.stat-number').forEach(counter => {
+        observer.observe(counter);
+    });
+
+    // Help search functionality
+    const searchInput = document.getElementById('helpSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const categories = document.querySelectorAll('.help-category');
+            
+            categories.forEach(category => {
+                const text = category.textContent.toLowerCase();
+                const parent = category.closest('.col-lg-4, .col-md-6');
+                if (text.includes(query)) {
+                    parent.style.display = 'block';
+                    category.style.transform = 'scale(1.02)';
+                    category.style.boxShadow = '0 20px 40px rgba(102, 126, 234, 0.15)';
+                } else if (query.length > 0) {
+                    parent.style.display = 'none';
+                } else {
+                    parent.style.display = 'block';
+                    category.style.transform = '';
+                    category.style.boxShadow = '';
+                }
+            });
+        });
+    }
+
+    // Enhanced category click effects with modern animations
+    document.querySelectorAll('.help-category').forEach(category => {
+        category.addEventListener('click', function() {
+            const categoryType = this.getAttribute('data-category');
+            
+            // Add ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                background: rgba(79, 70, 229, 0.3);
+                transform: scale(0);
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                left: 50%;
+                top: 50%;
+                margin-left: -10px;
+                margin-top: -10px;
+                animation: ripple-effect 0.6s linear;
+                pointer-events: none;
+            `;
+            
+            this.style.position = 'relative';
+            this.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+            
+            // Add loading animation to icon
+            const iconWrapper = this.querySelector('.icon-wrapper');
+            const icon = iconWrapper.querySelector('i');
+            
+            // Pulse animation
+            iconWrapper.style.animation = 'pulse 0.8s ease-in-out';
+            
+            setTimeout(() => {
+                iconWrapper.style.animation = '';
+                
+                // Show relevant FAQ section
+                const targetFAQ = document.querySelector(`#faq-${categoryType}`);
+                if (targetFAQ) {
+                    const accordionButton = document.querySelector(`[data-bs-target="#faq-${categoryType}"]`);
+                    if (accordionButton && !targetFAQ.classList.contains('show')) {
+                        accordionButton.click();
+                    }
+                    
+                    // Scroll to FAQ section with smooth animation
+                    setTimeout(() => {
+                        targetFAQ.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center' 
+                        });
+                    }, 300);
+                }
+                
+            }, 800);
+        });
+    });
+    
+    // Add ripple effect CSS
+    if (!document.getElementById('ripple-styles')) {
+        const rippleCSS = document.createElement('style');
+        rippleCSS.id = 'ripple-styles';
+        rippleCSS.textContent = `
+            @keyframes ripple-effect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(rippleCSS);
+    }
+
+    // Video preview functionality
+    document.querySelectorAll('.help-video-preview').forEach(preview => {
+        preview.addEventListener('click', function() {
+            // Here you would implement video modal or redirect
+            alert('فيديو تعليمي قريباً! | Tutorial video coming soon!');
+        });
+    });
+
+    // Quick links functionality
+    document.querySelectorAll('.quick-link-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const text = this.textContent.toLowerCase();
+            if (text.includes('video') || text.includes('فيديو')) {
+                alert('صفحة الدروس المرئية قريباً! | Video tutorials page coming soon!');
+            } else if (text.includes('download') || text.includes('تحميل')) {
+                alert('تطبيق الجوال قريباً! | Mobile app coming soon!');
+            } else if (text.includes('keyboard') || text.includes('لوحة')) {
+                showKeyboardShortcuts();
+            } else if (text.includes('report') || text.includes('إبلاغ')) {
+                window.location.href = '{{ url_for("contact") }}';
+            }
+        });
+    });
+
+    // Keyboard shortcuts modal
+    function showKeyboardShortcuts() {
+        const shortcuts = `
+        <div class="modal fade" id="shortcutsModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <span data-lang="ar">اختصارات لوحة المفاتيح</span>
+                            <span data-lang="en">Keyboard Shortcuts</span>
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td><kbd>→</kbd> أو <kbd>D</kbd></td>
+                                    <td><span data-lang="ar">الصفحة التالية</span><span data-lang="en">Next Page</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>←</kbd> أو <kbd>A</kbd></td>
+                                    <td><span data-lang="ar">الصفحة السابقة</span><span data-lang="en">Previous Page</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Space</kbd></td>
+                                    <td><span data-lang="ar">تشغيل/إيقاف العرض التلقائي</span><span data-lang="en">Toggle Autoplay</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>F</kbd></td>
+                                    <td><span data-lang="ar">ملء الشاشة</span><span data-lang="en">Fullscreen</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>S</kbd></td>
+                                    <td><span data-lang="ar">الإعدادات</span><span data-lang="en">Settings</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>B</kbd></td>
+                                    <td><span data-lang="ar">إضافة/إزالة مرجعية</span><span data-lang="en">Add/Remove Bookmark</span></td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl + K</kbd></td>
+                                    <td><span data-lang="ar">البحث السريع</span><span data-lang="en">Quick Search</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        if (!document.getElementById('shortcutsModal')) {
+            document.body.insertAdjacentHTML('beforeend', shortcuts);
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById('shortcutsModal'));
+        modal.show();
+    }
+
+    // Smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+
+// Language toggle integration
+function updateLanguageDisplay() {
+    const currentLang = localStorage.getItem('currentLang') || 'ar';
+    document.querySelectorAll('[data-lang]').forEach(element => {
+        const lang = element.getAttribute('data-lang');
+        element.style.display = lang === currentLang ? 'inline' : 'none';
+    });
+}
+
+// Initialize language display
+updateLanguageDisplay();
+
+// Listen for language changes
+window.addEventListener('languageChanged', updateLanguageDisplay);
+
+// Add floating action button for quick support
+const fabHTML = `
+    <div class="position-fixed bottom-0 end-0 p-4" style="z-index: 1000;">
+        <button class="btn btn-primary rounded-circle shadow-lg" 
+                style="width: 60px; height: 60px; border-radius: 50% !important; transition: all 0.3s ease;"
+                onclick="scrollToTop()"
+                data-bs-toggle="tooltip" 
+                data-bs-placement="left" 
+                title="العودة للأعلى | Back to Top">
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    </div>
+`;
+
+document.body.insertAdjacentHTML('beforeend', fabHTML);
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Show/hide FAB based on scroll position
+window.addEventListener('scroll', function() {
+    const fab = document.querySelector('.position-fixed .btn-primary');
+    if (fab) {
+        if (window.scrollY > 300) {
+            fab.style.transform = 'scale(1)';
+            fab.style.opacity = '1';
+        } else {
+            fab.style.transform = 'scale(0.8)';
+            fab.style.opacity = '0.7';
+        }
+    }
+});
+
+// Add keyboard navigation for accessibility
+document.addEventListener('keydown', function(e) {
+    // Quick search with Ctrl/Cmd + K
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('helpSearch').focus();
+    }
+    
+    // Escape to close search suggestions
+    if (e.key === 'Escape') {
+        const suggestions = document.getElementById('searchSuggestions');
+        if (suggestions) {
+            suggestions.style.display = 'none';
+        }
+        document.getElementById('helpSearch').blur();
+    }
+});
+
+console.log('🎉 Modern Help Center loaded successfully!');
+</script>
+{% endblock %}

@@ -1,0 +1,332 @@
+{% extends "base.html" %}
+
+{% block title %}البحث المتقدم - Advanced Search - Manga Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Search Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-search"></i>
+                        <span data-lang="en">Advanced Search</span>
+                        <span data-lang="ar">البحث المتقدم</span>
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('advanced_search') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="search_query" class="form-label">
+                                        <span data-lang="en">Search Query</span>
+                                        <span data-lang="ar">كلمة البحث</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="search_query" name="q" 
+                                           value="{{ search_params.q or '' }}" 
+                                           placeholder-en="Enter manga title, author, or keywords..."
+                                           placeholder-ar="أدخل عنوان المانجا، المؤلف، أو كلمات مفتاحية...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="manga_type" class="form-label">
+                                        <span data-lang="en">Type</span>
+                                        <span data-lang="ar">النوع</span>
+                                    </label>
+                                    <select class="form-select" id="manga_type" name="type">
+                                        <option value="">
+                                            <span data-lang="en">All Types</span>
+                                            <span data-lang="ar">جميع الأنواع</span>
+                                        </option>
+                                        <option value="manga" {% if search_params.type == 'manga' %}selected{% endif %}>Manga</option>
+                                        <option value="manhwa" {% if search_params.type == 'manhwa' %}selected{% endif %}>Manhwa</option>
+                                        <option value="manhua" {% if search_params.type == 'manhua' %}selected{% endif %}>Manhua</option>
+                                        <option value="webtoon" {% if search_params.type == 'webtoon' %}selected{% endif %}>Webtoon</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">
+                                        <span data-lang="en">Status</span>
+                                        <span data-lang="ar">الحالة</span>
+                                    </label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="">
+                                            <span data-lang="en">All Status</span>
+                                            <span data-lang="ar">جميع الحالات</span>
+                                        </option>
+                                        <option value="ongoing" {% if search_params.status == 'ongoing' %}selected{% endif %}>
+                                            <span data-lang="en">Ongoing</span>
+                                            <span data-lang="ar">مستمر</span>
+                                        </option>
+                                        <option value="completed" {% if search_params.status == 'completed' %}selected{% endif %}>
+                                            <span data-lang="en">Completed</span>
+                                            <span data-lang="ar">مكتمل</span>
+                                        </option>
+                                        <option value="hiatus" {% if search_params.status == 'hiatus' %}selected{% endif %}>
+                                            <span data-lang="en">On Hiatus</span>
+                                            <span data-lang="ar">متوقف مؤقتاً</span>
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        <span data-lang="en">Categories</span>
+                                        <span data-lang="ar">التصنيفات</span>
+                                    </label>
+                                    <div class="category-filter">
+                                        {% for category in categories %}
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="categories" 
+                                                   value="{{ category.id }}" id="search_cat_{{ category.id }}"
+                                                   {% if category.id|string in search_params.getlist('categories') %}checked{% endif %}>
+                                            <label class="form-check-label" for="search_cat_{{ category.id }}">
+                                                <span data-lang="en">{{ category.name }}</span>
+                                                <span data-lang="ar">{{ category.name_ar or category.name }}</span>
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="language" class="form-label">
+                                                <span data-lang="en">Language</span>
+                                                <span data-lang="ar">اللغة</span>
+                                            </label>
+                                            <select class="form-select" id="language" name="language">
+                                                <option value="">All Languages</option>
+                                                <option value="en" {% if search_params.language == 'en' %}selected{% endif %}>English</option>
+                                                <option value="ar" {% if search_params.language == 'ar' %}selected{% endif %}>Arabic</option>
+                                                <option value="ko" {% if search_params.language == 'ko' %}selected{% endif %}>Korean</option>
+                                                <option value="ja" {% if search_params.language == 'ja' %}selected{% endif %}>Japanese</option>
+                                                <option value="zh" {% if search_params.language == 'zh' %}selected{% endif %}>Chinese</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="sort" class="form-label">
+                                                <span data-lang="en">Sort By</span>
+                                                <span data-lang="ar">ترتيب حسب</span>
+                                            </label>
+                                            <select class="form-select" id="sort" name="sort">
+                                                <option value="relevance" {% if search_params.sort == 'relevance' %}selected{% endif %}>Relevance</option>
+                                                <option value="latest" {% if search_params.sort == 'latest' %}selected{% endif %}>Latest</option>
+                                                <option value="popular" {% if search_params.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                                                <option value="rating" {% if search_params.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                                                <option value="alphabetical" {% if search_params.sort == 'alphabetical' %}selected{% endif %}>A-Z</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg me-2">
+                                <i class="fas fa-search"></i>
+                                <span data-lang="en">Search</span>
+                                <span data-lang="ar">بحث</span>
+                            </button>
+                            <a href="{{ url_for('advanced_search') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo"></i>
+                                <span data-lang="en">Clear</span>
+                                <span data-lang="ar">مسح</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    {% if manga_results %}
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4>
+                    <span data-lang="en">Search Results ({{ manga_results.total }} found)</span>
+                    <span data-lang="ar">نتائج البحث (تم العثور على {{ manga_results.total }})</span>
+                </h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for manga in manga_results.items %}
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="manga-card h-100">
+                <div class="card h-100">
+                    <div class="position-relative">
+                        {% if manga.slug %}
+                        <a href="{{ url_for('manga_detail', slug=manga.slug) }}">
+                        {% else %}
+                        <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}">
+                        {% endif %}
+                            {% if manga.cover_image %}
+                                <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" 
+                                     alt="{{ manga.title }}" class="card-img-top">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                    <i class="fas fa-book fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </a>
+                        
+                        <!-- Premium Badge -->
+                        {% if manga.is_premium %}
+                        <span class="badge bg-warning position-absolute top-0 start-0 m-2">
+                            <i class="fas fa-crown"></i> Premium
+                        </span>
+                        {% endif %}
+
+                        <!-- Rating Badge -->
+                        {% if manga.average_rating > 0 %}
+                        <span class="badge bg-success position-absolute top-0 end-0 m-2">
+                            {{ "%.1f"|format(manga.average_rating) }} ★
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h6 class="card-title">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                            {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                            {% endif %}
+                                <span data-lang="en">{{ manga.title }}</span>
+                                <span data-lang="ar">{{ manga.title_ar or manga.title }}</span>
+                            </a>
+                        </h6>
+                        
+                        <p class="card-text small text-muted">{{ manga.author }}</p>
+                        
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye"></i> {{ "{:,}".format(manga.views) }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-book-open"></i> {{ manga.total_chapters }}
+                                </small>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <span class="badge bg-{% if manga.status == 'ongoing' %}success{% elif manga.status == 'completed' %}primary{% else %}secondary{% endif %} me-1">
+                                    {{ manga.status.title() }}
+                                </span>
+                                <span class="badge bg-info">{{ manga.type.title() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if manga_results.pages > 1 %}
+    <nav aria-label="Search results pagination">
+        <ul class="pagination justify-content-center">
+            {% if manga_results.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('advanced_search', page=manga_results.prev_num, **search_params.to_dict()) }}">
+                    <span data-lang="en">Previous</span>
+                    <span data-lang="ar">السابق</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page_num in manga_results.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num != manga_results.page %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('advanced_search', page=page_num, **search_params.to_dict()) }}">{{ page_num }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ page_num }}</span>
+                    </li>
+                    {% endif %}
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">...</span>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if manga_results.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('advanced_search', page=manga_results.next_num, **search_params.to_dict()) }}">
+                    <span data-lang="en">Next</span>
+                    <span data-lang="ar">التالي</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% elif request.args.get('q') or request.args.get('type') or request.args.get('status') %}
+    <!-- No Results -->
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-5x text-muted mb-3"></i>
+                <h4 class="text-muted">
+                    <span data-lang="en">No results found</span>
+                    <span data-lang="ar">لم يتم العثور على نتائج</span>
+                </h4>
+                <p class="text-muted">
+                    <span data-lang="en">Try adjusting your search criteria or browse our complete library.</span>
+                    <span data-lang="ar">جرب تعديل معايير البحث أو تصفح مكتبتنا الكاملة.</span>
+                </p>
+                <a href="{{ url_for('library') }}" class="btn btn-primary">
+                    <i class="fas fa-book"></i>
+                    <span data-lang="en">Browse Library</span>
+                    <span data-lang="ar">تصفح المكتبة</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.category-filter {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+}
+
+.manga-card:hover .card {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+}
+</style>
+{% endblock %}

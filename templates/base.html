@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="{% if current_user.is_authenticated and current_user.language == 'ar' %}ar{% else %}en{% endif %}" dir="{% if current_user.is_authenticated and current_user.language == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    {% set seo_data = seo_data or {} %}
+    {% set meta = seo_data.meta or {} %}
+    {% set og_tags = seo_data.og_tags or {} %}
+    {% set twitter_tags = seo_data.twitter_tags or {} %}
+    
+    <title>{{ meta.title or get_setting('seo_site_title', 'منصة المانجا - Manga Platform') }}</title>
+    <meta name="description" content="{{ meta.description or get_setting('seo_meta_description', 'أفضل منصة لقراءة المانجا والمانهوا باللغة العربية مجاناً') }}">
+    <meta name="keywords" content="{{ meta.keywords or get_setting('seo_meta_keywords', 'مانجا, مانهوا, قراءة مجانية, عربي') }}">
+    <meta name="author" content="{{ get_setting('site_name', 'Manga Platform') }}">
+    <meta name="robots" content="{{ meta.robots or get_setting('seo_robots_meta', 'index, follow') }}">
+    
+    <!-- Open Graph / Facebook -->
+    {% if get_setting('seo_og_enabled', True) %}
+        {% for property, content in og_tags.items() %}
+            {% if content %}
+                <meta property="{{ property }}" content="{{ content }}">
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Twitter -->
+    {% if get_setting('seo_twitter_enabled', True) %}
+        {% for name, content in twitter_tags.items() %}
+            {% if content %}
+                <meta name="{{ name }}" content="{{ content }}">
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    <!-- Canonical URL -->
+    {% if get_setting('seo_canonical_enabled', True) and seo_data.canonical_url %}
+        <link rel="canonical" href="{{ seo_data.canonical_url }}">
+    {% endif %}
+    
+    <!-- hreflang Tags -->
+    {% if get_setting('seo_hreflang_enabled', True) and seo_data.hreflang_tags %}
+        {% for lang, url in seo_data.hreflang_tags.items() %}
+            <link rel="alternate" hreflang="{{ lang }}" href="{{ url }}">
+        {% endfor %}
+    {% endif %}
+    
+    <!-- JSON-LD Structured Data -->
+    {% if get_setting('seo_schema_enabled', True) and seo_data.structured_data %}
+        <script type="application/ld+json">
+        {{ seo_data.structured_data | safe }}
+        </script>
+    {% endif %}
+    
+    <!-- Breadcrumbs Structured Data -->
+    {% if get_setting('seo_breadcrumb_enabled', True) and seo_data.breadcrumbs %}
+        <script type="application/ld+json">
+        {{ seo_data.breadcrumbs | safe }}
+        </script>
+    {% endif %}
+    
+    <!-- Favicon -->
+    {% set site_favicon = get_setting('site_favicon', "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>") %}
+    <link rel="icon" type="image/x-icon" href="{{ site_favicon }}">
+    <link rel="shortcut icon" href="{{ site_favicon }}">
+    
+    <!-- SEO Enhancements -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site_favicon }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ site_favicon }}">
+    
+    <!-- Mobile Status Bar Color -->
+    <meta name="theme-color" content="#000000">
+    
+    <!-- Dynamic Base URL for JavaScript -->
+    <script>
+        window.MANGA_PLATFORM = {
+            baseUrl: '{{ request.url_root.rstrip("/") }}',
+            apiUrl: '{{ request.url_root.rstrip("/") }}/api',
+            currentDomain: '{{ request.host }}'
+        };
+    </script>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-navbutton-color" content="#000000">
+    <meta name="msapplication-TileColor" content="#000000">
+    
+    <!-- Preconnect for performance -->
+    {% if get_setting('seo_page_speed_enabled', True) %}
+        <!-- Default preconnect domains -->
+        <link rel="preconnect" href="https://cdn.jsdelivr.net">
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+        
+        <!-- Custom preconnect domains -->
+        {% if seo_data and seo_data.preconnect_domains %}
+            {% for domain in seo_data.preconnect_domains %}
+                <link rel="preconnect" href="https://{{ domain }}">
+            {% endfor %}
+        {% else %}
+            {% set custom_domains = get_setting('seo_preconnect_domains', '').split(',') %}
+            {% for domain in custom_domains %}
+                {% if domain.strip() %}
+                    <link rel="preconnect" href="https://{{ domain.strip() }}">
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    
+    <!-- Custom SEO Code (head section) -->
+    {% set custom_head = get_setting('seo_custom_head') %}
+    {% if custom_head %}
+        {{ custom_head | safe }}
+    {% endif %}
+    
+    <!-- Google Tag Manager (head) -->
+    {% set gtm_id = get_setting('seo_google_tag_manager') %}
+    {% if gtm_id %}
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','{{ gtm_id }}');</script>
+    {% endif %}
+    
+    <!-- Language alternates for SEO -->
+    <link rel="alternate" hreflang="en" href="{{ request.url }}">
+    <link rel="alternate" hreflang="ar" href="{{ request.url }}">
+    <link rel="alternate" hreflang="x-default" href="{{ request.url }}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS (Animate On Scroll) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhancements.css') }}">
+    
+    <!-- Immediate language application to prevent flicker -->
+    <script>
+        (function() {
+            // Get saved language immediately
+            const savedLang = localStorage.getItem('language') || 'en';
+            
+            // Apply language attributes immediately
+            document.documentElement.lang = savedLang;
+            document.documentElement.dir = savedLang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Add CSS class to prevent showing wrong language elements
+            document.documentElement.classList.add('lang-' + savedLang);
+            
+            // Add immediate styles to hide non-current language elements without causing white page
+            const style = document.createElement('style');
+            style.id = 'initial-lang-style';
+            style.textContent = `
+                [data-lang]:not([data-lang="${savedLang}"]) {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                }
+                [data-lang="${savedLang}"] {
+                    display: initial !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                }
+                
+                /* Ensure body content is visible during language switch */
+                body {
+                    min-height: 100vh;
+                    background-color: var(--bs-body-bg, #fff);
+                }
+                
+                /* Prevent layout shift during language change */
+                .container, .container-fluid {
+                    opacity: 1 !important;
+                    visibility: visible !important;
+                }
+            `;
+            document.head.appendChild(style);
+        })();
+    </script>
+    
+    <style>
+        .notification-dropdown {
+            font-size: 0.875rem;
+        }
+        
+        /* Force notification dropdown to show */
+        .notification-dropdown.show {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            position: absolute !important;
+            top: 100% !important;
+            right: 0 !important;
+            left: auto !important;
+            z-index: 9999 !important;
+            transform: none !important;
+            margin-top: 0.125rem !important;
+        }
+        
+        /* Fix notification dropdown container */
+        .nav-item.dropdown {
+            position: relative !important;
+        }
+        
+        /* Debug - make dropdown visible with background */
+        .notification-dropdown {
+            background: #1a1a1a !important;
+            border: 1px solid #dc3545 !important;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .navbar-logo {
+            height: 35px;
+            width: auto;
+            max-width: 150px;
+            object-fit: contain;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.1));
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        .navbar-brand::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .navbar-brand:hover::before {
+            left: 100%;
+        }
+        
+        .navbar-brand:hover .navbar-logo {
+            transform: scale(1.05) rotate(2deg);
+            filter: drop-shadow(0 4px 15px rgba(220, 53, 69, 0.3)) brightness(1.1);
+        }
+        
+        .navbar-brand:hover .brand-text {
+            background: linear-gradient(45deg, #dc3545, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transform: translateY(-1px);
+        }
+        
+        .footer-logo {
+            height: 25px;
+            width: auto;
+            max-width: 120px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 1px 4px rgba(255, 255, 255, 0.1));
+        }
+        
+        .footer-logo:hover {
+            transform: scale(1.1) rotate(-2deg);
+            filter: drop-shadow(0 2px 8px rgba(220, 53, 69, 0.4));
+        }
+        
+        .brand-text {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        /* Keyframe animations */
+        @keyframes logoFloat {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-2px);
+            }
+        }
+        
+        @keyframes logoGlow {
+            0%, 100% {
+                filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.1));
+            }
+            50% {
+                filter: drop-shadow(0 2px 12px rgba(220, 53, 69, 0.2));
+            }
+        }
+        
+        /* Active state animation */
+        .navbar-brand:active .navbar-logo {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+        
+        /* Loading state animation */
+        .navbar-logo.loading {
+            animation: logoSpin 1s linear infinite;
+        }
+        
+        @keyframes logoSpin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Extra sparkle animation on page load */
+        @keyframes logoSparkle {
+            0%, 100% {
+                filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.1)) 
+                        drop-shadow(2px 0 4px rgba(220, 53, 69, 0.1));
+            }
+            25% {
+                filter: drop-shadow(0 2px 12px rgba(255, 215, 0, 0.3)) 
+                        drop-shadow(2px 0 8px rgba(220, 53, 69, 0.2));
+            }
+            50% {
+                filter: drop-shadow(0 2px 12px rgba(255, 255, 255, 0.2)) 
+                        drop-shadow(2px 0 8px rgba(255, 107, 53, 0.3));
+            }
+            75% {
+                filter: drop-shadow(0 2px 12px rgba(247, 147, 30, 0.3)) 
+                        drop-shadow(2px 0 8px rgba(220, 53, 69, 0.2));
+            }
+        }
+        
+        /* Initial loading sparkle effect */
+        .navbar-logo.page-load {
+            animation: logoSparkle 2s ease-in-out, logoFloat 3s ease-in-out infinite;
+        }
+        
+        /* Pulse effect for special occasions */
+        .navbar-logo.pulse {
+            animation: logoPulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.1));
+            }
+            50% {
+                transform: scale(1.02);
+                filter: drop-shadow(0 4px 15px rgba(220, 53, 69, 0.3));
+            }
+        }
+        
+        .nav-link:hover {
+            color: #ffc107 !important;
+        }
+        
+        footer {
+            background: linear-gradient(135deg, #1a1a1a, #2d3748);
+        }
+        
+        .newsletter .input-group {
+            max-width: 250px;
+        }
+        
+        .social-icons a:hover {
+            color: #ffc107 !important;
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .notification-dropdown {
+                width: 300px !important;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    
+    <!-- Google Tag Manager (noscript) -->
+    {% set gtm_id = get_setting('seo_google_tag_manager') %}
+    {% if gtm_id %}
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_id }}"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {% endif %}
+    
+    <!-- Custom SEO Code (body start) -->
+    {% set custom_body_start = get_setting('seo_custom_body_start') %}
+    {% if custom_body_start %}
+        {{ custom_body_start | safe }}
+    {% endif %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark modern-navbar">
+        <div class="container position-relative">
+            <a class="navbar-brand modern-brand" href="{{ url_for('index') }}">
+                {% set logo_url = get_setting('logo_url') %}
+                {% if logo_url %}
+                    <img src="{{ logo_url }}" alt="{{ get_setting('site_name', 'Manga Platform') }}" class="navbar-logo me-2">
+                {% else %}
+                    <i class="fas fa-book-open me-2"></i>
+                {% endif %}
+                <span class="brand-text">{{ get_setting('site_name', 'Manga Platform') }}</span>
+            </a>
+            
+            <!-- Mobile Quick Actions -->
+            <div class="mobile-quick-actions d-lg-none">
+                <button class="btn btn-outline-light btn-sm me-2" id="mobile-search-toggle" 
+                        title-en="Search" title-ar="بحث">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            
+            <button class="navbar-toggler modern-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="toggler-icon"></span>
+                <span class="toggler-icon"></span>
+                <span class="toggler-icon"></span>
+            </button>
+            
+            <!-- Mobile Search Bar -->
+            <div class="mobile-search-bar" id="mobileSearchBar">
+                <div class="container py-3">
+                    <div class="input-group">
+                        <input class="form-control" type="search" id="mobileHeaderSearch" 
+                               placeholder-en="Search manga..." placeholder-ar="ابحث عن مانجا..."
+                               value="{{ request.args.get('search', '') }}">
+                        <button class="btn btn-primary" onclick="quickSearch('mobile')">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <a href="{{ url_for('advanced_search') }}" class="btn btn-outline-primary" 
+                           title-en="Advanced Search" title-ar="بحث متقدم">
+                            <i class="fas fa-sliders-h"></i>
+                        </a>
+                        <button class="btn btn-outline-secondary" id="mobile-search-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Search Bar -->
+            <div class="desktop-search-bar" id="desktopSearchBar">
+                <div class="container py-3">
+                    <div class="input-group">
+                        <input class="form-control" type="search" id="desktopHeaderSearch" 
+                               placeholder-en="Search manga..." placeholder-ar="ابحث عن مانجا..."
+                               value="{{ request.args.get('search', '') }}">
+                        <button class="btn btn-primary" onclick="quickSearch('desktop')">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <a href="{{ url_for('advanced_search') }}" class="btn btn-outline-primary" 
+                           title-en="Advanced Search" title-ar="بحث متقدم">
+                            <i class="fas fa-sliders-h"></i>
+                        </a>
+                        <button class="btn btn-outline-secondary" id="desktop-search-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="collapse navbar-collapse modern-collapse" id="navbarNav">
+                <!-- Main Navigation - Mobile Only -->
+                <div class="mobile-nav-section d-lg-none">
+                    <h6 class="mobile-nav-title">
+                        <span data-lang="en">Navigation</span>
+                        <span data-lang="ar">التنقل</span>
+                    </h6>
+                    <ul class="navbar-nav mobile-nav-grid">
+                        <li class="nav-item">
+                            <a class="nav-link modern-nav-link" href="{{ url_for('index') }}">
+                                <i class="fas fa-home"></i>
+                                <span data-lang="en">Home</span>
+                                <span data-lang="ar">الرئيسية</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link modern-nav-link" href="{{ url_for('library') }}">
+                                <i class="fas fa-library"></i>
+                                <span data-lang="en">Library</span>
+                                <span data-lang="ar">المكتبة</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link modern-nav-link" href="{{ url_for('publishers') }}">
+                                <i class="fas fa-users"></i>
+                                <span data-lang="en">Publishers</span>
+                                <span data-lang="ar">الناشرون</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link modern-nav-link premium-link" href="{{ url_for('premium_plans') }}">
+                                <i class="fas fa-crown text-warning"></i>
+                                <span data-lang="en">Premium</span>
+                                <span data-lang="ar">المميز</span>
+                            </a>
+                        </li>
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link modern-nav-link" href="{{ url_for('user_bookmarks') }}">
+                                <i class="fas fa-heart text-danger"></i>
+                                <span data-lang="en">Favorites</span>
+                                <span data-lang="ar">المفضلة</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <ul class="navbar-nav d-none d-lg-flex">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <span data-lang="en">Home</span>
+                            <span data-lang="ar">الرئيسية</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('library') }}">
+                            <span data-lang="en">Library</span>
+                            <span data-lang="ar">المكتبة</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('publishers') }}">
+                            <i class="fas fa-users me-1"></i>
+                            <span data-lang="en">Publishers</span>
+                            <span data-lang="ar">الناشرون</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('premium_plans') }}">
+                            <i class="fas fa-crown text-warning me-1"></i>
+                            <span data-lang="en">Premium</span>
+                            <span data-lang="ar">المميز</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Desktop Search Button -->
+                <div class="desktop-controls d-none d-lg-flex me-auto">
+                    <button class="btn btn-outline-light me-2" id="desktop-search-toggle" 
+                            title-en="Search" title-ar="بحث">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    {% if current_user.is_authenticated %}
+                    <a class="btn btn-outline-light me-2" href="{{ url_for('user_bookmarks') }}" 
+                       title-en="My Favorites" title-ar="المفضلة">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile Controls Section -->
+                <div class="mobile-nav-section d-lg-none">
+                    <h6 class="mobile-nav-title">
+                        <span data-lang="en">Settings</span>
+                        <span data-lang="ar">الإعدادات</span>
+                    </h6>
+                    <div class="mobile-controls-grid">
+                        <button class="btn btn-outline-light modern-control-btn" id="mobile-theme-toggle" 
+                                title-en="Dark Mode" title-ar="الوضع المظلم">
+                            <i class="fas fa-moon"></i>
+                            <span data-lang="en">Theme</span>
+                            <span data-lang="ar">المظهر</span>
+                        </button>
+                        <button class="btn btn-outline-light modern-control-btn" id="mobile-lang-toggle" 
+                                title-en="Language" title-ar="اللغة">
+                            <i class="fas fa-language"></i>
+                            <span data-lang="en">Language</span>
+                            <span data-lang="ar">اللغة</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Desktop Controls -->
+                <div class="desktop-controls d-none d-lg-flex">
+                    <button class="btn btn-outline-light me-3" id="theme-toggle" 
+                            title-en="Toggle Dark Mode" title-ar="تبديل الوضع المظلم">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="btn btn-outline-light me-3" id="lang-toggle" 
+                            title-en="Switch to Arabic" title-ar="Switch to English">
+                        <i class="fas fa-language"></i>
+                    </button>
+                </div>
+                
+                <!-- Notifications -->
+                {% if current_user.is_authenticated %}
+                <div class="nav-item dropdown me-2 d-flex align-items-center">
+                    <a class="nav-link position-relative d-flex align-items-center justify-content-center" 
+                       href="#" role="button" 
+                       aria-expanded="false"
+                       id="notificationDropdown">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display: none;">
+                            0
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end notification-dropdown" 
+                        style="width: 350px; max-height: 400px; overflow-y: auto;"
+                        aria-labelledby="notificationDropdown">
+                        <li class="dropdown-header d-flex justify-content-between align-items-center">
+                            <span data-lang="en">Notifications</span>
+                            <span data-lang="ar">الإشعارات</span>
+                            <a href="{{ url_for('user_notifications') }}" class="small">
+                                <span data-lang="en">View All</span>
+                                <span data-lang="ar">عرض الكل</span>
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li class="px-3 py-2" id="notificationList">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-bell-slash"></i><br>
+                                <small>
+                                    <span data-lang="en">No new notifications</span>
+                                    <span data-lang="ar">لا توجد إشعارات جديدة</span>
+                                </small>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- User Menu -->
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item dropdown d-flex align-items-center">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                                {% if current_user.is_premium %}
+                                    <i class="fas fa-crown text-warning ms-1" title="Premium Member"></i>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end modern-dropdown admin-user-dropdown" id="adminUserDropdown">
+                                <!-- User Quick Actions -->
+                                <li class="dropdown-item-group">
+                                    <div class="d-flex justify-content-around py-2 border-bottom">
+                                        <a href="{{ url_for('user_bookmarks') }}" class="btn btn-sm btn-outline-primary flex-fill me-1" title-en="Bookmarks" title-ar="المفضلة">
+                                            <i class="fas fa-bookmark"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Saved</span>
+                                                <span data-lang="ar">المحفوظة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('user_history') }}" class="btn btn-sm btn-outline-info flex-fill me-1" title-en="History" title-ar="السجل">
+                                            <i class="fas fa-history"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">History</span>
+                                                <span data-lang="ar">السجل</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('user_notifications') }}" class="btn btn-sm btn-outline-warning flex-fill" title-en="Notifications" title-ar="التنبيهات">
+                                            <i class="fas fa-bell"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Alerts</span>
+                                                <span data-lang="ar">التنبيهات</span>
+                                            </small>
+                                        </a>
+                                    </div>
+                                </li>
+                                
+                                {% if not current_user.is_premium %}
+                                <li><a class="dropdown-item premium-upgrade" href="{{ url_for('premium_plans') }}">
+                                    <i class="fas fa-crown text-warning me-2"></i>
+                                    <span data-lang="en">Upgrade Premium</span>
+                                    <span data-lang="ar">الترقية المميزة</span>
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                
+                                {% if current_user.is_publisher %}
+                                <li class="dropdown-header bg-light">
+                                    <i class="fas fa-upload me-1"></i>
+                                    <span data-lang="en">Publisher</span>
+                                    <span data-lang="ar">الناشر</span>
+                                </li>
+                                <li><a class="dropdown-item compact-item" href="{{ url_for('publisher_dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2 text-success"></i>
+                                    <span data-lang="en">Dashboard</span>
+                                    <span data-lang="ar">اللوحة</span>
+                                </a></li>
+                                <li><a class="dropdown-item compact-item" href="{{ url_for('publisher_upload') }}">
+                                    <i class="fas fa-plus me-2 text-success"></i>
+                                    <span data-lang="en">Upload</span>
+                                    <span data-lang="ar">رفع</span>
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% else %}
+                                <li><a class="dropdown-item" href="{{ url_for('apply_publisher') }}">
+                                    <i class="fas fa-user-tie me-2 text-primary"></i>
+                                    <span data-lang="en">Become Publisher</span>
+                                    <span data-lang="ar">كن ناشراً</span>
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                
+                                {% if current_user.is_admin %}
+                                <li class="dropdown-header bg-danger text-white rounded">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    <span data-lang="en">Admin</span>
+                                    <span data-lang="ar">الإدارة الكاملة</span>
+                                </li>
+                                <li class="admin-actions">
+                                    <div class="d-flex justify-content-around py-1">
+                                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline-danger flex-fill me-1" title-en="Admin Panel" title-ar="لوحة الإدارة">
+                                            <i class="fas fa-cog"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Panel</span>
+                                                <span data-lang="ar">اللوحة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_manage') }}" class="btn btn-sm btn-outline-danger flex-fill me-1" title-en="Manage Content" title-ar="إدارة المحتوى">
+                                            <i class="fas fa-list"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Manage</span>
+                                                <span data-lang="ar">إدارة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-danger flex-fill" title-en="Users" title-ar="المستخدمين">
+                                            <i class="fas fa-users"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Users</span>
+                                                <span data-lang="ar">المستخدمين</span>
+                                            </small>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% elif current_user.is_publisher %}
+                                <li class="dropdown-header bg-primary text-white rounded">
+                                    <i class="fas fa-upload me-1"></i>
+                                    <span data-lang="en">Publisher</span>
+                                    <span data-lang="ar">إدارة النشر</span>
+                                </li>
+                                <li class="admin-actions">
+                                    <div class="d-flex justify-content-around py-1">
+                                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline-primary flex-fill me-1" title-en="Dashboard" title-ar="لوحة التحكم">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Dashboard</span>
+                                                <span data-lang="ar">اللوحة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_upload_new') }}" class="btn btn-sm btn-outline-primary flex-fill me-1" title-en="Upload" title-ar="رفع محتوى">
+                                            <i class="fas fa-upload"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Upload</span>
+                                                <span data-lang="ar">رفع</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_manage') }}" class="btn btn-sm btn-outline-primary flex-fill" title-en="Manage" title-ar="إدارة المحتوى">
+                                            <i class="fas fa-cogs"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Manage</span>
+                                                <span data-lang="ar">إدارة</span>
+                                            </small>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% elif current_user.is_translator %}
+                                <li class="dropdown-header bg-info text-white rounded">
+                                    <i class="fas fa-language me-1"></i>
+                                    <span data-lang="en">Translator</span>
+                                    <span data-lang="ar">إدارة الترجمة</span>
+                                </li>
+                                <li class="admin-actions">
+                                    <div class="d-flex justify-content-around py-1">
+                                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-outline-info flex-fill me-1" title-en="Dashboard" title-ar="لوحة التحكم">
+                                            <i class="fas fa-tachometer-alt"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Dashboard</span>
+                                                <span data-lang="ar">اللوحة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_chapters') }}?filter=translator" class="btn btn-sm btn-outline-info flex-fill me-1" title-en="Chapters" title-ar="مراجعة الفصول">
+                                            <i class="fas fa-edit"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Review</span>
+                                                <span data-lang="ar">مراجعة</span>
+                                            </small>
+                                        </a>
+                                        <a href="{{ url_for('admin_manage') }}?filter=translation" class="btn btn-sm btn-outline-info flex-fill" title-en="Translate" title-ar="طلبات الترجمة">
+                                            <i class="fas fa-language"></i>
+                                            <small class="d-block">
+                                                <span data-lang="en">Translate</span>
+                                                <span data-lang="ar">ترجمة</span>
+                                            </small>
+                                        </a>
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                    <i class="fas fa-sign-out-alt me-2"></i>
+                                    <span data-lang="en">Logout</span>
+                                    <span data-lang="ar">خروج</span>
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('apply_publisher') }}">
+                                <i class="fas fa-user-tie me-1"></i>
+                                <span data-lang="en">Become Publisher</span>
+                                <span data-lang="ar">كن ناشراً</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>
+                                <span data-lang="en">Login</span>
+                                <span data-lang="ar">دخول</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">
+                                <i class="fas fa-user-plus me-1"></i>
+                                <span data-lang="en">Register</span>
+                                <span data-lang="ar">تسجيل</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% if get_setting('footer_enabled', True) %}
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <!-- Site Information -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>
+                        {% set logo_url = get_setting('logo_url') %}
+                        {% if logo_url %}
+                            <img src="{{ logo_url }}" alt="{{ get_setting('site_name', 'Manga Platform') }}" class="footer-logo me-2">
+                        {% else %}
+                            <i class="fas fa-book-open me-2"></i>
+                        {% endif %}
+                        <span data-lang="en">{{ get_setting('site_name', 'Manga Platform') }}</span>
+                        <span data-lang="ar">{{ get_setting('site_name', 'منصة المانجا') }}</span>
+                    </h5>
+                    <p>
+                        <span data-lang="en">{{ get_setting('footer_site_description', 'Your ultimate destination for manga, manhwa, and manhua reading.') }}</span>
+                        <span data-lang="ar">{{ get_setting('footer_site_description_ar', 'وجهتك المثلى لقراءة المانجا والمانهوا والمانهوا.') }}</span>
+                    </p>
+                    
+                    <!-- Custom Content -->
+                    {% if get_setting('footer_custom_content') %}
+                    <div class="mt-3" data-lang="en">
+                        {{ get_setting('footer_custom_content') | safe }}
+                    </div>
+                    {% endif %}
+                    {% if get_setting('footer_custom_content_ar') %}
+                    <div class="mt-3" data-lang="ar">
+                        {{ get_setting('footer_custom_content_ar') | safe }}
+                    </div>
+                    {% endif %}
+                    
+                </div>
+
+                <!-- Quick Navigation Links -->
+                {% if get_setting('footer_show_quick_links', True) %}
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6>
+                        <span data-lang="en">Browse</span>
+                        <span data-lang="ar">تصفح</span>
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('index') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Home</span>
+                            <span data-lang="ar">الرئيسية</span>
+                        </a></li>
+                        <li><a href="{{ url_for('library') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Library</span>
+                            <span data-lang="ar">المكتبة</span>
+                        </a></li>
+                        <li><a href="{{ url_for('advanced_search') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Advanced Search</span>
+                            <span data-lang="ar">بحث متقدم</span>
+                        </a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6>
+                        <span data-lang="en">Community</span>
+                        <span data-lang="ar">المجتمع</span>
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('apply_publisher') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Become Publisher</span>
+                            <span data-lang="ar">كن ناشراً</span>
+                        </a></li>
+                        {% if get_setting('footer_discord_url') %}
+                        <li><a href="{{ get_setting('footer_discord_url') }}" class="text-light text-decoration-none" target="_blank">
+                            <span data-lang="en">Discord Community</span>
+                            <span data-lang="ar">مجتمع Discord</span>
+                        </a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h6>
+                        <span data-lang="en">Support</span>
+                        <span data-lang="ar">الدعم</span>
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ get_setting('footer_help_page_url', '/help') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Help Center</span>
+                            <span data-lang="ar">مركز المساعدة</span>
+                        </a></li>
+                        <li><a href="{{ get_setting('footer_contact_page_url', '/contact') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">Contact Us</span>
+                            <span data-lang="ar">اتصل بنا</span>
+                        </a></li>
+                        <li><a href="{{ get_setting('footer_dmca_page_url', '/dmca') }}" class="text-light text-decoration-none">
+                            <span data-lang="en">DMCA</span>
+                            <span data-lang="ar">بلاغ DMCA</span>
+                        </a></li>
+                    </ul>
+                </div>
+                {% endif %}
+                <!-- Social Links -->
+                {% if get_setting('footer_show_social_links', True) %}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6>
+                        <span data-lang="en">Connect With Us</span>
+                        <span data-lang="ar">تواصل معنا</span>
+                    </h6>
+                    <div class="d-flex gap-3 mb-3">
+                        {% if get_setting('footer_twitter_url') %}
+                        <a href="{{ get_setting('footer_twitter_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="Twitter/X">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        {% endif %}
+                        {% if get_setting('footer_discord_url') %}
+                        <a href="{{ get_setting('footer_discord_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="Discord">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        {% endif %}
+                        {% if get_setting('footer_facebook_url') %}
+                        <a href="{{ get_setting('footer_facebook_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        {% endif %}
+                        {% if get_setting('footer_instagram_url') %}
+                        <a href="{{ get_setting('footer_instagram_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        {% endif %}
+                        {% if get_setting('footer_youtube_url') %}
+                        <a href="{{ get_setting('footer_youtube_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="YouTube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        {% endif %}
+                        {% if get_setting('footer_telegram_url') %}
+                        <a href="{{ get_setting('footer_telegram_url') }}" class="text-light fs-4" target="_blank" rel="noopener" title="Telegram">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="newsletter">
+                        <h6>
+                            <span data-lang="en">Newsletter</span>
+                            <span data-lang="ar">النشرة الإخبارية</span>
+                        </h6>
+                        <p class="small mb-2">
+                            <span data-lang="en">Get notified about new chapters and updates</span>
+                            <span data-lang="ar">احصل على إشعارات الفصول الجديدة والتحديثات</span>
+                        </p>
+                        <form id="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                            <div class="input-group input-group-sm">
+                                <input type="email" id="newsletter-email" class="form-control" 
+                                       placeholder-en="Enter your email" 
+                                       placeholder-ar="أدخل بريدك الإلكتروني"
+                                       required>
+                                <button class="btn btn-primary" type="submit" id="newsletter-btn"
+                                        title-en="Subscribe" title-ar="اشترك">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                        <div id="newsletter-message" class="mt-2" style="display: none;"></div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <hr class="mt-4">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        <span data-lang="en">{{ get_setting('footer_copyright_text', '© 2024 Manga Platform. All rights reserved.') }}</span>
+                        <span data-lang="ar">{{ get_setting('footer_copyright_text_ar', '© 2024 منصة المانجا. جميع الحقوق محفوظة.') }}</span>
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="{{ get_setting('footer_about_page_url', '/about') }}" class="text-light text-decoration-none me-3">
+                        <span data-lang="en">About</span>
+                        <span data-lang="ar">حول</span>
+                    </a>
+                    <a href="{{ get_setting('footer_privacy_policy_url', '/privacy-policy') }}" class="text-light text-decoration-none me-3">
+                        <span data-lang="en">Privacy Policy</span>
+                        <span data-lang="ar">سياسة الخصوصية</span>
+                    </a>
+                    <a href="{{ get_setting('footer_terms_of_service_url', '/terms-of-service') }}" class="text-light text-decoration-none me-3">
+                        <span data-lang="en">Terms of Service</span>
+                        <span data-lang="ar">شروط الخدمة</span>
+                    </a>
+                    <a href="{{ url_for('api_manga_list') }}" class="text-light text-decoration-none">
+                        <span data-lang="en">API</span>
+                        <span data-lang="ar">واجهة برمجية</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- AOS (Animate On Scroll) -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bubble-animations.js') }}"></script>
+    
+    <!-- Newsletter subscription script -->
+    <script>
+        async function subscribeNewsletter(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('newsletter-form');
+            const email = document.getElementById('newsletter-email').value;
+            const btn = document.getElementById('newsletter-btn');
+            const message = document.getElementById('newsletter-message');
+            
+            // Disable button during request
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                const response = await fetch('/newsletter/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    message.className = 'mt-2 text-success small';
+                    message.innerHTML = '<i class="fas fa-check"></i> ' + (getCurrentLanguage() === 'ar' ? 'تم الاشتراك بنجاح!' : 'Successfully subscribed!');
+                    form.reset();
+                } else {
+                    message.className = 'mt-2 text-warning small';
+                    message.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.message || (getCurrentLanguage() === 'ar' ? 'حدث خطأ!' : 'An error occurred!'));
+                }
+            } catch (error) {
+                message.className = 'mt-2 text-danger small';
+                message.innerHTML = '<i class="fas fa-times"></i> ' + (getCurrentLanguage() === 'ar' ? 'فشل في الاتصال!' : 'Connection failed!');
+            }
+            
+            // Show message and restore button
+            message.style.display = 'block';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            
+            // Hide message after 5 seconds
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+    
+    <!-- Initialize AOS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true,
+                offset: 100
+            });
+        });
+    </script>
+    
+    <!-- Notification System -->
+    {% if current_user.is_authenticated %}
+    <script>
+        // Load notifications count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+            // Update every 5 minutes in production, or disable in development
+            const isDevelopment = window.location.hostname.includes('replit.dev') || 
+                                 window.location.hostname.includes('localhost') || 
+                                 window.location.hostname.includes('127.0.0.1');
+            
+            if (!isDevelopment) {
+                // Update every 5 minutes in production
+                setInterval(updateNotificationCount, 300000);
+            }
+        });
+        
+        function updateNotificationCount() {
+            fetch('{{ url_for("unread_notifications_count") }}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'inline';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => {
+                    // Only log notification errors in development mode
+                    if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
+                        console.error('Error loading notification count:', error);
+                    }
+                    // Don't show error to user for notification count failures
+                });
+        }
+        
+        function quickSearch() {
+            const headerSearch = document.getElementById('headerSearch');
+            if (headerSearch && headerSearch.value.trim()) {
+                window.location.href = `{{ url_for('advanced_search') }}?q=${encodeURIComponent(headerSearch.value.trim())}`;
+            }
+        }
+        
+        // Allow Enter key for search
+        const headerSearch = document.getElementById('headerSearch');
+        if (headerSearch) {
+            headerSearch.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    quickSearch();
+                }
+            });
+        }
+    </script>
+    {% else %}
+    <script>
+        function quickSearch() {
+            const headerSearch = document.getElementById('headerSearch');
+            if (headerSearch && headerSearch.value.trim()) {
+                window.location.href = `{{ url_for('library') }}?search=${encodeURIComponent(headerSearch.value.trim())}`;
+            }
+        }
+        
+        // Allow Enter key for search
+        const headerSearch = document.getElementById('headerSearch');
+        if (headerSearch) {
+            headerSearch.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    quickSearch();
+                }
+            });
+        }
+    </script>
+    {% endif %}
+    
+    <!-- Modern Mobile Navbar JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Search Toggle
+            const mobileSearchToggle = document.getElementById('mobile-search-toggle');
+            const mobileSearchBar = document.getElementById('mobileSearchBar');
+            const mobileSearchClose = document.getElementById('mobile-search-close');
+            
+            if (mobileSearchToggle && mobileSearchBar) {
+                mobileSearchToggle.addEventListener('click', function() {
+                    mobileSearchBar.classList.add('show');
+                    setTimeout(() => {
+                        const mobileHeaderSearch = document.getElementById('mobileHeaderSearch');
+                        if (mobileHeaderSearch) {
+                            mobileHeaderSearch.focus();
+                        }
+                    }, 300);
+                });
+            }
+            
+            if (mobileSearchClose) {
+                mobileSearchClose.addEventListener('click', function() {
+                    mobileSearchBar.classList.remove('show');
+                });
+            }
+            
+            // Mobile Theme Toggle
+            const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+            const desktopThemeToggle = document.getElementById('theme-toggle');
+            
+            if (mobileThemeToggle && window.themeManager) {
+                mobileThemeToggle.addEventListener('click', function() {
+                    window.themeManager.toggleTheme();
+                });
+            }
+            
+            // Mobile Language Toggle is handled by LanguageManager in main.js
+            
+            // Enhanced Mobile Search Function
+            window.quickSearch = function(source = 'desktop') {
+                let query;
+                if (source === 'mobile') {
+                    query = document.getElementById('mobileHeaderSearch').value;
+                } else {
+                    query = document.getElementById('headerSearch').value;
+                }
+                
+                if (query.trim()) {
+                    {% if current_user.is_authenticated %}
+                        window.location.href = `{{ url_for('advanced_search') }}?q=${encodeURIComponent(query)}`;
+                    {% else %}
+                        window.location.href = `{{ url_for('library') }}?search=${encodeURIComponent(query)}`;
+                    {% endif %}
+                }
+            };
+            
+            // Mobile Search Enter Key Support
+            const mobileSearchInput = document.getElementById('mobileHeaderSearch');
+            if (mobileSearchInput) {
+                mobileSearchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        quickSearch('mobile');
+                    }
+                });
+            }
+            
+            // Sync mobile and desktop notification badges
+            function syncNotificationBadges() {
+                const desktopBadge = document.getElementById('notificationBadge');
+                const mobileBadge = document.getElementById('mobileNotificationBadge');
+                
+                if (desktopBadge && mobileBadge) {
+                    mobileBadge.textContent = desktopBadge.textContent;
+                    mobileBadge.style.display = desktopBadge.style.display;
+                }
+            }
+            
+            // Sync notification lists
+            function syncNotificationLists() {
+                const desktopList = document.getElementById('notificationList');
+                const mobileList = document.getElementById('mobileNotificationList');
+                
+                if (desktopList && mobileList) {
+                    mobileList.innerHTML = desktopList.innerHTML;
+                }
+            }
+            
+            // Sync notifications on initial load and updates
+            {% if current_user.is_authenticated %}
+            const originalUpdateNotificationCount = window.updateNotificationCount;
+            if (originalUpdateNotificationCount) {
+                window.updateNotificationCount = function() {
+                    originalUpdateNotificationCount();
+                    setTimeout(() => {
+                        syncNotificationBadges();
+                        syncNotificationLists();
+                    }, 100);
+                };
+            }
+            
+            // Initial sync
+            setTimeout(() => {
+                syncNotificationBadges();
+                syncNotificationLists();
+            }, 500);
+            {% endif %}
+            
+            // Smooth collapse animation
+            const navbarCollapse = document.getElementById('navbarNav');
+            if (navbarCollapse) {
+                navbarCollapse.addEventListener('show.bs.collapse', function () {
+                    this.style.animation = 'fadeInDown 0.3s ease-out';
+                });
+                
+                navbarCollapse.addEventListener('hide.bs.collapse', function () {
+                    this.style.animation = 'fadeOutUp 0.3s ease-in';
+                });
+            }
+            
+            // Auto-close mobile menu on outside click
+            document.addEventListener('click', function(e) {
+                const navbar = document.querySelector('.modern-navbar');
+                const navbarToggler = document.querySelector('.modern-toggler');
+                const navbarCollapse = document.getElementById('navbarNav');
+                
+                if (navbar && !navbar.contains(e.target) && navbarCollapse.classList.contains('show')) {
+                    const bsCollapse = new bootstrap.Collapse(navbarCollapse, {
+                        toggle: false
+                    });
+                    bsCollapse.hide();
+                }
+            });
+            
+            // Handle responsive search bar positioning
+            function handleResponsiveSearch() {
+                const mobileSearchBar = document.getElementById('mobileSearchBar');
+                if (mobileSearchBar) {
+                    if (window.innerWidth >= 992) {
+                        mobileSearchBar.classList.remove('show');
+                    }
+                }
+            }
+            
+            window.addEventListener('resize', handleResponsiveSearch);
+            
+            // Modern mobile navbar initialized successfully (debug log removed)
+        });
+        
+        // Add fade out animation keyframes
+        if (!document.querySelector('#mobile-navbar-animations')) {
+            const style = document.createElement('style');
+            style.id = 'mobile-navbar-animations';
+            style.textContent = `
+                @keyframes fadeOutUp {
+                    from {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateY(-20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Custom SEO Code (head section) -->
+    {% if get_setting('seo_custom_head') %}
+        {{ get_setting('seo_custom_head') | safe }}
+    {% endif %}
+    
+    <!-- Analytics Code -->
+    {% if seo_data and seo_data.analytics %}
+        {{ seo_data.analytics | safe }}
+    {% else %}
+        <!-- Google Analytics -->
+        {% set ga_id = get_setting('seo_google_analytics') %}
+        {% if ga_id %}
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+            <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '{{ ga_id }}');
+            </script>
+        {% endif %}
+        
+        <!-- Google Tag Manager -->
+        {% set gtm_id = get_setting('seo_google_tag_manager') %}
+        {% if gtm_id %}
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','{{ gtm_id }}');</script>
+        {% endif %}
+    {% endif %}
+    
+    <!-- Logo Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbarLogo = document.querySelector('.navbar-logo');
+            const footerLogo = document.querySelector('.footer-logo');
+            
+            if (navbarLogo) {
+                // Add page load sparkle effect
+                navbarLogo.classList.add('page-load');
+                
+                // Remove page-load class after animation completes
+                setTimeout(() => {
+                    navbarLogo.classList.remove('page-load');
+                }, 2000);
+                
+                // Add click animation
+                navbarLogo.addEventListener('click', function() {
+                    this.classList.add('loading');
+                    setTimeout(() => {
+                        this.classList.remove('loading');
+                    }, 1000);
+                });
+                
+                // Add special pulse effect on double click
+                let clickTimeout;
+                navbarLogo.addEventListener('click', function() {
+                    if (clickTimeout) {
+                        clearTimeout(clickTimeout);
+                        clickTimeout = null;
+                        // Double click detected
+                        this.classList.add('pulse');
+                        setTimeout(() => {
+                            this.classList.remove('pulse');
+                        }, 3000);
+                    } else {
+                        clickTimeout = setTimeout(() => {
+                            clickTimeout = null;
+                        }, 300);
+                    }
+                });
+                
+                // Add intersection observer for scroll effects
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.animationPlayState = 'running';
+                        } else {
+                            entry.target.style.animationPlayState = 'paused';
+                        }
+                    });
+                });
+                
+                observer.observe(navbarLogo);
+            }
+            
+            // Footer logo hover enhancement
+            if (footerLogo) {
+                footerLogo.addEventListener('mouseenter', function() {
+                    this.style.animationPlayState = 'running';
+                });
+                
+                footerLogo.addEventListener('mouseleave', function() {
+                    this.style.animationPlayState = 'paused';
+                });
+            }
+            
+            // Random sparkle effect every 30 seconds
+            setInterval(() => {
+                if (navbarLogo && Math.random() > 0.7) {
+                    navbarLogo.classList.add('pulse');
+                    setTimeout(() => {
+                        navbarLogo.classList.remove('pulse');
+                    }, 1500);
+                }
+            }, 30000);
+            
+            // Performance optimization - pause animations when tab is not visible
+            document.addEventListener('visibilitychange', function() {
+                const isHidden = document.hidden;
+                if (navbarLogo) {
+                    navbarLogo.style.animationPlayState = isHidden ? 'paused' : 'running';
+                }
+            });
+            
+            // Logo animations initialized successfully (debug log removed)
+        });
+        
+        // Fix notification dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationDropdown = document.getElementById('notificationDropdown');
+            
+            if (notificationDropdown) {
+                // Remove any existing Bootstrap handlers
+                notificationDropdown.removeAttribute('data-bs-toggle');
+                
+                // Add manual click handler
+                notificationDropdown.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const dropdownMenu = this.nextElementSibling;
+                    const isOpen = dropdownMenu.classList.contains('show');
+                    
+                    // Close all other open dropdowns first
+                    document.querySelectorAll('.dropdown-menu.show').forEach(menu => {
+                        menu.classList.remove('show');
+                        menu.previousElementSibling.setAttribute('aria-expanded', 'false');
+                    });
+                    
+                    if (!isOpen) {
+                        // Open this dropdown
+                        dropdownMenu.classList.add('show');
+                        this.setAttribute('aria-expanded', 'true');
+                        
+                        // Force positioning and visibility
+                        dropdownMenu.style.position = 'absolute';
+                        dropdownMenu.style.top = '100%';
+                        dropdownMenu.style.right = '0';
+                        dropdownMenu.style.left = 'auto';
+                        dropdownMenu.style.zIndex = '9999';
+                        dropdownMenu.style.display = 'block';
+                        dropdownMenu.style.visibility = 'visible';
+                        dropdownMenu.style.opacity = '1';
+                        dropdownMenu.style.transform = 'none';
+                        dropdownMenu.style.marginTop = '0.125rem';
+                        
+                        // Debug logs removed for cleaner console
+                    } else {
+                        // Close this dropdown
+                        dropdownMenu.classList.remove('show');
+                        this.setAttribute('aria-expanded', 'false');
+                        dropdownMenu.style.display = 'none';
+                        // Debug log removed for cleaner console
+                    }
+                });
+                
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!notificationDropdown.contains(e.target)) {
+                        const dropdownMenu = notificationDropdown.nextElementSibling;
+                        if (dropdownMenu && dropdownMenu.classList.contains('show')) {
+                            dropdownMenu.classList.remove('show');
+                            notificationDropdown.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+                
+                // Notification dropdown functionality initialized (debug log removed)
+            }
+        });
+    </script>
+
+    <!-- Custom SEO Code (end of body) -->
+    {% if seo_data and seo_data.custom_code %}
+        {{ seo_data.custom_code | safe }}
+    {% else %}
+        {% set custom_body_end = get_setting('seo_custom_body_end') %}
+        {% if custom_body_end %}
+            {{ custom_body_end | safe }}
+        {% endif %}
+    {% endif %}
+    
+</body>
+</html>

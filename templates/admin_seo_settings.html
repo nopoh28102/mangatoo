@@ -1,0 +1,1121 @@
+{% extends "base.html" %}
+{% block title %}إدارة تحسينات محركات البحث - SEO{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-md-3 col-lg-2 sidebar-admin">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-search"></i> إدارة SEO</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="#basic-seo" class="list-group-item list-group-item-action active" data-bs-toggle="pill">
+                            <i class="fas fa-cog me-2"></i> إعدادات أساسية
+                        </a>
+                        <a href="#meta-tags" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-tags me-2"></i> العلامات الوصفية
+                        </a>
+                        <a href="#social-media" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-share-alt me-2"></i> وسائل التواصل
+                        </a>
+                        <a href="#structured-data" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-code me-2"></i> البيانات المنظمة
+                        </a>
+                        <a href="#analytics" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-chart-line me-2"></i> التحليلات
+                        </a>
+                        <a href="#performance" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-rocket me-2"></i> الأداء
+                        </a>
+                        <a href="#robots-sitemap" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-robot me-2"></i> Robots & Sitemap
+                        </a>
+                        <a href="#custom-code" class="list-group-item list-group-item-action" data-bs-toggle="pill">
+                            <i class="fas fa-code me-2"></i> كود مخصص
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4><i class="fas fa-search-plus me-2"></i> إدارة تحسينات محركات البحث</h4>
+                        <small class="text-muted">تحكم شامل في إعدادات SEO لتحسين ظهور الموقع في نتائج البحث</small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success" onclick="testSeoSettings()">
+                            <i class="fas fa-check me-1"></i> اختبار الإعدادات
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                <i class="fas fa-cog me-1"></i> خيارات متقدمة
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" onclick="exportSeoSettings()">
+                                    <i class="fas fa-download me-2"></i> تصدير الإعدادات
+                                </a></li>
+                                <li><a class="dropdown-item" href="#" onclick="importSeoSettings()">
+                                    <i class="fas fa-upload me-2"></i> استيراد الإعدادات
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#" onclick="resetSeoSettings()">
+                                    <i class="fas fa-undo me-2"></i> إعادة تعيين جميع الإعدادات
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-check-circle me-2"></i>{{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" id="seoSettingsForm">
+                        <div class="tab-content">
+                            <!-- Basic SEO Settings -->
+                            <div class="tab-pane fade show active" id="basic-seo">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-cog me-2"></i> الإعدادات الأساسية
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_site_title" class="form-label">عنوان الموقع</label>
+                                            <input type="text" class="form-control" id="seo_site_title" 
+                                                   name="setting_seo_site_title" 
+                                                   value="{{ get_setting('seo_site_title', 'منصة المانجا') }}"
+                                                   placeholder="عنوان الموقع الذي يظهر في نتائج البحث">
+                                            <div class="form-text">يظهر في علامة title وفي نتائج البحث</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_title_separator" class="form-label">فاصل العنوان</label>
+                                            <select class="form-select" id="seo_title_separator" name="setting_seo_title_separator">
+                                                {% set current_separator = get_setting('seo_title_separator', ' | ') %}
+                                                <option value=" | " {{ 'selected' if current_separator == ' | ' else '' }}> | </option>
+                                                <option value=" - " {{ 'selected' if current_separator == ' - ' else '' }}> - </option>
+                                                <option value=" :: " {{ 'selected' if current_separator == ' :: ' else '' }}> :: </option>
+                                                <option value=" • " {{ 'selected' if current_separator == ' • ' else '' }}> • </option>
+                                            </select>
+                                            <div class="form-text">الرمز المستخدم لفصل أجزاء العنوان</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_robots_meta" class="form-label">إعدادات Robots</label>
+                                            <select class="form-select" id="seo_robots_meta" name="setting_seo_robots_meta">
+                                                {% set current_robots = get_setting('seo_robots_meta', 'index, follow') %}
+                                                <option value="index, follow" {{ 'selected' if current_robots == 'index, follow' else '' }}>فهرسة وتتبع الروابط</option>
+                                                <option value="index, nofollow" {{ 'selected' if current_robots == 'index, nofollow' else '' }}>فهرسة بدون تتبع روابط</option>
+                                                <option value="noindex, follow" {{ 'selected' if current_robots == 'noindex, follow' else '' }}>عدم فهرسة مع تتبع روابط</option>
+                                                <option value="noindex, nofollow" {{ 'selected' if current_robots == 'noindex, nofollow' else '' }}>عدم فهرسة وعدم تتبع</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_meta_description" class="form-label">الوصف التعريفي</label>
+                                            <textarea class="form-control" id="seo_meta_description" rows="4"
+                                                      name="setting_seo_meta_description"
+                                                      placeholder="وصف مختصر وجذاب للموقع يظهر في نتائج البحث">{{ get_setting('seo_meta_description', '') }}</textarea>
+                                            <div class="form-text">
+                                                <span id="desc-counter">0</span>/160 حرف
+                                                - يظهر في نتائج البحث
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_meta_keywords" class="form-label">الكلمات المفتاحية</label>
+                                            <input type="text" class="form-control" id="seo_meta_keywords" 
+                                                   name="setting_seo_meta_keywords" 
+                                                   value="{{ get_setting('seo_meta_keywords', '') }}"
+                                                   placeholder="مانجا, مانهوا, قراءة مجانية">
+                                            <div class="form-text">افصل الكلمات بفواصل (,)</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_default_image" class="form-label">الصورة الافتراضية</label>
+                                            <input type="text" class="form-control" id="seo_default_image" 
+                                                   name="setting_seo_default_image" 
+                                                   value="{{ get_setting('seo_default_image', '') }}"
+                                                   placeholder="/static/images/og-default.jpg">
+                                            <div class="form-text">صورة افتراضية لمشاركة الصفحات على وسائل التواصل</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Favicon Management Section -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h6 class="border-bottom pb-2 mb-3">
+                                            <i class="fas fa-star me-2"></i> إدارة الفافيكون
+                                        </h6>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="current_favicon" class="form-label">الفافيكون الحالي</label>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="favicon-preview">
+                                                    {% set current_favicon = get_setting('site_favicon', '/static/img/favicon.ico') %}
+                                                    <img src="{{ current_favicon }}" alt="الفافيكون الحالي" 
+                                                         style="width: 32px; height: 32px; border: 1px solid #ddd; border-radius: 4px;"
+                                                         id="favicon-preview">
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <input type="text" class="form-control" id="current_favicon" 
+                                                           name="setting_site_favicon" 
+                                                           value="{{ current_favicon }}"
+                                                           placeholder="/static/img/favicon.ico" readonly>
+                                                    <div class="form-text">المسار الحالي للفافيكون</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="favicon_upload" class="form-label">رفع فافيكون جديد</label>
+                                            <div class="input-group">
+                                                <input type="file" class="form-control" id="favicon_upload" 
+                                                       accept=".ico,.png,.jpg,.jpeg,.gif,.svg" 
+                                                       onchange="previewFavicon(this)">
+                                                <button type="button" class="btn btn-primary" onclick="uploadFavicon()">
+                                                    <i class="fas fa-upload me-1"></i> رفع
+                                                </button>
+                                            </div>
+                                            <div class="form-text">
+                                                الأنواع المدعومة: ICO, PNG, JPG, SVG (أفضل حجم: 32x32 أو 16x16 بكسل)
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <div class="d-flex gap-2">
+                                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetFavicon()">
+                                                    <i class="fas fa-undo me-1"></i> استعادة الافتراضي
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteFavicon()">
+                                                    <i class="fas fa-trash me-1"></i> حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SEO Features Toggle -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h6 class="border-bottom pb-2 mb-3">تفعيل المميزات</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="setting_seo_canonical_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_canonical_enabled" 
+                                                   name="setting_seo_canonical_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_canonical_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_canonical_enabled">
+                                                الروابط المعيارية
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="setting_seo_schema_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_schema_enabled" 
+                                                   name="setting_seo_schema_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_schema_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_schema_enabled">
+                                                البيانات المنظمة
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="setting_seo_breadcrumb_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_breadcrumb_enabled" 
+                                                   name="setting_seo_breadcrumb_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_breadcrumb_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_breadcrumb_enabled">
+                                                مسار التنقل
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="setting_seo_sitemap_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_sitemap_enabled" 
+                                                   name="setting_seo_sitemap_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_sitemap_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_sitemap_enabled">
+                                                خريطة الموقع
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analytics Tab -->
+                            <div class="tab-pane fade" id="analytics">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-chart-line me-2"></i> التحليلات والتتبع
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_google_analytics" class="form-label">Google Analytics ID</label>
+                                            <input type="text" class="form-control" id="seo_google_analytics" 
+                                                   name="setting_seo_google_analytics" 
+                                                   value="{{ get_setting('seo_google_analytics', '') }}"
+                                                   placeholder="G-XXXXXXXXXX">
+                                            <div class="form-text">معرف Google Analytics 4</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_google_tag_manager" class="form-label">Google Tag Manager ID</label>
+                                            <input type="text" class="form-control" id="seo_google_tag_manager" 
+                                                   name="setting_seo_google_tag_manager" 
+                                                   value="{{ get_setting('seo_google_tag_manager', '') }}"
+                                                   placeholder="GTM-XXXXXXX">
+                                            <div class="form-text">معرف حاوية Google Tag Manager</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_google_site_verification" class="form-label">Google Site Verification</label>
+                                            <input type="text" class="form-control" id="seo_google_site_verification" 
+                                                   name="setting_seo_google_site_verification" 
+                                                   value="{{ get_setting('seo_google_site_verification', '') }}"
+                                                   placeholder="abc123xyz">
+                                            <div class="form-text">رمز التحقق من Google Search Console</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_bing_verification" class="form-label">Bing Site Verification</label>
+                                            <input type="text" class="form-control" id="seo_bing_verification" 
+                                                   name="setting_seo_bing_verification" 
+                                                   value="{{ get_setting('seo_bing_verification', '') }}"
+                                                   placeholder="abc123xyz">
+                                            <div class="form-text">رمز التحقق من Bing Webmaster Tools</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_yandex_verification" class="form-label">Yandex Site Verification</label>
+                                            <input type="text" class="form-control" id="seo_yandex_verification" 
+                                                   name="setting_seo_yandex_verification" 
+                                                   value="{{ get_setting('seo_yandex_verification', '') }}"
+                                                   placeholder="abc123xyz">
+                                            <div class="form-text">رمز التحقق من Yandex Webmaster</div>
+                                        </div>
+
+                                        <div class="form-check form-switch">
+                                            <input type="hidden" name="setting_seo_analytics_anonymize" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_analytics_anonymize" 
+                                                   name="setting_seo_analytics_anonymize" value="true"
+                                                   {{ 'checked' if get_setting('seo_analytics_anonymize', False) else '' }}>
+                                            <label class="form-check-label" for="seo_analytics_anonymize">
+                                                إخفاء هوية IP في التحليلات
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Performance Tab -->
+                            <div class="tab-pane fade" id="performance">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-rocket me-2"></i> تحسينات الأداء
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_preconnect_domains" class="form-label">نطاقات Preconnect</label>
+                                            <textarea class="form-control" id="seo_preconnect_domains" rows="3"
+                                                      name="setting_seo_preconnect_domains"
+                                                      placeholder="https://fonts.googleapis.com
+https://cdnjs.cloudflare.com">{{ get_setting('seo_preconnect_domains', '') }}</textarea>
+                                            <div class="form-text">كل نطاق في سطر منفصل</div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_dns_prefetch_domains" class="form-label">نطاقات DNS Prefetch</label>
+                                            <textarea class="form-control" id="seo_dns_prefetch_domains" rows="3"
+                                                      name="setting_seo_dns_prefetch_domains"
+                                                      placeholder="//fonts.gstatic.com
+//www.google-analytics.com">{{ get_setting('seo_dns_prefetch_domains', '') }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_lazy_loading" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_lazy_loading" 
+                                                   name="setting_seo_lazy_loading" value="true"
+                                                   {{ 'checked' if get_setting('seo_lazy_loading', True) else '' }}>
+                                            <label class="form-check-label" for="seo_lazy_loading">
+                                                تفعيل Lazy Loading للصور
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_preload_critical_resources" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_preload_critical_resources" 
+                                                   name="setting_seo_preload_critical_resources" value="true"
+                                                   {{ 'checked' if get_setting('seo_preload_critical_resources', True) else '' }}>
+                                            <label class="form-check-label" for="seo_preload_critical_resources">
+                                                تحميل الموارد المهمة مسبقاً
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_minify_html" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_minify_html" 
+                                                   name="setting_seo_minify_html" value="true"
+                                                   {{ 'checked' if get_setting('seo_minify_html', False) else '' }}>
+                                            <label class="form-check-label" for="seo_minify_html">
+                                                ضغط HTML
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Robots & Sitemap Tab -->
+                            <div class="tab-pane fade" id="robots-sitemap">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-robot me-2"></i> إعدادات Robots.txt و Sitemap
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_robots_txt" class="form-label">محتوى Robots.txt</label>
+                                            <textarea class="form-control font-monospace" id="seo_robots_txt" rows="10"
+                                                      name="setting_seo_robots_txt">{{ get_setting('seo_robots_txt', 'User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /user/\nSitemap: /sitemap.xml') }}</textarea>
+                                            <div class="form-text">تحكم في فهرسة محركات البحث</div>
+                                        </div>
+
+                                        <div class="d-flex gap-2 mb-3">
+                                            <a href="/robots.txt" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-external-link-alt me-1"></i> عرض Robots.txt
+                                            </a>
+                                            <button type="button" class="btn btn-outline-success btn-sm" onclick="testRobots()">
+                                                <i class="fas fa-check me-1"></i> اختبار
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <h6>إعدادات Sitemap</h6>
+                                            
+                                            <div class="form-check form-switch mb-2">
+                                                <input type="hidden" name="setting_seo_sitemap_enabled" value="false">
+                                                <input class="form-check-input" type="checkbox" id="sitemap_enabled" 
+                                                       name="setting_seo_sitemap_enabled" value="true"
+                                                       {{ 'checked' if get_setting('seo_sitemap_enabled', True) else '' }}>
+                                                <label class="form-check-label" for="sitemap_enabled">
+                                                    تفعيل XML Sitemap
+                                                </label>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="seo_sitemap_priority_home" class="form-label">أولوية الصفحة الرئيسية</label>
+                                                <select class="form-select" id="seo_sitemap_priority_home" name="setting_seo_sitemap_priority_home">
+                                                    {% set current_priority = get_setting('seo_sitemap_priority_home', '1.0') %}
+                                                    <option value="1.0" {{ 'selected' if current_priority == '1.0' else '' }}>1.0 (الأعلى)</option>
+                                                    <option value="0.9" {{ 'selected' if current_priority == '0.9' else '' }}>0.9</option>
+                                                    <option value="0.8" {{ 'selected' if current_priority == '0.8' else '' }}>0.8</option>
+                                                    <option value="0.7" {{ 'selected' if current_priority == '0.7' else '' }}>0.7</option>
+                                                    <option value="0.5" {{ 'selected' if current_priority == '0.5' else '' }}>0.5</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="seo_sitemap_changefreq" class="form-label">تكرار التحديث</label>
+                                                <select class="form-select" id="seo_sitemap_changefreq" name="setting_seo_sitemap_changefreq">
+                                                    {% set current_freq = get_setting('seo_sitemap_changefreq', 'daily') %}
+                                                    <option value="always" {{ 'selected' if current_freq == 'always' else '' }}>دائماً</option>
+                                                    <option value="hourly" {{ 'selected' if current_freq == 'hourly' else '' }}>كل ساعة</option>
+                                                    <option value="daily" {{ 'selected' if current_freq == 'daily' else '' }}>يومياً</option>
+                                                    <option value="weekly" {{ 'selected' if current_freq == 'weekly' else '' }}>أسبوعياً</option>
+                                                    <option value="monthly" {{ 'selected' if current_freq == 'monthly' else '' }}>شهرياً</option>
+                                                    <option value="yearly" {{ 'selected' if current_freq == 'yearly' else '' }}>سنوياً</option>
+                                                    <option value="never" {{ 'selected' if current_freq == 'never' else '' }}>أبداً</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="d-flex gap-2">
+                                                <a href="/sitemap.xml" target="_blank" class="btn btn-outline-info btn-sm">
+                                                    <i class="fas fa-sitemap me-1"></i> عرض Sitemap
+                                                </a>
+                                                <button type="button" class="btn btn-outline-success btn-sm" onclick="generateSitemap()">
+                                                    <i class="fas fa-sync me-1"></i> إعادة إنشاء
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Custom Code Tab -->
+                            <div class="tab-pane fade" id="custom-code">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-code me-2"></i> كود HTML مخصص
+                                        </h5>
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <strong>تحذير:</strong> استخدم هذه الخاصية بحذر. كود HTML خاطئ قد يؤثر على عمل الموقع.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_head" class="form-label">
+                                        كود HTML في قسم &lt;head&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_head" rows="6"
+                                              name="setting_seo_custom_head"
+                                              placeholder="<!-- كود مخصص للرأس -->">{{ get_setting('seo_custom_head', '') }}</textarea>
+                                    <div class="form-text">يُدرج قبل إغلاق &lt;/head&gt;</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_body_start" class="form-label">
+                                        كود HTML في بداية &lt;body&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_body_start" rows="4"
+                                              name="setting_seo_custom_body_start"
+                                              placeholder="<!-- Google Tag Manager (noscript) -->">{{ get_setting('seo_custom_body_start', '') }}</textarea>
+                                    <div class="form-text">يُدرج مباشرة بعد فتح &lt;body&gt;</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_body_end" class="form-label">
+                                        كود HTML في نهاية &lt;body&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_body_end" rows="4"
+                                              name="setting_seo_custom_body_end"
+                                              placeholder="<!-- كود تتبع إضافي -->">{{ get_setting('seo_custom_body_end', '') }}</textarea>
+                                    <div class="form-text">يُدرج قبل إغلاق &lt;/body&gt;</div>
+                                </div>
+                            </div>
+
+                            <!-- Social Media Tab -->
+                            <div class="tab-pane fade" id="social-media">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-share-alt me-2"></i> وسائل التواصل الاجتماعي  
+                                        </h5>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="seo_og_title" class="form-label">عنوان Facebook</label>
+                                                    <input type="text" class="form-control" id="seo_og_title" 
+                                                           name="setting_seo_og_title" 
+                                                           value="{{ get_setting('seo_og_title', '') }}"
+                                                           placeholder="عنوان مخصص لمشاركة Facebook">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="seo_og_description" class="form-label">وصف Facebook</label>
+                                                    <textarea class="form-control" id="seo_og_description" rows="3"
+                                                              name="setting_seo_og_description"
+                                                              placeholder="وصف مخصص لمشاركة Facebook">{{ get_setting('seo_og_description', '') }}</textarea>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="seo_og_image" class="form-label">صورة Facebook</label>
+                                                    <input type="text" class="form-control" id="seo_og_image" 
+                                                           name="setting_seo_og_image" 
+                                                           value="{{ get_setting('seo_og_image', '') }}"
+                                                           placeholder="/static/images/og-image.jpg">
+                                                    <div class="form-text">الحجم المفضل: 1200x630 بكسل</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="seo_twitter_card" class="form-label">نوع Twitter Card</label>
+                                                    <select class="form-select" id="seo_twitter_card" name="setting_seo_twitter_card">
+                                                        {% set current_twitter_card = get_setting('seo_twitter_card', 'summary_large_image') %}
+                                                        <option value="summary" {{ 'selected' if current_twitter_card == 'summary' else '' }}>خلاصة</option>
+                                                        <option value="summary_large_image" {{ 'selected' if current_twitter_card == 'summary_large_image' else '' }}>خلاصة مع صورة كبيرة</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="seo_twitter_site" class="form-label">حساب Twitter للموقع</label>
+                                                    <input type="text" class="form-control" id="seo_twitter_site" 
+                                                           name="setting_seo_twitter_site" 
+                                                           value="{{ get_setting('seo_twitter_site', '') }}"
+                                                           placeholder="@manga_platform">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="seo_twitter_image" class="form-label">صورة Twitter</label>
+                                                    <input type="text" class="form-control" id="seo_twitter_image" 
+                                                           name="setting_seo_twitter_image" 
+                                                           value="{{ get_setting('seo_twitter_image', '') }}"
+                                                           placeholder="/static/images/twitter-image.jpg">
+                                                    <div class="form-text">الحجم المفضل: 1200x675 بكسل</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Open Graph Settings -->
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3"><i class="fab fa-facebook me-2"></i> Open Graph (Facebook)</h6>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_og_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_og_enabled" 
+                                                   name="setting_seo_og_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_og_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_og_enabled">
+                                                تفعيل Open Graph
+                                            </label>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_facebook_app_id" class="form-label">Facebook App ID</label>
+                                            <input type="text" class="form-control" id="seo_facebook_app_id" 
+                                                   name="setting_seo_facebook_app_id" 
+                                                   value="{{ get_setting('seo_facebook_app_id', '') }}"
+                                                   placeholder="123456789012345">
+                                            <div class="form-text">معرف تطبيق فيسبوك (اختياري)</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Twitter Settings -->
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3"><i class="fab fa-twitter me-2"></i> Twitter Cards</h6>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_twitter_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_twitter_enabled" 
+                                                   name="setting_seo_twitter_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_twitter_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_twitter_enabled">
+                                                تفعيل Twitter Cards
+                                            </label>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="seo_twitter_username" class="form-label">اسم المستخدم</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">@</span>
+                                                <input type="text" class="form-control" id="seo_twitter_username" 
+                                                       name="setting_seo_twitter_username" 
+                                                       value="{{ get_setting('seo_twitter_username', '').lstrip('@') }}"
+                                                       placeholder="username">
+                                            </div>
+                                            <div class="form-text">اسم المستخدم في تويتر (اختياري)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <!-- Performance Tab -->
+                            <div class="tab-pane fade" id="performance">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-rocket me-2"></i> تحسينات الأداء
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_page_speed_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_page_speed_enabled" 
+                                                   name="setting_seo_page_speed_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_page_speed_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_page_speed_enabled">
+                                                تفعيل تحسينات السرعة
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_lazy_loading" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_lazy_loading" 
+                                                   name="setting_seo_lazy_loading" value="true"
+                                                   {{ 'checked' if get_setting('seo_lazy_loading', True) else '' }}>
+                                            <label class="form-check-label" for="seo_lazy_loading">
+                                                تحميل الصور التدريجي
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-3">
+                                            <input type="hidden" name="setting_seo_hreflang_enabled" value="false">
+                                            <input class="form-check-input" type="checkbox" id="seo_hreflang_enabled" 
+                                                   name="setting_seo_hreflang_enabled" value="true"
+                                                   {{ 'checked' if get_setting('seo_hreflang_enabled', True) else '' }}>
+                                            <label class="form-check-label" for="seo_hreflang_enabled">
+                                                علامات hreflang
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="seo_preconnect_domains" class="form-label">النطاقات للاتصال المسبق</label>
+                                            <textarea class="form-control" id="seo_preconnect_domains" rows="4"
+                                                      name="setting_seo_preconnect_domains"
+                                                      placeholder="fonts.googleapis.com, fonts.gstatic.com">{{ get_setting('seo_preconnect_domains', '') }}</textarea>
+                                            <div class="form-text">افصل النطاقات بفواصل لتحسين سرعة التحميل</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Robots & Sitemap Tab -->
+                            <div class="tab-pane fade" id="robots-sitemap">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-robot me-2"></i> إعدادات Robots.txt وخريطة الموقع
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_robots_txt" class="form-label">محتوى ملف robots.txt</label>
+                                    <textarea class="form-control font-monospace" id="seo_robots_txt" rows="10"
+                                              name="setting_seo_robots_txt"
+                                              placeholder="User-agent: *&#10;Allow: /&#10;Disallow: /admin/">{{ get_setting('seo_robots_txt', '') }}</textarea>
+                                    <div class="form-text">تعليمات للـ search engines حول كيفية فهرسة الموقع</div>
+                                </div>
+
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>تحذير:</strong> تعديل robots.txt بشكل خاطئ قد يؤثر سلباً على فهرسة الموقع في محركات البحث.
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary" onclick="testRobotsTxt()">
+                                        <i class="fas fa-search me-1"></i> اختبار robots.txt
+                                    </button>
+                                    <a href="/sitemap.xml" target="_blank" class="btn btn-outline-info">
+                                        <i class="fas fa-sitemap me-1"></i> عرض خريطة الموقع
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Custom Code Tab -->
+                            <div class="tab-pane fade" id="custom-code">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5 class="border-bottom pb-2 mb-4">
+                                            <i class="fas fa-code me-2"></i> أكواد مخصصة
+                                        </h5>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_head" class="form-label">
+                                        كود HTML في &lt;head&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_head" rows="6"
+                                              name="setting_seo_custom_head"
+                                              placeholder="<!-- أدخل كود HTML مخصص هنا -->">{{ get_setting('seo_custom_head', '') }}</textarea>
+                                    <div class="form-text">يُدرج في قسم &lt;head&gt; من جميع الصفحات</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_body_start" class="form-label">
+                                        كود HTML في بداية &lt;body&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_body_start" rows="4"
+                                              name="setting_seo_custom_body_start"
+                                              placeholder="<!-- Google Tag Manager (noscript) -->">{{ get_setting('seo_custom_body_start', '') }}</textarea>
+                                    <div class="form-text">يُدرج مباشرة بعد فتح &lt;body&gt;</div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="seo_custom_body_end" class="form-label">
+                                        كود HTML في نهاية &lt;body&gt;
+                                    </label>
+                                    <textarea class="form-control font-monospace" id="seo_custom_body_end" rows="4"
+                                              name="setting_seo_custom_body_end"
+                                              placeholder="<!-- كود تتبع إضافي -->">{{ get_setting('seo_custom_body_end', '') }}</textarea>
+                                    <div class="form-text">يُدرج قبل إغلاق &lt;/body&gt;</div>
+                                </div>
+
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>تحذير:</strong> استخدم هذه الخاصية بحذر. كود HTML خاطئ قد يؤثر على عمل الموقع.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Save Button -->
+                        <div class="border-top pt-4 mt-4">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-save me-2"></i> حفظ إعدادات SEO
+                                </button>
+                                <div class="text-muted small">
+                                    آخر تحديث الآن
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Preview Modal -->
+<div class="modal fade" id="seoPreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">معاينة نتائج البحث</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="google-preview">
+                    <div class="google-preview-url text-success small">{{ request.url_root }}</div>
+                    <div class="google-preview-title text-primary h6 mb-1" id="preview-title"></div>
+                    <div class="google-preview-description text-muted small" id="preview-description"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.google-preview {
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 16px;
+    background: white;
+    font-family: arial, sans-serif;
+}
+
+.google-preview-title {
+    color: #1a0dab;
+    font-size: 20px;
+    font-weight: normal;
+    line-height: 1.3;
+    text-decoration: underline;
+}
+
+.google-preview-description {
+    color: #4d5156;
+    line-height: 1.4;
+}
+
+.sidebar-admin .list-group-item {
+    border: none;
+    border-radius: 0;
+    padding: 12px 16px;
+    color: #495057;
+}
+
+.sidebar-admin .list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.sidebar-admin .list-group-item.active {
+    background-color: #007bff;
+    color: white;
+}
+</style>
+
+<script>
+// Character counter for meta description
+document.getElementById('seo_meta_description').addEventListener('input', function() {
+    const counter = document.getElementById('desc-counter');
+    const count = this.value.length;
+    counter.textContent = count;
+    counter.className = count > 160 ? 'text-danger fw-bold' : '';
+});
+
+// Initial count
+document.getElementById('desc-counter').textContent = 
+    document.getElementById('seo_meta_description').value.length;
+
+// Preview functionality
+function testSeoSettings() {
+    const title = document.getElementById('seo_site_title').value;
+    const description = document.getElementById('seo_meta_description').value;
+    
+    document.getElementById('preview-title').textContent = title;
+    document.getElementById('preview-description').textContent = description;
+    
+    new bootstrap.Modal(document.getElementById('seoPreviewModal')).show();
+}
+
+// Enhanced robots.txt test
+function testRobots() {
+    fetch('/admin/seo/test-robots', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let message = data.message;
+            if (data.warnings && data.warnings.length > 0) {
+                message += '\n\nتحذيرات:\n' + data.warnings.join('\n');
+            }
+            alert(message);
+        } else {
+            alert('خطأ: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء فحص robots.txt');
+    });
+}
+
+// Alias for backward compatibility
+function testRobotsTxt() {
+    testRobots();
+}
+
+// Favicon management functions
+function previewFavicon(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('favicon-preview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function uploadFavicon() {
+    const fileInput = document.getElementById('favicon_upload');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('الرجاء اختيار ملف أولاً');
+        return;
+    }
+    
+    // Validate file type
+    const allowedTypes = ['image/x-icon', 'image/vnd.microsoft.icon', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('نوع الملف غير مدعوم. استخدم ICO, PNG, JPG, SVG');
+        return;
+    }
+    
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('حجم الملف كبير جداً. الحد الأقصى 2 ميجابايت');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('favicon', file);
+    
+    // Show loading
+    const uploadBtn = document.querySelector('button[onclick="uploadFavicon()"]');
+    const originalText = uploadBtn.innerHTML;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> جاري الرفع...';
+    uploadBtn.disabled = true;
+    
+    fetch('/admin/upload-favicon', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('current_favicon').value = data.favicon_path;
+            document.getElementById('favicon-preview').src = data.favicon_path + '?t=' + Date.now();
+            alert('تم رفع الفافيكون بنجاح!');
+            fileInput.value = '';
+        } else {
+            alert('خطأ: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء رفع الملف');
+    })
+    .finally(() => {
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = false;
+    });
+}
+
+function resetFavicon() {
+    if (confirm('هل تريد استعادة الفافيكون الافتراضي؟')) {
+        fetch('/admin/reset-favicon', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('current_favicon').value = data.favicon_path;
+                document.getElementById('favicon-preview').src = data.favicon_path + '?t=' + Date.now();
+                alert('تم استعادة الفافيكون الافتراضي');
+            } else {
+                alert('خطأ: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء استعادة الفافيكون');
+        });
+    }
+}
+
+function deleteFavicon() {
+    if (confirm('هل تريد حذف الفافيكون الحالي؟')) {
+        fetch('/admin/delete-favicon', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('current_favicon').value = '';
+                document.getElementById('favicon-preview').src = '/static/img/favicon.ico';
+                alert('تم حذف الفافيكون');
+            } else {
+                alert('خطأ: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء حذف الفافيكون');
+        });
+    }
+}
+
+// Generate sitemap function
+function generateSitemap() {
+    if (confirm('هل تريد إعادة إنشاء خريطة الموقع؟')) {
+        fetch('/admin/seo/generate-sitemap', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message + '\nيمكنك مشاهدتها على: ' + data.sitemap_url);
+            } else {
+                alert('خطأ: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء إنشاء خريطة الموقع');
+        });
+    }
+}
+
+// Export SEO settings
+function exportSeoSettings() {
+    window.open('/admin/seo/export', '_blank');
+}
+
+// Import SEO settings
+function importSeoSettings() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('seo_file', file);
+            
+            fetch('/admin/seo/import', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    if (data.errors && data.errors.length > 0) {
+                        alert('تحذيرات:\n' + data.errors.join('\n'));
+                    }
+                    location.reload();
+                } else {
+                    alert('خطأ: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('حدث خطأ أثناء استيراد الإعدادات');
+            });
+        }
+    };
+    input.click();
+}
+
+// Reset SEO settings
+function resetSeoSettings() {
+    if (confirm('هل تريد إعادة تعيين جميع إعدادات SEO إلى القيم الافتراضية؟\nسيتم فقدان جميع الإعدادات الحالية!')) {
+        fetch('/admin/seo/reset', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert('خطأ: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء إعادة تعيين الإعدادات');
+        });
+    }
+}
+</script>
+{% endblock %}

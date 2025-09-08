@@ -1,0 +1,359 @@
+
+/* تحسينات CSS للمنصة */
+.manga-card {
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    will-change: transform;
+}
+
+.manga-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.reading-progress {
+    height: 4px;
+    background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 100%);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.comment-reaction {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    border: 1px solid var(--border-color);
+    background: var(--bg-tertiary);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+.comment-reaction:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.comment-reaction.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+@media (max-width: 768px) {
+    .manga-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* ==================== FLOATING SPARKLES - OPTIMIZED ==================== */
+.sparkles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.8;
+}
+
+.sparkle {
+    position: absolute;
+    color: #fff;
+    opacity: 0.6;
+    animation: sparkleFloat 10s infinite linear;
+    font-size: 10px;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.sparkle:nth-child(1) {
+    left: 15%;
+    animation-duration: 8s;
+    animation-delay: 0s;
+}
+
+.sparkle:nth-child(2) {
+    left: 30%;
+    animation-duration: 10s;
+    animation-delay: 1s;
+}
+
+.sparkle:nth-child(3) {
+    left: 45%;
+    animation-duration: 9s;
+    animation-delay: 2s;
+}
+
+.sparkle:nth-child(4) {
+    left: 60%;
+    animation-duration: 11s;
+    animation-delay: 1.5s;
+}
+
+.sparkle:nth-child(5) {
+    left: 75%;
+    animation-duration: 8.5s;
+    animation-delay: 3s;
+}
+
+.sparkle:nth-child(6) {
+    left: 85%;
+    animation-duration: 9.5s;
+    animation-delay: 0.5s;
+}
+
+.sparkle:nth-child(7) {
+    left: 10%;
+    animation-duration: 7s;
+    animation-delay: 2.5s;
+}
+
+.sparkle:nth-child(8) {
+    left: 55%;
+    animation-duration: 10.5s;
+    animation-delay: 4s;
+}
+
+.sparkle:nth-child(9) {
+    left: 90%;
+    animation-duration: 8s;
+    animation-delay: 1.2s;
+}
+
+.sparkle:nth-child(10) {
+    left: 25%;
+    animation-duration: 9.2s;
+    animation-delay: 3.5s;
+}
+
+@keyframes sparkleFloat {
+    0% {
+        transform: translateY(100vh) translateX(0px) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.6;
+        transform: translateY(90vh) translateX(5px) scale(1);
+    }
+    90% {
+        opacity: 0.6;
+        transform: translateY(10vh) translateX(-5px) scale(1);
+    }
+    100% {
+        transform: translateY(-10vh) translateX(0px) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ==================== GOLDEN HALOS ANIMATION - OPTIMIZED ==================== */
+.golden-halos-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.7;
+}
+
+.golden-vapor {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        rgba(255, 215, 0, 0.1) 0%,
+        rgba(255, 193, 7, 0.08) 40%,
+        transparent 70%);
+    opacity: 0;
+    animation: gentleVapor 20s infinite ease-in-out;
+    filter: blur(4px);
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.golden-vapor.vapor-1 {
+    width: 60px;
+    height: 80px;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.golden-vapor.vapor-2 {
+    width: 45px;
+    height: 65px;
+    left: 50%;
+    animation-delay: 8s;
+}
+
+.golden-vapor.vapor-3 {
+    width: 55px;
+    height: 75px;
+    left: 75%;
+    animation-delay: 16s;
+}
+
+@keyframes gentleVapor {
+    0% {
+        transform: translateY(100vh) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.3;
+        transform: translateY(80vh) scale(0.8);
+    }
+    80% {
+        opacity: 0.3;
+        transform: translateY(20vh) scale(1.2);
+    }
+    100% {
+        transform: translateY(-10vh) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ==================== HERO SECTION WITH ANIMATIONS ==================== */
+.hero-section {
+    position: relative;
+    overflow: visible;
+    min-height: 60vh;
+}
+
+/* Ensure animated elements don't interfere with interactions */
+.hero-section .container {
+    position: relative;
+    z-index: 10;
+}
+
+/* Allow sparkles to flow outside hero section boundaries */
+.hero-section-modern {
+    overflow: visible !important;
+}
+
+/* Ensure all containers allow overflow for interactive elements */
+.container-fluid,
+.row,
+.col-lg-6,
+.hero-content {
+    overflow: visible !important;
+}
+
+/* Special handling for badge hover effects */
+.hero-badge {
+    overflow: visible !important;
+    z-index: 1001 !important;
+}
+
+/* Prevent horizontal scrollbar in trending section */
+.trending-showcase,
+.top-three-grid,
+.manga-grid {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+
+/* Ensure section containers don't overflow */
+.content-section {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+
+/* Fix any remaining horizontal scrollbars */
+.section-header,
+.manga-card-modern,
+.manga-cover-container,
+.manga-info {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+}
+
+/* Prevent any grid items from causing overflow */
+.manga-grid > .manga-card-modern {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Extra protection for mobile devices */
+@media (max-width: 768px) {
+    .manga-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 1rem !important;
+    }
+    
+    .content-section .container {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+}
+
+/* Performance Optimizations */
+.manga-card,
+.manga-card-modern {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.sparkle,
+.golden-vapor {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .sparkle,
+    .golden-vapor,
+    .manga-card,
+    .manga-card-modern {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .manga-card:hover,
+    .manga-card-modern:hover {
+        transform: none !important;
+    }
+}
+
+/* ==================== RESPONSIVE ADJUSTMENTS ==================== */
+@media (max-width: 768px) {
+    .sparkle {
+        font-size: 8px;
+        animation-duration: 12s;
+    }
+    
+    .golden-vapor {
+        animation-duration: 25s;
+        filter: blur(3px);
+    }
+    
+    .hero-section {
+        min-height: 50vh;
+    }
+    
+    /* Reduce animations on mobile for better performance */
+    .sparkles-container {
+        opacity: 0.5;
+    }
+    
+    .golden-halos-container {
+        opacity: 0.4;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Minimal animations on small mobile devices */
+    .sparkles-container,
+    .golden-halos-container {
+        display: none;
+    }
+}

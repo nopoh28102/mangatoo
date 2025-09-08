@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}حول الموقع - About Us{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="text-center mb-4">
+                        <span data-lang="ar">حول منصة مانجاتو</span>
+                        <span data-lang="en">About Mangatoo Platform</span>
+                    </h1>
+                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 class="mb-3">
+                                <span data-lang="ar">مرحباً بك في عالم المانجا</span>
+                                <span data-lang="en">Welcome to the World of Manga</span>
+                            </h3>
+                            
+                            <p class="lead mb-4">
+                                <span data-lang="ar">
+                                    منصة مانجاتو هي وجهتك المثلى لقراءة أفضل قصص المانجا والقصص المصورة باللغة العربية والإنجليزية.
+                                    نوفر لك مكتبة ضخمة من المحتوى عالي الجودة مع تجربة قراءة مميزة.
+                                </span>
+                                <span data-lang="en">
+                                    Mangatoo platform is your ultimate destination for reading the best manga and comics 
+                                    in Arabic and English. We provide you with a huge library of high-quality content 
+                                    with an exceptional reading experience.
+                                </span>
+                            </p>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="mb-3">
+                                        <span data-lang="ar">ما نقدمه</span>
+                                        <span data-lang="en">What We Offer</span>
+                                    </h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            <span data-lang="ar">مكتبة ضخمة من المانجا والقصص المصورة</span>
+                                            <span data-lang="en">Huge library of manga and comics</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            <span data-lang="ar">محتوى محدث يومياً</span>
+                                            <span data-lang="en">Daily updated content</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            <span data-lang="ar">تجربة قراءة مريحة ومتطورة</span>
+                                            <span data-lang="en">Comfortable and advanced reading experience</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-check text-success me-2"></i>
+                                            <span data-lang="ar">دعم للغتين العربية والإنجليزية</span>
+                                            <span data-lang="en">Support for Arabic and English</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <h5 class="mb-3">
+                                        <span data-lang="ar">مميزات الموقع</span>
+                                        <span data-lang="en">Platform Features</span>
+                                    </h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="fas fa-star text-warning me-2"></i>
+                                            <span data-lang="ar">نظام تقييم وتعليقات تفاعلي</span>
+                                            <span data-lang="en">Interactive rating and comments system</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-bookmark text-info me-2"></i>
+                                            <span data-lang="ar">إمكانية حفظ المفضلات</span>
+                                            <span data-lang="en">Bookmark favorites</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-history text-secondary me-2"></i>
+                                            <span data-lang="ar">متابعة تقدم القراءة</span>
+                                            <span data-lang="en">Reading progress tracking</span>
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="fas fa-crown text-primary me-2"></i>
+                                            <span data-lang="ar">اشتراك مميز للمحتوى الحصري</span>
+                                            <span data-lang="en">Premium subscription for exclusive content</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <a href="{{ url_for('library') }}" class="btn btn-primary btn-lg me-3">
+                                    <span data-lang="ar">تصفح المكتبة</span>
+                                    <span data-lang="en">Browse Library</span>
+                                </a>
+                                <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-primary btn-lg">
+                                    <span data-lang="ar">الاشتراك المميز</span>
+                                    <span data-lang="en">Premium Subscription</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

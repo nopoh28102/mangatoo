@@ -1,0 +1,335 @@
+{% extends "admin/base.html" %}
+
+{% block title %}إدارة خطط الدفع - Payment Plans Management{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Payment Plans Management</span>
+            <span data-lang="ar">إدارة خطط الدفع</span>
+        </h2>
+        <a href="{{ url_for('admin_add_payment_plan') }}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>
+            <span data-lang="en">Add New Plan</span>
+            <span data-lang="ar">إضافة خطة جديدة</span>
+        </a>
+    </div>
+
+    <!-- Plans Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Total Plans</span>
+                                <span data-lang="ar">إجمالي الخطط</span>
+                            </h6>
+                            <h3>{{ total_plans or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-credit-card fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Active Subscribers</span>
+                                <span data-lang="ar">المشتركين النشطين</span>
+                            </h6>
+                            <h3>{{ active_subscribers or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Monthly Revenue</span>
+                                <span data-lang="ar">الإيرادات الشهرية</span>
+                            </h6>
+                            <h3>${{ monthly_revenue or 0 }}</h3>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>
+                                <span data-lang="en">Conversion Rate</span>
+                                <span data-lang="ar">معدل التحويل</span>
+                            </h6>
+                            <h3>{{ conversion_rate or 0 }}%</h3>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Plans -->
+    <div class="card">
+        <div class="card-header">
+            <h5>
+                <span data-lang="en">Payment Plans</span>
+                <span data-lang="ar">خطط الدفع</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if plans %}
+            <div class="row">
+                {% for plan in plans %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 border-light bg-white">
+                        <div class="card-body d-flex flex-column">
+                            <div class="text-center mb-3">
+                                <h4 class="card-title text-primary fw-bold">
+                                    {{ plan.name_ar or plan.name }}
+                                </h4>
+                            </div>
+                            
+                            <div class="text-center mb-4">
+                                <h2 class="text-success fw-bold">
+                                    ${{ plan.price }}
+                                    <small class="text-muted fs-6">
+                                        / {{ plan.duration_months }} 
+                                        <span data-lang="en">{{ 'month' if plan.duration_months == 1 else 'months' }}</span>
+                                        <span data-lang="ar">{{ 'شهر' if plan.duration_months == 1 else 'شهور' }}</span>
+                                    </small>
+                                </h2>
+                            </div>
+
+                            <div class="mb-4 flex-grow-1">
+                                {% if plan.features %}
+                                <ul class="list-unstyled">
+                                    {% for feature in plan.features %}
+                                    <li class="mb-2 text-dark">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        {{ feature }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="text-muted text-center">لا توجد ميزات محددة</p>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="row text-center small">
+                                    <div class="col-6">
+                                        <div class="fw-bold text-primary">0</div>
+                                        <small class="text-muted">
+                                            <span data-lang="en">Subscribers</span>
+                                            <span data-lang="ar">مشترك</span>
+                                        </small>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="fw-bold text-success">${{ 0 }}</div>
+                                        <small class="text-muted">
+                                            <span data-lang="en">Monthly</span>
+                                            <span data-lang="ar">شهري</span>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-{{ 'success' if plan.is_active else 'secondary' }}">
+                                        {% if plan.is_active %}
+                                            <span data-lang="en">Active</span>
+                                            <span data-lang="ar">نشط</span>
+                                        {% else %}
+                                            <span data-lang="en">Inactive</span>
+                                            <span data-lang="ar">غير نشط</span>
+                                        {% endif %}
+                                    </span>
+                                    <small class="text-muted">{{ plan.created_at.strftime('%Y-%m-%d') if plan.created_at else '' }}</small>
+                                </div>
+                                
+                                <div class="btn-group w-100">
+                                    <a href="{{ url_for('admin_edit_payment_plan', plan_id=plan.id) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                        <span data-lang="en">Edit</span>
+                                        <span data-lang="ar">تعديل</span>
+                                    </a>
+                                    <button class="btn btn-outline-info btn-sm" 
+                                            onclick="viewSubscribers({{ plan.id }})">
+                                        <i class="fas fa-users"></i>
+                                        <span data-lang="en">Subscribers</span>
+                                        <span data-lang="ar">المشتركين</span>
+                                    </button>
+                                    <button class="btn btn-outline-{{ 'warning' if plan.is_active else 'success' }} btn-sm" 
+                                            onclick="togglePlan({{ plan.id }})">
+                                        {% if plan.is_active %}
+                                            <i class="fas fa-pause"></i>
+                                            <span data-lang="en">Deactivate</span>
+                                            <span data-lang="ar">إلغاء التفعيل</span>
+                                        {% else %}
+                                            <i class="fas fa-play"></i>
+                                            <span data-lang="en">Activate</span>
+                                            <span data-lang="ar">تفعيل</span>
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-credit-card fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No payment plans found</span>
+                    <span data-lang="ar">لا توجد خطط دفع</span>
+                </h5>
+                <p class="text-muted">
+                    <span data-lang="en">Create your first payment plan to start accepting subscriptions</span>
+                    <span data-lang="ar">أنشئ أول خطة دفع لبدء قبول الاشتراكات</span>
+                </p>
+                <a href="{{ url_for('admin_add_payment_plan') }}" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>
+                    <span data-lang="en">Create Payment Plan</span>
+                    <span data-lang="ar">إنشاء خطة دفع</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Subscribers Modal -->
+<div class="modal fade" id="subscribersModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span data-lang="en">Plan Subscribers</span>
+                    <span data-lang="ar">مشتركي الخطة</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="subscribersContent">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <span data-lang="en">Close</span>
+                    <span data-lang="ar">إغلاق</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleFeatured(planId) {
+    fetch(`/admin/payment-plans/${planId}/toggle-featured`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            // Revert checkbox if failed
+            const checkbox = document.getElementById(`featured${planId}`);
+            checkbox.checked = !checkbox.checked;
+            alert('Error updating plan');
+        }
+    });
+}
+
+function togglePlan(planId) {
+    fetch(`/admin/payment-plans/${planId}/toggle-active`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error updating plan');
+        }
+    });
+}
+
+function viewSubscribers(planId) {
+    document.getElementById('subscribersContent').innerHTML = `
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    `;
+    
+    const modal = new bootstrap.Modal(document.getElementById('subscribersModal'));
+    modal.show();
+    
+    fetch(`/admin/payment-plans/${planId}/subscribers`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let html = '<div class="table-responsive"><table class="table table-sm">';
+                html += '<thead><tr><th>User</th><th>Email</th><th>Start Date</th><th>Status</th><th>Actions</th></tr></thead>';
+                html += '<tbody>';
+                
+                data.subscribers.forEach(sub => {
+                    html += `<tr>
+                        <td>${sub.user.username}</td>
+                        <td>${sub.user.email}</td>
+                        <td>${sub.start_date}</td>
+                        <td><span class="badge bg-${sub.is_active ? 'success' : 'secondary'}">${sub.is_active ? 'Active' : 'Inactive'}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-info" onclick="viewSubscriptionDetails(${sub.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+                
+                html += '</tbody></table></div>';
+                document.getElementById('subscribersContent').innerHTML = html;
+            } else {
+                document.getElementById('subscribersContent').innerHTML = 
+                    '<div class="alert alert-info">No subscribers found</div>';
+            }
+        })
+        .catch(error => {
+            document.getElementById('subscribersContent').innerHTML = 
+                '<div class="alert alert-danger">Error loading subscribers</div>';
+        });
+}
+</script>
+{% endblock %}

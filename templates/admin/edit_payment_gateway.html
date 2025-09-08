@@ -1,0 +1,282 @@
+{% extends "admin/base.html" %}
+
+{% block title %}تعديل بوابة الدفع - لوحة التحكم{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>تعديل بوابة الدفع: {{ gateway.display_name_ar or gateway.display_name }}</h2>
+        <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>العودة لبوابات الدفع
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Basic Information -->
+                        <h5>المعلومات الأساسية</h5>
+                        <hr>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">اسم البوابة (تقني)</label>
+                                <input type="text" class="form-control" id="name" name="name" required value="{{ gateway.name }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="display_name" class="form-label">اسم العرض (إنجليزي)</label>
+                                <input type="text" class="form-control" id="display_name" name="display_name" required value="{{ gateway.display_name }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="display_name_ar" class="form-label">اسم العرض (عربي)</label>
+                                <input type="text" class="form-control" id="display_name_ar" name="display_name_ar" value="{{ gateway.display_name_ar or '' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gateway_type" class="form-label">نوع البوابة</label>
+                                <select class="form-control" id="gateway_type" name="gateway_type" required onchange="showGatewayConfig()">
+                                    <option value="stripe" {{ 'selected' if gateway.gateway_type == 'stripe' }}>Stripe</option>
+                                    <option value="paypal" {{ 'selected' if gateway.gateway_type == 'paypal' }}>PayPal</option>
+                                    <option value="paytabs" {{ 'selected' if gateway.gateway_type == 'paytabs' }}>PayTabs</option>
+                                    <option value="fawry" {{ 'selected' if gateway.gateway_type == 'fawry' }}>Fawry</option>
+                                    <option value="razorpay" {{ 'selected' if gateway.gateway_type == 'razorpay' }}>Razorpay</option>
+                                    <option value="paymob" {{ 'selected' if gateway.gateway_type == 'paymob' }}>PayMob</option>
+                                    <option value="square" {{ 'selected' if gateway.gateway_type == 'square' }}>Square</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="supported_currencies" class="form-label">العملات المدعومة</label>
+                                <input type="text" class="form-control" id="supported_currencies" name="supported_currencies" 
+                                       value="{{ ','.join(gateway.supported_currencies) if gateway.supported_currencies else 'USD' }}">
+                                <small class="form-text text-muted">افصل بين العملات بفاصلة</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="logo_url" class="form-label">رابط الشعار</label>
+                                <input type="url" class="form-control" id="logo_url" name="logo_url" value="{{ gateway.logo_url or '' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_active" name="is_active" {{ 'checked' if gateway.is_active }}>
+                                    <label class="form-check-label" for="is_active">
+                                        تفعيل البوابة
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="is_sandbox" name="is_sandbox" {{ 'checked' if gateway.is_sandbox }}>
+                                    <label class="form-check-label" for="is_sandbox">
+                                        وضع التجريب (Sandbox)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="description" class="form-label">الوصف (إنجليزي)</label>
+                                <textarea class="form-control" id="description" name="description" rows="3">{{ gateway.description or '' }}</textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="description_ar" class="form-label">الوصف (عربي)</label>
+                                <textarea class="form-control" id="description_ar" name="description_ar" rows="3">{{ gateway.description_ar or '' }}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Gateway-specific Configuration -->
+                        <h5 class="mt-4">إعدادات البوابة</h5>
+                        <hr>
+                        
+                        <!-- Stripe Configuration -->
+                        <div id="stripe-config" class="gateway-config" style="display: {{ 'block' if gateway.gateway_type == 'stripe' else 'none' }};">
+                            <div class="alert alert-info">
+                                <strong>إعدادات Stripe:</strong> تحتاج إلى مفاتيح API من لوحة تحكم Stripe
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="stripe_publishable_key" class="form-label">المفتاح العام (Publishable Key)</label>
+                                    <input type="text" class="form-control" id="stripe_publishable_key" name="stripe_publishable_key" 
+                                           value="{{ gateway.config_data.get('publishable_key', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="stripe_secret_key" class="form-label">المفتاح السري (Secret Key)</label>
+                                    <input type="password" class="form-control" id="stripe_secret_key" name="stripe_secret_key" 
+                                           value="{{ gateway.config_data.get('secret_key', '') if gateway.config_data else '' }}">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="stripe_webhook_secret" class="form-label">مفتاح Webhook (اختياري)</label>
+                                <input type="password" class="form-control" id="stripe_webhook_secret" name="stripe_webhook_secret" 
+                                       value="{{ gateway.config_data.get('webhook_secret', '') if gateway.config_data else '' }}">
+                            </div>
+                        </div>
+                        
+                        <!-- PayPal Configuration -->
+                        <div id="paypal-config" class="gateway-config" style="display: {{ 'block' if gateway.gateway_type == 'paypal' else 'none' }};">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayPal:</strong> أدخل بيانات اعتماد API من PayPal Developer
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paypal_client_id" class="form-label">Client ID</label>
+                                    <input type="text" class="form-control" id="paypal_client_id" name="paypal_client_id" 
+                                           value="{{ gateway.config_data.get('client_id', gateway.config_data.get('live_client_id', '')) if gateway.config_data else '' }}"
+                                           placeholder="1934nlV6GslAduWG0oqHpp_akHMJjlbeTDzjXY1q2qZloKUeL">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paypal_client_secret" class="form-label">Secret Key</label>
+                                    <input type="password" class="form-control" id="paypal_client_secret" name="paypal_client_secret" 
+                                           value="{{ gateway.config_data.get('client_secret', gateway.config_data.get('live_client_secret', '')) if gateway.config_data else '' }}"
+                                           placeholder="d9G309waVBAVTyAkQODwWpU2y9lyuzqSytcOhysMk2Fl8M">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PayTabs Configuration -->
+                        <div id="paytabs-config" class="gateway-config" style="display: {{ 'block' if gateway.gateway_type == 'paytabs' else 'none' }};">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayTabs:</strong> تحتاج إلى مفاتيح API من لوحة تحكم PayTabs
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label for="paytabs_server_key" class="form-label">Server Key</label>
+                                    <input type="password" class="form-control" id="paytabs_server_key" name="paytabs_server_key" 
+                                           value="{{ gateway.config_data.get('server_key', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="paytabs_client_key" class="form-label">Client Key</label>
+                                    <input type="text" class="form-control" id="paytabs_client_key" name="paytabs_client_key" 
+                                           value="{{ gateway.config_data.get('client_key', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="paytabs_merchant_id" class="form-label">Merchant ID</label>
+                                    <input type="text" class="form-control" id="paytabs_merchant_id" name="paytabs_merchant_id" 
+                                           value="{{ gateway.config_data.get('merchant_id', '') if gateway.config_data else '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fawry Configuration -->
+                        <div id="fawry-config" class="gateway-config" style="display: {{ 'block' if gateway.gateway_type == 'fawry' else 'none' }};">
+                            <div class="alert alert-info">
+                                <strong>إعدادات Fawry:</strong> تحتاج إلى بيانات التاجر من Fawry
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="fawry_merchant_code" class="form-label">Merchant Code</label>
+                                    <input type="text" class="form-control" id="fawry_merchant_code" name="fawry_merchant_code" 
+                                           value="{{ gateway.config_data.get('merchant_code', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="fawry_security_key" class="form-label">Security Key</label>
+                                    <input type="password" class="form-control" id="fawry_security_key" name="fawry_security_key" 
+                                           value="{{ gateway.config_data.get('security_key', '') if gateway.config_data else '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- PayMob Configuration -->
+                        <div id="paymob-config" class="gateway-config" style="display: {{ 'block' if gateway.gateway_type == 'paymob' else 'none' }};">
+                            <div class="alert alert-info">
+                                <strong>إعدادات PayMob:</strong> تحتاج إلى مفاتيح API من لوحة تحكم PayMob Accept
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paymob_api_key" class="form-label">API Key</label>
+                                    <input type="password" class="form-control" id="paymob_api_key" name="paymob_api_key" 
+                                           value="{{ gateway.config_data.get('api_key', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paymob_integration_id" class="form-label">Integration ID</label>
+                                    <input type="text" class="form-control" id="paymob_integration_id" name="paymob_integration_id" 
+                                           value="{{ gateway.config_data.get('integration_id', '') if gateway.config_data else '' }}">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="paymob_iframe_id" class="form-label">iFrame ID</label>
+                                    <input type="text" class="form-control" id="paymob_iframe_id" name="paymob_iframe_id" 
+                                           value="{{ gateway.config_data.get('iframe_id', '') if gateway.config_data else '' }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="paymob_hmac_secret" class="form-label">HMAC Secret</label>
+                                    <input type="password" class="form-control" id="paymob_hmac_secret" name="paymob_hmac_secret" 
+                                           value="{{ gateway.config_data.get('hmac_secret', '') if gateway.config_data else '' }}">
+                                </div>
+                            </div>
+                            <div class="alert alert-warning">
+                                <strong>ملاحظة:</strong> PayMob متاح في مصر، باكستان، ونيجيريا. تأكد من استخدام العملة المحلية المناسبة.
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="{{ url_for('admin_payment_gateways') }}" class="btn btn-secondary">إلغاء</a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>حفظ التغييرات
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>حالة البوابة</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>الحالة:</strong> 
+                        <span class="badge bg-{{ 'success' if gateway.is_active else 'secondary' }}">
+                            {{ 'مفعلة' if gateway.is_active else 'معطلة' }}
+                        </span>
+                    </p>
+                    <p><strong>البيئة:</strong> 
+                        <span class="badge bg-{{ 'warning' if gateway.is_sandbox else 'success' }}">
+                            {{ 'تجريبية' if gateway.is_sandbox else 'إنتاج' }}
+                        </span>
+                    </p>
+                    <p><strong>تاريخ الإنشاء:</strong> {{ gateway.created_at.strftime('%Y-%m-%d') if gateway.created_at else 'غير محدد' }}</p>
+                    <p><strong>آخر تحديث:</strong> {{ gateway.updated_at.strftime('%Y-%m-%d') }}</p>
+                    
+                    <hr>
+                    <h6>اختبار البوابة</h6>
+                    <p class="small text-muted">يمكنك اختبار البوابة عبر إجراء عملية دفع تجريبية</p>
+                    <a href="#" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-test-tube me-1"></i>اختبار البوابة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showGatewayConfig() {
+    // Hide all config sections
+    document.querySelectorAll('.gateway-config').forEach(el => {
+        el.style.display = 'none';
+    });
+    
+    // Show selected gateway config
+    const selectedType = document.getElementById('gateway_type').value;
+    if (selectedType) {
+        const configEl = document.getElementById(selectedType + '-config');
+        if (configEl) {
+            configEl.style.display = 'block';
+        }
+    }
+}
+</script>
+{% endblock %}

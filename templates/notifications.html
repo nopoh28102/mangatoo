@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    <span data-lang="en">Notifications</span>
+                    <span data-lang="ar">الإشعارات</span>
+                </h2>
+                <div class="text-muted">
+                    <small>
+                        <span data-lang="en">{{ notifications|length }} notifications</span>
+                        <span data-lang="ar">{{ notifications|length }} إشعار</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if notifications %}
+                <div class="notifications-list">
+                    {% for notification in notifications %}
+                    <div class="card mb-3 notification-card {% if not notification.is_read %}notification-unread{% endif %}">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start">
+                                <div class="notification-icon me-3">
+                                    {% if notification.type == 'new_chapter' %}
+                                        <i class="fas fa-book-open text-primary"></i>
+                                    {% elif notification.type == 'new_manga' %}
+                                        <i class="fas fa-book text-success"></i>
+                                    {% elif notification.type == 'comment' %}
+                                        <i class="fas fa-comment text-info"></i>
+                                    {% elif notification.type == 'rating' %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% elif notification.type == 'publisher_approved' %}
+                                        <i class="fas fa-check-circle text-success"></i>
+                                    {% elif notification.type == 'translation_request' %}
+                                        <i class="fas fa-language text-info"></i>
+                                    {% else %}
+                                        <i class="fas fa-bell text-secondary"></i>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="flex-grow-1">
+                                    <h6 class="notification-title mb-1">{{ notification.title }}</h6>
+                                    <p class="notification-message mb-2 text-muted">{{ notification.message }}</p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i>
+                                            {{ notification.created_at.strftime('%Y-%m-%d %H:%M') }}
+                                        </small>
+                                        
+                                        {% if notification.link %}
+                                        <a href="{{ notification.link }}" class="btn btn-sm btn-outline-primary">
+                                            <span data-lang="en">View</span>
+                                            <span data-lang="ar">عرض</span>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if not notification.is_read %}
+                                <div class="notification-badge">
+                                    <span class="badge bg-primary"></span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bell-slash fa-5x text-muted mb-3"></i>
+                    <h4 class="text-muted">
+                        <span data-lang="en">No notifications</span>
+                        <span data-lang="ar">لا توجد إشعارات</span>
+                    </h4>
+                    <p class="text-muted">
+                        <span data-lang="en">You're all caught up! New notifications will appear here.</span>
+                        <span data-lang="ar">أنت مطلع على كل شيء! الإشعارات الجديدة ستظهر هنا.</span>
+                    </p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i class="fas fa-home"></i>
+                        <span data-lang="en">Go to Homepage</span>
+                        <span data-lang="ar">الذهاب للصفحة الرئيسية</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.notification-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.notification-unread {
+    border-left-color: #007bff;
+    background-color: #f8f9ff;
+}
+
+.notification-card:hover {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.notification-icon {
+    width: 40px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.notification-title {
+    color: #333;
+    font-weight: 600;
+}
+
+.notification-message {
+    font-size: 0.9em;
+}
+
+.notification-badge {
+    width: 12px;
+    height: 12px;
+}
+
+.notification-badge .badge {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    padding: 0;
+}
+</style>
+{% endblock %}

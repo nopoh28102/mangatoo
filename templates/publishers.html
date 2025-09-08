@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}الناشرون - منصة المانجا{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="publishers-hero">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <div class="hero-content" data-aos="fade-up">
+                    <div class="hero-icon mb-3">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h1 class="hero-title mb-3">
+                        <span data-lang="en">Our Publishers</span>
+                        <span data-lang="ar">الناشرون لدينا</span>
+                    </h1>
+                    <p class="hero-subtitle mb-4">
+                        <span data-lang="en">Meet the talented creators bringing amazing manga and manhwa stories to life</span>
+                        <span data-lang="ar">تعرف على المبدعين الموهوبين الذين يبث الحياة في قصص المانجا والمانهوا الرائعة</span>
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ publisher_stats|length }}</span>
+                            <span class="stat-label" data-lang="en">Active Publishers</span>
+                            <span class="stat-label" data-lang="ar">ناشر نشط</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Publishers Grid Section -->
+<div class="publishers-grid-section py-5">
+    <div class="container">
+        {% if publisher_stats %}
+        <div class="row justify-content-center">
+            {% for stat in publisher_stats %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="publisher-card" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                    <div class="card-header">
+                        <div class="publisher-avatar">
+                            {% if stat.publisher.profile_picture %}
+                            <img src="{{ stat.publisher.profile_picture }}" 
+                                 class="avatar-img" 
+                                 alt="{{ stat.publisher.username }}">
+                            {% else %}
+                            <div class="avatar-placeholder">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            {% endif %}
+                            <div class="avatar-badge">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="publisher-info">
+                            <h3 class="publisher-name">
+                                <a href="{{ url_for('publisher_profile', publisher_id=stat.publisher.id) }}">
+                                    {{ stat.publisher.username }}
+                                </a>
+                            </h3>
+                            <p class="publisher-date">
+                                <i class="far fa-calendar me-1"></i>
+                                <span data-lang="en">Since {{ stat.join_date.strftime('%B %Y') }}</span>
+                                <span data-lang="ar">منذ {{ stat.join_date.strftime('%Y/%m') }}</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if stat.publisher.bio %}
+                    <div class="publisher-bio">
+                        <p>
+                            <span data-lang="en">{{ stat.publisher.bio[:120] }}{% if stat.publisher.bio|length > 120 %}...{% endif %}</span>
+                            <span data-lang="ar">{{ stat.publisher.bio_ar[:120] if stat.publisher.bio_ar else stat.publisher.bio[:120] }}{% if (stat.publisher.bio_ar or stat.publisher.bio)|length > 120 %}...{% endif %}</span>
+                        </p>
+                    </div>
+                    {% endif %}
+
+                    <div class="stats-grid">
+                        <div class="stat-box stat-primary">
+                            <div class="stat-icon">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number">{{ stat.total_manga }}</span>
+                                <span class="stat-label" data-lang="en">Manga</span>
+                                <span class="stat-label" data-lang="ar">مانجا</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-box stat-success">
+                            <div class="stat-icon">
+                                <i class="fas fa-list-ol"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number">{{ stat.total_chapters }}</span>
+                                <span class="stat-label" data-lang="en">Chapters</span>
+                                <span class="stat-label" data-lang="ar">فصل</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-box stat-info">
+                            <div class="stat-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-number">{{ "{:,}".format(stat.total_views) }}</span>
+                                <span class="stat-label" data-lang="en">Views</span>
+                                <span class="stat-label" data-lang="ar">مشاهدة</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if stat.latest_chapter %}
+                    <div class="latest-work">
+                        <div class="latest-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="latest-info">
+                            <p class="latest-title">
+                                <span data-lang="en">Latest Update</span>
+                                <span data-lang="ar">آخر تحديث</span>
+                            </p>
+                            <p class="latest-details">
+                                <span data-lang="en">{{ stat.latest_chapter.manga.title }} - Ch.{{ stat.latest_chapter.chapter_number }}</span>
+                                <span data-lang="ar">{{ stat.latest_chapter.manga.title_ar or stat.latest_chapter.manga.title }} - ف.{{ stat.latest_chapter.chapter_number }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="card-actions">
+                        <a href="{{ url_for('publisher_profile', publisher_id=stat.publisher.id) }}" 
+                           class="btn-modern btn-primary">
+                            <i class="fas fa-user-circle me-2"></i>
+                            <span data-lang="en">View Profile</span>
+                            <span data-lang="ar">عرض الملف الشخصي</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state" data-aos="fade-up">
+            <div class="empty-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <h3 class="empty-title">
+                <span data-lang="en">No Publishers Yet</span>
+                <span data-lang="ar">لا توجد ناشرون بعد</span>
+            </h3>
+            <p class="empty-subtitle">
+                <span data-lang="en">We're working on bringing talented publishers to our platform. Check back soon!</span>
+                <span data-lang="ar">نعمل على جلب ناشرين موهوبين إلى منصتنا. تحقق مرة أخرى قريباً!</span>
+            </p>
+            <a href="{{ url_for('index') }}" class="btn-modern btn-primary">
+                <i class="fas fa-home me-2"></i>
+                <span data-lang="en">Back to Home</span>
+                <span data-lang="ar">العودة للرئيسية</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Publishers Page Modern Styles */
+.publishers-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.publishers-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.hero-stats {
+    margin-top: 2rem;
+}
+
+.stat-item {
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.publishers-grid-section {
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+    min-height: 70vh;
+}
+
+.publisher-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.publisher-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    border-color: #667eea;
+}
+
+.card-header {
+    padding: 2rem 2rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, #f8f9fa, #ffffff);
+}
+
+.publisher-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.avatar-placeholder {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.avatar-badge {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #ffd700, #ffed4e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-size: 0.7rem;
+    border: 2px solid white;
+}
+
+.publisher-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.publisher-name {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.publisher-name a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.publisher-name a:hover {
+    color: #667eea;
+}
+
+.publisher-date {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.publisher-bio {
+    padding: 0 2rem 1rem;
+    color: #666;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: #f8f9fa;
+}
+
+.stat-box {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.stat-primary .stat-icon { color: #667eea; }
+.stat-success .stat-icon { color: #28a745; }
+.stat-info .stat-icon { color: #17a2b8; }
+
+.stat-icon {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: #333;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+}
+
+.latest-work {
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid #e9ecef;
+}
+
+.latest-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.latest-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.latest-title {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.latest-details {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-actions {
+    padding: 1.5rem 2rem;
+    margin-top: auto;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-modern {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-modern:hover::before {
+    left: 100%;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    color: white;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 5rem;
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.empty-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.empty-subtitle {
+    font-size: 1.1rem;
+    color: #888;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .stat-item {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .publisher-info {
+        text-align: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .latest-work {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem;
+    }
+    
+    .latest-info {
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .publisher-card {
+        margin: 0 1rem;
+    }
+    
+    .card-header,
+    .publisher-bio,
+    .stats-grid,
+    .latest-work,
+    .card-actions {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .latest-work {
+    text-align: right;
+}
+
+[dir="rtl"] .publisher-date {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .btn-modern {
+    flex-direction: row-reverse;
+}
+</style>
+{% endblock %}

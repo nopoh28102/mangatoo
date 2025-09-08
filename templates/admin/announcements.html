@@ -1,0 +1,206 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Announcements Management - إدارة الإعلانات{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <span data-lang="en">Announcements Management</span>
+                <span data-lang="ar">إدارة الإعلانات</span>
+            </h2>
+            <a href="{{ url_for('admin_add_announcement') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                <span data-lang="en">Add New Announcement</span>
+                <span data-lang="ar">إضافة إعلان جديد</span>
+            </a>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card text-white bg-primary">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <span data-lang="en">Total Announcements</span>
+                            <span data-lang="ar">إجمالي الإعلانات</span>
+                        </div>
+                        <h3>{{ total_announcements }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-success">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <span data-lang="en">Active Announcements</span>
+                            <span data-lang="ar">الإعلانات النشطة</span>
+                        </div>
+                        <h3>{{ active_announcements }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card text-white bg-warning">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <span data-lang="en">Featured Announcements</span>
+                            <span data-lang="ar">الإعلانات المميزة</span>
+                        </div>
+                        <h3>{{ featured_announcements }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements Table -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <span data-lang="en">Announcements List</span>
+                    <span data-lang="ar">قائمة الإعلانات</span>
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if announcements.items %}
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover">
+                        <thead>
+                            <tr>
+                                <th>العنوان</th>
+                                <th>النوع</th>
+                                <th>الجمهور المستهدف</th>
+                                <th>الحالة</th>
+                                <th>مميز</th>
+                                <th>تاريخ الإنشاء</th>
+                                <th>ينتهي في</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for announcement in announcements.items %}
+                            <tr>
+                                <td>
+                                    <strong>{{ announcement.title }}</strong>
+                                    {% if announcement.title_ar %}
+                                        <br><small class="text-muted">{{ announcement.title_ar }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if announcement.type == 'info' %}
+                                        <span class="badge bg-info">معلومات</span>
+                                    {% elif announcement.type == 'warning' %}
+                                        <span class="badge bg-warning">تحذير</span>
+                                    {% elif announcement.type == 'success' %}
+                                        <span class="badge bg-success">نجاح</span>
+                                    {% elif announcement.type == 'error' %}
+                                        <span class="badge bg-danger">خطأ</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if announcement.target_audience == 'all' %}
+                                        الجميع
+                                    {% elif announcement.target_audience == 'premium' %}
+                                        المشتركون المميزون
+                                    {% elif announcement.target_audience == 'publishers' %}
+                                        الناشرون
+                                    {% elif announcement.target_audience == 'translators' %}
+                                        المترجمون
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if announcement.is_active %}
+                                        <span class="badge bg-success">نشط</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">غير نشط</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if announcement.is_featured %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-muted"></i>
+                                    {% endif %}
+                                </td>
+                                <td>{{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if announcement.display_until %}
+                                        {{ announcement.display_until.strftime('%Y-%m-%d %H:%M') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('admin_edit_announcement', announcement_id=announcement.id) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('admin_toggle_announcement', announcement_id=announcement.id) }}" 
+                                           class="btn btn-sm btn-outline-{{ 'warning' if announcement.is_active else 'success' }}">
+                                            <i class="fas fa-{{ 'pause' if announcement.is_active else 'play' }}"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('admin_delete_announcement', announcement_id=announcement.id) }}" 
+                                              style="display: inline;" onsubmit="return confirm('هل أنت متأكد من حذف هذا الإعلان؟')">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if announcements.pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if announcements.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_announcements', page=announcements.prev_num) }}">السابق</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in announcements.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != announcements.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_announcements', page=page_num) }}">{{ page_num }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">…</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if announcements.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_announcements', page=announcements.next_num) }}">التالي</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
+                    <h5>لا توجد إعلانات</h5>
+                    <p class="text-muted">لم يتم إنشاء أي إعلانات بعد.</p>
+                    <a href="{{ url_for('admin_add_announcement') }}" class="btn btn-primary">إضافة أول إعلان</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

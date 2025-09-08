@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}دفع عبر Apple Pay - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fab fa-apple-pay me-2"></i>
+                        دفع عبر Apple Pay
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <!-- Payment Summary -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">ملخص الطلب</h5>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span>{{ plan.name_ar or plan.name }}</span>
+                            <strong>${{ payment.amount }}</strong>
+                        </div>
+                    </div>
+
+                    <!-- Apple Pay Button Area -->
+                    <div class="my-5">
+                        <div class="mb-4">
+                            <i class="fab fa-apple fa-5x text-dark"></i>
+                        </div>
+                        
+                        <h5 class="mb-3">دفع سريع وآمن مع Apple Pay</h5>
+                        <p class="text-muted mb-4">استخدم Touch ID أو Face ID لإتمام عملية الدفع بسرعة وأمان</p>
+                        
+                        <!-- Apple Pay Button (Simulated) -->
+                        <button id="applePayBtn" class="btn btn-dark btn-lg px-5 py-3 mb-4" onclick="initiateApplePay()">
+                            <i class="fab fa-apple-pay me-2 fa-lg"></i>
+                            ادفع بـ Apple Pay
+                        </button>
+                        
+                        <div class="alert alert-warning">
+                            <small>
+                                <i class="fas fa-info-circle me-2"></i>
+                                يتطلب جهاز Apple متوافق مع Apple Pay وبصمة/وجه مسجل
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="row text-start">
+                        <div class="col-md-12">
+                            <h6 class="mb-3">مميزات Apple Pay:</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    دفع سريع بلمسة واحدة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    حماية متقدمة للبيانات
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    لا يتم حفظ تفاصيل البطاقة
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-check text-success me-2"></i>
+                                    تأكيد بالبصمة أو الوجه
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Alternative Payment -->
+                    <div class="border-top pt-4 mt-4">
+                        <h6 class="text-muted mb-3">لا تملك Apple Pay؟</h6>
+                        <a href="{{ url_for('create_payment', plan_id=plan.id, gateway_id=1) }}" class="btn btn-outline-primary">
+                            <i class="fas fa-credit-card me-2"></i>
+                            ادفع بالبطاقة الائتمانية
+                        </a>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function initiateApplePay() {
+    const btn = document.getElementById('applePayBtn');
+    const originalText = btn.innerHTML;
+    
+    // Check if Apple Pay is available (simulated)
+    if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
+        alert('Apple Pay غير متاح على هذا الجهاز. يرجى استخدام وسيلة دفع أخرى.');
+        return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري التحضير...';
+    
+    // Simulate Apple Pay session
+    setTimeout(function() {
+        // In real implementation, this would create an Apple Pay session
+        const confirmPayment = confirm('سيتم خصم ${{ payment.amount }} من Apple Pay. هل تريد المتابعة؟');
+        
+        if (confirmPayment) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري المعالجة...';
+            
+            // Simulate payment processing
+            setTimeout(function() {
+                alert('تم الدفع بنجاح عبر Apple Pay!');
+                window.location.href = "{{ url_for('payment_success', payment_id=payment.id) }}";
+            }, 2000);
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    }, 1000);
+}
+
+// Simulate Apple Pay availability check
+if (typeof ApplePaySession === 'undefined') {
+    // Mock Apple Pay for demo purposes
+    window.ApplePaySession = {
+        canMakePayments: function() {
+            // Return true for iOS devices, false for others
+            return /iPad|iPhone|iPod/.test(navigator.userAgent);
+        }
+    };
+}
+
+// Check Apple Pay availability on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (!window.ApplePaySession || !ApplePaySession.canMakePayments()) {
+        document.getElementById('applePayBtn').disabled = true;
+        document.getElementById('applePayBtn').innerHTML = '<i class="fas fa-times me-2"></i>Apple Pay غير متاح';
+        document.getElementById('applePayBtn').classList.remove('btn-dark');
+        document.getElementById('applePayBtn').classList.add('btn-secondary');
+    }
+});
+</script>
+{% endblock %}

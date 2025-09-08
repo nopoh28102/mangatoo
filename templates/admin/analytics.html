@@ -1,0 +1,428 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Analytics Dashboard - لوحة الإحصائيات{% endblock %}
+
+{% block admin_content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    <span data-lang="en">Analytics Dashboard</span>
+                    <span data-lang="ar">لوحة تحكم الإحصائيات</span>
+                </h1>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        <span data-lang="en">Export Data</span>
+                        <span data-lang="ar">تصدير البيانات</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ "{:,}".format(total_users) }}</h4>
+                            <p class="mb-0">
+                                <span data-lang="en">Total Users</span>
+                                <span data-lang="ar">إجمالي المستخدمين</span>
+                            </p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ "{:,}".format(total_manga) }}</h4>
+                            <p class="mb-0">
+                                <span data-lang="en">Total Manga</span>
+                                <span data-lang="ar">إجمالي المانجا</span>
+                            </p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-book fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ "{:,}".format(total_chapters) }}</h4>
+                            <p class="mb-0">
+                                <span data-lang="en">Total Chapters</span>
+                                <span data-lang="ar">إجمالي الفصول</span>
+                            </p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-file-alt fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h4 class="mb-0">{{ "{:,}".format(active_publishers) }}</h4>
+                            <p class="mb-0">
+                                <span data-lang="en">Active Publishers</span>
+                                <span data-lang="ar">الناشرون النشطون</span>
+                            </p>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-user-tie fa-2x opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Weekly Activity Chart -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-area"></i>
+                        <span data-lang="en">Weekly Activity</span>
+                        <span data-lang="ar">النشاط الأسبوعي</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="weeklyActivityChart" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Categories -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie"></i>
+                        <span data-lang="en">Top Categories</span>
+                        <span data-lang="ar">أهم التصنيفات</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoriesChart" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Most Popular Manga -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-trophy"></i>
+                        <span data-lang="en">Most Popular Manga (This Month)</span>
+                        <span data-lang="ar">أشهر المانجا (هذا الشهر)</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th data-lang="en">Rank</th>
+                                    <th data-lang="ar" style="display: none;">الترتيب</th>
+                                    <th data-lang="en">Title</th>
+                                    <th data-lang="ar" style="display: none;">العنوان</th>
+                                    <th data-lang="en">Views</th>
+                                    <th data-lang="ar" style="display: none;">المشاهدات</th>
+                                    <th data-lang="en">Rating</th>
+                                    <th data-lang="ar" style="display: none;">التقييم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- This would be populated with actual data -->
+                                <tr>
+                                    <td class="text-center">
+                                        <span class="badge bg-warning">1</span>
+                                    </td>
+                                    <td>
+                                        <span data-lang="en">Sample Manga Title</span>
+                                        <span data-lang="ar">عنوان مانجا نموذجي</span>
+                                    </td>
+                                    <td>123,456</td>
+                                    <td>4.8 ★</td>
+                                </tr>
+                                <!-- More rows would be added programmatically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clock"></i>
+                        <span data-lang="en">Recent Activity</span>
+                        <span data-lang="ar">النشاط الحديث</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="activity-icon bg-primary">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">
+                                    <span data-lang="en">5 new users registered</span>
+                                    <span data-lang="ar">5 مستخدمين جدد سجلوا</span>
+                                </p>
+                                <small class="text-muted">2 hours ago</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon bg-success">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">
+                                    <span data-lang="en">New manga published: "Adventure Quest"</span>
+                                    <span data-lang="ar">مانجا جديدة نُشرت: "مغامرة البحث"</span>
+                                </p>
+                                <small class="text-muted">4 hours ago</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon bg-info">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">
+                                    <span data-lang="en">Translation request submitted</span>
+                                    <span data-lang="ar">طلب ترجمة تم إرساله</span>
+                                </p>
+                                <small class="text-muted">6 hours ago</small>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-icon bg-warning">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="mb-1">
+                                    <span data-lang="en">Publisher application approved</span>
+                                    <span data-lang="ar">طلب ناشر تم قبوله</span>
+                                </p>
+                                <small class="text-muted">1 day ago</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Performance -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-server"></i>
+                        <span data-lang="en">System Performance</span>
+                        <span data-lang="ar">أداء النظام</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 data-lang="en">Storage Used</h6>
+                                <h6 data-lang="ar" style="display: none;">التخزين المستخدم</h6>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-info" role="progressbar" style="width: 65%">65%</div>
+                                </div>
+                                <small class="text-muted">2.1 GB / 3.2 GB</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 data-lang="en">Bandwidth</h6>
+                                <h6 data-lang="ar" style="display: none;">عرض النطاق</h6>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 45%">45%</div>
+                                </div>
+                                <small class="text-muted">450 GB / 1 TB</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 data-lang="en">CPU Usage</h6>
+                                <h6 data-lang="ar" style="display: none;">استخدام المعالج</h6>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 32%">32%</div>
+                                </div>
+                                <small class="text-muted">Normal Load</small>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h6 data-lang="en">Memory</h6>
+                                <h6 data-lang="ar" style="display: none;">الذاكرة</h6>
+                                <div class="progress mb-2" style="height: 20px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 58%">58%</div>
+                                </div>
+                                <small class="text-muted">2.9 GB / 5 GB</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    display: flex;
+    align-items-start;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+    font-size: 0.875rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-content p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.opacity-75 {
+    opacity: 0.75;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Sample charts - in real implementation, data would come from backend
+document.addEventListener('DOMContentLoaded', function() {
+    // Weekly Activity Chart
+    const weeklyCtx = document.getElementById('weeklyActivityChart').getContext('2d');
+    new Chart(weeklyCtx, {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                label: 'Views',
+                data: [12000, 19000, 15000, 25000, 22000, 30000, 28000],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'New Users',
+                data: [120, 190, 150, 250, 220, 300, 280],
+                borderColor: '#28a745',
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Categories Chart
+    const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
+    new Chart(categoriesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Action', 'Romance', 'Fantasy', 'Comedy', 'Drama'],
+            datasets: [{
+                data: [30, 25, 20, 15, 10],
+                backgroundColor: [
+                    '#FF6384',
+                    '#36A2EB',
+                    '#FFCE56',
+                    '#FF9F40',
+                    '#9966FF'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+
+function exportData() {
+    alert('Export functionality would be implemented here');
+}
+</script>
+{% endblock %}

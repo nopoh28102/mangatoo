@@ -1,0 +1,652 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Comments Monitoring - مراقبة التعليقات{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <span data-lang="en">Comments Monitoring</span>
+        <span data-lang="ar">مراقبة التعليقات</span>
+    </h2>
+    <div class="btn-group">
+        <button type="button" class="btn btn-success" onclick="bulkApprove()">
+            <i class="fas fa-check me-2"></i>
+            <span data-lang="en">Approve Selected</span>
+            <span data-lang="ar">موافقة على المحدد</span>
+        </button>
+        <button type="button" class="btn btn-warning" onclick="bulkModerate()">
+            <i class="fas fa-flag me-2"></i>
+            <span data-lang="en">Moderate Selected</span>
+            <span data-lang="ar">مراجعة المحدد</span>
+        </button>
+        <button type="button" class="btn btn-danger" onclick="bulkDelete()">
+            <i class="fas fa-trash me-2"></i>
+            <span data-lang="en">Delete Selected</span>
+            <span data-lang="ar">حذف المحدد</span>
+        </button>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Total Comments</span>
+                            <span data-lang="ar">إجمالي التعليقات</span>
+                        </h6>
+                        <h3>{{ total_comments or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-comments fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Approved</span>
+                            <span data-lang="ar">مقبول</span>
+                        </h6>
+                        <h3>{{ approved_comments or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Pending</span>
+                            <span data-lang="ar">معلق</span>
+                        </h6>
+                        <h3>{{ pending_comments or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-clock fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6>
+                            <span data-lang="en">Flagged</span>
+                            <span data-lang="ar">مُبلغ عنه</span>
+                        </h6>
+                        <h3>{{ flagged_comments or 0 }}</h3>
+                    </div>
+                    <i class="fas fa-flag fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="search" 
+                       placeholder-en="Search comments..." 
+                       placeholder-ar="البحث في التعليقات..."
+                       value="{{ search }}">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="status">
+                    <option value="">
+                        <span data-lang="en">All Status</span>
+                        <span data-lang="ar">جميع الحالات</span>
+                    </option>
+                    <option value="approved" {{ 'selected' if request.args.get('status') == 'approved' }}>
+                        <span data-lang="en">Approved</span>
+                        <span data-lang="ar">مقبول</span>
+                    </option>
+                    <option value="pending" {{ 'selected' if request.args.get('status') == 'pending' }}>
+                        <span data-lang="en">Pending</span>
+                        <span data-lang="ar">معلق</span>
+                    </option>
+                    <option value="flagged" {{ 'selected' if request.args.get('status') == 'flagged' }}>
+                        <span data-lang="en">Flagged</span>
+                        <span data-lang="ar">مُبلغ عنه</span>
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="manga">
+                    <option value="">
+                        <span data-lang="en">All Manga</span>
+                        <span data-lang="ar">جميع المانجا</span>
+                    </option>
+                    {% for manga in manga_list %}
+                    <option value="{{ manga.id }}" {{ 'selected' if request.args.get('manga') == manga.id|string }}>
+                        {{ manga.title }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="sort">
+                    <option value="newest" {{ 'selected' if request.args.get('sort') == 'newest' }}>
+                        <span data-lang="en">Newest First</span>
+                        <span data-lang="ar">الأحدث أولاً</span>
+                    </option>
+                    <option value="oldest" {{ 'selected' if request.args.get('sort') == 'oldest' }}>
+                        <span data-lang="en">Oldest First</span>
+                        <span data-lang="ar">الأقدم أولاً</span>
+                    </option>
+                    <option value="most_liked" {{ 'selected' if request.args.get('sort') == 'most_liked' }}>
+                        <span data-lang="en">Most Liked</span>
+                        <span data-lang="ar">الأكثر إعجاباً</span>
+                    </option>
+                    <option value="most_reported" {{ 'selected' if request.args.get('sort') == 'most_reported' }}>
+                        <span data-lang="en">Most Reported</span>
+                        <span data-lang="ar">الأكثر بلاغاً</span>
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>
+                    <span data-lang="en">Filter</span>
+                    <span data-lang="ar">فلترة</span>
+                </button>
+                <button type="button" class="btn btn-secondary ms-2" onclick="resetFilters()">
+                    <i class="fas fa-undo me-2"></i>
+                    <span data-lang="en">Reset</span>
+                    <span data-lang="ar">إعادة تعيين</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Comments Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5>
+                <span data-lang="en">Comments List</span>
+                <span data-lang="ar">قائمة التعليقات</span>
+                {% if comments %}
+                    <span class="badge bg-secondary ms-2">{{ comments.total }}</span>
+                {% endif %}
+            </h5>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="selectAll">
+                <label class="form-check-label" for="selectAll">
+                    <span data-lang="en">Select All</span>
+                    <span data-lang="ar">تحديد الكل</span>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        {% if comments and comments.items %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="50"></th>
+                        <th>
+                            <span data-lang="en">Comment</span>
+                            <span data-lang="ar">التعليق</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">User</span>
+                            <span data-lang="ar">المستخدم</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Manga</span>
+                            <span data-lang="ar">المانجا</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Status</span>
+                            <span data-lang="ar">الحالة</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Stats</span>
+                            <span data-lang="ar">الإحصائيات</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Date</span>
+                            <span data-lang="ar">التاريخ</span>
+                        </th>
+                        <th>
+                            <span data-lang="en">Actions</span>
+                            <span data-lang="ar">الإجراءات</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in comments.items %}
+                    <tr class="{{ 'table-warning' if comment.status == 'pending' else 'table-danger' if comment.status == 'flagged' else '' }}">
+                        <td>
+                            <input type="checkbox" class="form-check-input comment-checkbox" value="{{ comment.id }}">
+                        </td>
+                        <td>
+                            <div class="comment-content">
+                                <p class="mb-1">{{ comment.content[:150] }}{{ '...' if comment.content|length > 150 else '' }}</p>
+                                {% if comment.parent_comment %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-reply me-1"></i>
+                                        <span data-lang="en">Reply to:</span>
+                                        <span data-lang="ar">رد على:</span>
+                                        {{ comment.parent_comment.user.username }}
+                                    </small>
+                                {% endif %}
+                                {% if comment.is_edited %}
+                                    <br><small class="text-info">
+                                        <i class="fas fa-edit me-1"></i>
+                                        <span data-lang="en">Edited</span>
+                                        <span data-lang="ar">مُعدل</span>
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ comment.user.avatar_url or '/static/img/default-avatar.png' }}" 
+                                     class="rounded-circle me-2" width="32" height="32" alt="{{ comment.user.username }}">
+                                <div>
+                                    <strong>{{ comment.user.username }}</strong>
+                                    {% if comment.user.is_premium %}
+                                        <span class="badge bg-warning ms-1">
+                                            <span data-lang="en">Premium</span>
+                                            <span data-lang="ar">مدفوع</span>
+                                        </span>
+                                    {% endif %}
+                                    <br><small class="text-muted">{{ comment.user.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="{{ url_for('static', filename=comment.manga.cover_image.replace('static/', '') if comment.manga.cover_image else 'img/no-cover.png') }}" 
+                                     class="rounded me-2" width="30" height="40" alt="{{ comment.manga.title }}">
+                                <div>
+                                    <a href="{{ url_for('manga_detail', slug=comment.manga.slug or 'manga') }}" 
+                                       class="text-decoration-none" target="_blank">
+                                        <strong>{{ comment.manga.title }}</strong>
+                                    </a>
+                                    {% if comment.chapter %}
+                                        <br><small class="text-muted">
+                                            <span data-lang="en">Chapter</span>
+                                            <span data-lang="ar">الفصل</span>
+                                            {{ comment.chapter.chapter_number }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if comment.status == 'approved' %}
+                                <span class="badge bg-success">
+                                    <span data-lang="en">Approved</span>
+                                    <span data-lang="ar">مقبول</span>
+                                </span>
+                            {% elif comment.status == 'pending' %}
+                                <span class="badge bg-warning">
+                                    <span data-lang="en">Pending</span>
+                                    <span data-lang="ar">معلق</span>
+                                </span>
+                            {% elif comment.status == 'flagged' %}
+                                <span class="badge bg-danger">
+                                    <span data-lang="en">Flagged</span>
+                                    <span data-lang="ar">مُبلغ عنه</span>
+                                </span>
+                            {% endif %}
+                            {% if comment.reports_count > 0 %}
+                                <br><small class="text-danger">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    {{ comment.reports_count }} 
+                                    <span data-lang="en">reports</span>
+                                    <span data-lang="ar">بلاغ</span>
+                                </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="d-flex mb-1">
+                                    <i class="fas fa-thumbs-up text-success me-1"></i>
+                                    <span>{{ comment.likes_count or 0 }}</span>
+                                </div>
+                                <div class="d-flex mb-1">
+                                    <i class="fas fa-thumbs-down text-danger me-1"></i>
+                                    <span>{{ comment.dislikes_count or 0 }}</span>
+                                </div>
+                                <div class="d-flex">
+                                    <i class="fas fa-reply text-info me-1"></i>
+                                    <span>{{ comment.replies_count or 0 }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>{{ comment.created_at.strftime('%Y-%m-%d') }}</div>
+                            <small class="text-muted">{{ comment.created_at.strftime('%H:%M') }}</small>
+                            {% if comment.updated_at != comment.created_at %}
+                                <br><small class="text-info">
+                                    <span data-lang="en">Updated:</span>
+                                    <span data-lang="ar">محدث:</span>
+                                    {{ comment.updated_at.strftime('%m/%d') }}
+                                </small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('manga_detail', slug=comment.manga.slug) }}#comment-{{ comment.id }}" 
+                                   class="btn btn-outline-primary" target="_blank" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {% if comment.status != 'approved' %}
+                                <button class="btn btn-outline-success" 
+                                        onclick="approveComment({{ comment.id }})" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                {% endif %}
+                                {% if comment.status != 'flagged' %}
+                                <button class="btn btn-outline-warning" 
+                                        onclick="flagComment({{ comment.id }})" title="Flag">
+                                    <i class="fas fa-flag"></i>
+                                </button>
+                                {% endif %}
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle" 
+                                            data-bs-toggle="dropdown">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <button class="dropdown-item" onclick="editComment({{ comment.id }})">
+                                                <i class="fas fa-edit me-2"></i>
+                                                <span data-lang="en">Edit</span>
+                                                <span data-lang="ar">تعديل</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="viewReports({{ comment.id }})">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <span data-lang="en">View Reports</span>
+                                                <span data-lang="ar">عرض البلاغات</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item" onclick="viewReplies({{ comment.id }})">
+                                                <i class="fas fa-comments me-2"></i>
+                                                <span data-lang="en">View Replies</span>
+                                                <span data-lang="ar">عرض الردود</span>
+                                            </button>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <button class="dropdown-item text-danger" onclick="deleteComment({{ comment.id }})">
+                                                <i class="fas fa-trash me-2"></i>
+                                                <span data-lang="en">Delete</span>
+                                                <span data-lang="ar">حذف</span>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if comments.pages > 1 %}
+        <div class="card-footer">
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-0">
+                    {% if comments.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_comments', page=comments.prev_num, **request.args) }}">
+                            <span data-lang="en">Previous</span>
+                            <span data-lang="ar">السابق</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in comments.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != comments.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('admin_comments', page=page_num, **request.args) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if comments.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_comments', page=comments.next_num, **request.args) }}">
+                            <span data-lang="en">Next</span>
+                            <span data-lang="ar">التالي</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">
+                <span data-lang="en">No comments found</span>
+                <span data-lang="ar">لم يتم العثور على تعليقات</span>
+            </h5>
+            <p class="text-muted">
+                <span data-lang="en">Comments will appear here as users post them</span>
+                <span data-lang="ar">ستظهر التعليقات هنا عندما ينشرها المستخدمون</span>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.comment-checkbox');
+    checkboxes.forEach(checkbox => checkbox.checked = this.checked);
+});
+
+function approveComment(commentId) {
+    fetch(`/admin/comments/${commentId}/approve`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            showNotification('Error approving comment', 'danger');
+        }
+    });
+}
+
+function flagComment(commentId) {
+    const reason = prompt('Reason for flagging (optional):');
+    fetch(`/admin/comments/${commentId}/flag`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({reason: reason})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            showNotification('Error flagging comment', 'danger');
+        }
+    });
+}
+
+function deleteComment(commentId) {
+    if (confirm('Are you sure you want to delete this comment? This action cannot be undone.')) {
+        fetch(`/admin/comments/${commentId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Comment deleted successfully', 'success');
+                location.reload();
+            } else {
+                showNotification('Error: ' + data.error, 'danger');
+            }
+        });
+    }
+}
+
+function bulkApprove() {
+    const selectedComments = Array.from(document.querySelectorAll('.comment-checkbox:checked')).map(cb => cb.value);
+    if (selectedComments.length === 0) {
+        showNotification('Please select comments to approve', 'warning');
+        return;
+    }
+    
+    if (confirm(`Approve ${selectedComments.length} selected comments?`)) {
+        fetch('/admin/comments/bulk-approve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({comment_ids: selectedComments})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Comments approved successfully', 'success');
+                location.reload();
+            } else {
+                showNotification('Error approving comments', 'danger');
+            }
+        });
+    }
+}
+
+function bulkModerate() {
+    const selectedComments = Array.from(document.querySelectorAll('.comment-checkbox:checked')).map(cb => cb.value);
+    if (selectedComments.length === 0) {
+        showNotification('Please select comments to moderate', 'warning');
+        return;
+    }
+    
+    if (confirm(`Flag ${selectedComments.length} selected comments for moderation?`)) {
+        fetch('/admin/comments/bulk-flag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({comment_ids: selectedComments})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Comments flagged for moderation', 'success');
+                location.reload();
+            } else {
+                showNotification('Error flagging comments', 'danger');
+            }
+        });
+    }
+}
+
+function bulkDelete() {
+    const selectedComments = Array.from(document.querySelectorAll('.comment-checkbox:checked')).map(cb => cb.value);
+    if (selectedComments.length === 0) {
+        showNotification('Please select comments to delete', 'warning');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to delete ${selectedComments.length} selected comments? This action cannot be undone.`)) {
+        fetch('/admin/comments/bulk-delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({comment_ids: selectedComments})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Comments deleted successfully', 'success');
+                location.reload();
+            } else {
+                showNotification('Error deleting comments', 'danger');
+            }
+        });
+    }
+}
+
+function editComment(commentId) {
+    // Implement edit comment functionality
+    showNotification('Edit functionality coming soon', 'info');
+}
+
+function viewReports(commentId) {
+    window.location.href = `/admin/comments/${commentId}/reports`;
+}
+
+function viewReplies(commentId) {
+    window.location.href = `/admin/comments/${commentId}/replies`;
+}
+
+function resetFilters() {
+    window.location.href = '/admin/comments';
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

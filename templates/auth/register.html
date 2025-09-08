@@ -1,0 +1,621 @@
+{% extends "base.html" %}
+
+{% block title %}
+<span data-lang="en">Register - Manga Platform</span>
+<span data-lang="ar">التسجيل - منصة المانجا</span>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="auth-card">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h2>
+                            <span data-lang="en">Join Our Community</span>
+                            <span data-lang="ar">انضم إلى مجتمعنا</span>
+                        </h2>
+                        <p class="text-muted">
+                            <span data-lang="en">Create an account to start your manga journey</span>
+                            <span data-lang="ar">أنشئ حساباً لبدء رحلتك في عالم المانجا</span>
+                        </p>
+                    </div>
+                    
+                    <form method="POST" enctype="multipart/form-data" id="register-form">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user me-2"></i>
+                                <span data-lang="en">Username</span>
+                                <span data-lang="ar">اسم المستخدم</span>
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="username" 
+                                   name="username" required autocomplete="username"
+                                   placeholder-en="Choose a username" placeholder-ar="اختر اسم مستخدم"
+                                   minlength="3" maxlength="20">
+                            <div class="form-text">
+                                <span data-lang="en">3-20 characters, letters and numbers only</span>
+                                <span data-lang="ar">3-20 حرف، أحرف وأرقام فقط</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span data-lang="en">Email Address</span>
+                                <span data-lang="ar">البريد الإلكتروني</span>
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="email" 
+                                   name="email" required autocomplete="email"
+                                   placeholder-en="Enter your email address" placeholder-ar="أدخل بريدك الإلكتروني">
+                        </div>
+                        
+                        <!-- Profile Picture Upload -->
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">
+                                <i class="fas fa-image me-2"></i>
+                                <span data-lang="en">Profile Picture</span>
+                                <span data-lang="ar">صورة الملف الشخصي</span>
+                                <span class="text-muted ms-1">(<span data-lang="en">Optional</span><span data-lang="ar">اختياري</span>)</span>
+                            </label>
+                            <div class="profile-upload-container">
+                                <div class="profile-preview mb-3">
+                                    <img id="profile-preview" src="/static/img/default-avatar.svg" 
+                                         class="rounded-circle" width="80" height="80" alt="Profile Preview">
+                                </div>
+                                <input type="file" class="form-control" id="profile_picture" 
+                                       name="profile_picture" accept="image/*" onchange="previewProfileImage(this)">
+                                <div class="form-text">
+                                    <span data-lang="en">Maximum file size: 5MB. Accepted formats: JPG, PNG, GIF</span>
+                                    <span data-lang="ar">الحد الأقصى لحجم الملف: 5 ميجابايت. الصيغ المقبولة: JPG, PNG, GIF</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>
+                                <span data-lang="en">Password</span>
+                                <span data-lang="ar">كلمة المرور</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg" id="password" 
+                                       name="password" required autocomplete="new-password"
+                                       placeholder-en="Create a strong password" placeholder-ar="أنشئ كلمة مرور قوية" minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" id="toggle-password">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength mt-2">
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <small class="form-text" id="password-strength-text">
+                                    <span data-lang="en">Password strength: Weak</span>
+                                    <span data-lang="ar">قوة كلمة المرور: ضعيف</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="confirm-password" class="form-label">
+                                <i class="fas fa-lock me-2"></i>
+                                <span data-lang="en">Confirm Password</span>
+                                <span data-lang="ar">تأكيد كلمة المرور</span>
+                            </label>
+                            <input type="password" class="form-control form-control-lg" id="confirm-password" 
+                                   required autocomplete="new-password"
+                                   placeholder-en="Confirm your password" placeholder-ar="أكد كلمة المرور">
+                            <div class="invalid-feedback" id="password-match-feedback">
+                                <span data-lang="en">Passwords do not match</span>
+                                <span data-lang="ar">كلمتا المرور غير متطابقتان</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    <span data-lang="en">I agree to the <a href="#" class="text-primary">Terms of Service</a> and <a href="#" class="text-primary">Privacy Policy</a></span>
+                                    <span data-lang="ar">أوافق على <a href="#" class="text-primary">شروط الخدمة</a> و<a href="#" class="text-primary">سياسة الخصوصية</a></span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="newsletter">
+                                <label class="form-check-label" for="newsletter">
+                                    <span data-lang="en">Subscribe to newsletter for updates</span>
+                                    <span data-lang="ar">اشترك في النشرة الإخبارية للحصول على التحديثات</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                            <i class="fas fa-user-plus me-2"></i>
+                            <span data-lang="en">Create Account</span>
+                            <span data-lang="ar">إنشاء حساب</span>
+                        </button>
+                    </form>
+                    
+                    <!-- Google OAuth Register -->
+                    {% if is_google_oauth_enabled() %}
+                    <div class="text-center mb-3">
+                        <div class="divider">
+                            <span data-lang="en">Or</span>
+                            <span data-lang="ar">أو</span>
+                        </div>
+                        <a href="{{ url_for('google_auth.google_login') }}" class="btn btn-google btn-lg w-100">
+                            <i class="fab fa-google me-2"></i>
+                            <span data-lang="en">Sign up with Google</span>
+                            <span data-lang="ar">التسجيل مع Google</span>
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">
+                            <span data-lang="en">Already have an account?</span>
+                            <span data-lang="ar">لديك حساب بالفعل؟</span>
+                        </p>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            <span data-lang="en">Sign In</span>
+                            <span data-lang="ar">تسجيل الدخول</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Features Preview -->
+                    <div class="features-preview mt-4">
+                        <h6 class="text-center mb-3">
+                            <span data-lang="en">What you'll get:</span>
+                            <span data-lang="ar">ما ستحصل عليه:</span>
+                        </h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <i class="fas fa-bookmark text-primary mb-2"></i>
+                                <small class="d-block">
+                                    <span data-lang="en">Bookmarks</span>
+                                    <span data-lang="ar">المفضلة</span>
+                                </small>
+                            </div>
+                            <div class="col-4">
+                                <i class="fas fa-history text-success mb-2"></i>
+                                <small class="d-block">
+                                    <span data-lang="en">Reading History</span>
+                                    <span data-lang="ar">تاريخ القراءة</span>
+                                </small>
+                            </div>
+                            <div class="col-4">
+                                <i class="fas fa-comments text-info mb-2"></i>
+                                <small class="d-block">
+                                    <span data-lang="en">Comments</span>
+                                    <span data-lang="ar">التعليقات</span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Background Animation -->
+<div class="auth-background">
+    <div class="floating-books">
+        <i class="fas fa-book floating-book"></i>
+        <i class="fas fa-book-open floating-book"></i>
+        <i class="fas fa-bookmark floating-book"></i>
+        <i class="fas fa-book floating-book"></i>
+        <i class="fas fa-book-open floating-book"></i>
+        <i class="fas fa-heart floating-book"></i>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: var(--bg-primary);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.auth-card {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-tertiary);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.form-control-lg:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    background: var(--bg-tertiary);
+    color: var(--text-color);
+}
+
+.form-control-lg::placeholder {
+    color: var(--text-muted);
+}
+
+.btn-lg {
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(220, 53, 69, 0.3);
+}
+
+.btn-outline-secondary {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.password-strength .progress-bar {
+    transition: all 0.3s ease;
+}
+
+.password-strength .progress-bar.weak {
+    background-color: #dc3545;
+    width: 25%;
+}
+
+.password-strength .progress-bar.fair {
+    background-color: #ffc107;
+    width: 50%;
+}
+
+.password-strength .progress-bar.good {
+    background-color: #17a2b8;
+    width: 75%;
+}
+
+.password-strength .progress-bar.strong {
+    background-color: #28a745;
+    width: 100%;
+}
+
+.features-preview {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+
+.auth-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.floating-books {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-book {
+    position: absolute;
+    color: var(--text-muted);
+    font-size: 2rem;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+.floating-book:nth-child(1) {
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.floating-book:nth-child(2) {
+    top: 30%;
+    left: 90%;
+    animation-delay: 2s;
+}
+
+.floating-book:nth-child(3) {
+    top: 70%;
+    left: 15%;
+    animation-delay: 4s;
+}
+
+.floating-book:nth-child(4) {
+    top: 15%;
+    left: 75%;
+    animation-delay: 1s;
+}
+
+.floating-book:nth-child(5) {
+    top: 85%;
+    left: 80%;
+    animation-delay: 3s;
+}
+
+.floating-book:nth-child(6) {
+    top: 50%;
+    left: 5%;
+    animation-delay: 5s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+/* Form styling */
+.form-label {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-text, .text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* Checkbox and form controls */
+.form-check-input {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    color: var(--text-color);
+}
+
+/* Progress bar for password strength */
+.progress {
+    background-color: var(--bg-tertiary);
+}
+
+.invalid-feedback {
+    color: var(--danger-color);
+}
+
+/* Profile picture styling */
+.profile-upload-container {
+    text-align: center;
+}
+
+.profile-preview img {
+    object-fit: cover;
+    border: 3px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.profile-preview img:hover {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    const togglePassword = document.getElementById('toggle-password');
+    const form = document.getElementById('register-form');
+    
+    // Password toggle functionality
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        if (type === 'password') {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        } else {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    });
+    
+    // Password strength checker
+    passwordInput.addEventListener('input', function() {
+        const password = this.value;
+        const progressBar = document.querySelector('.password-strength .progress-bar');
+        const strengthText = document.getElementById('password-strength-text');
+        
+        let strength = 0;
+        let strengthLabel = 'Weak';
+        
+        // Length check
+        if (password.length >= 6) strength += 1;
+        if (password.length >= 8) strength += 1;
+        
+        // Character variety checks
+        if (/[a-z]/.test(password)) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        
+        // Update progress bar
+        progressBar.className = 'progress-bar';
+        
+        if (strength <= 2) {
+            progressBar.classList.add('weak');
+            strengthLabel = 'Weak';
+        } else if (strength <= 3) {
+            progressBar.classList.add('fair');
+            strengthLabel = 'Fair';
+        } else if (strength <= 4) {
+            progressBar.classList.add('good');
+            strengthLabel = 'Good';
+        } else {
+            progressBar.classList.add('strong');
+            strengthLabel = 'Strong';
+        }
+        
+        strengthText.textContent = `Password strength: ${strengthLabel}`;
+        
+        // Check password match
+        checkPasswordMatch();
+    });
+    
+    // Password confirmation checker
+    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (confirmPassword && password !== confirmPassword) {
+            confirmPasswordInput.classList.add('is-invalid');
+        } else {
+            confirmPasswordInput.classList.remove('is-invalid');
+        }
+    }
+    
+    // Username validation
+    document.getElementById('username').addEventListener('input', function() {
+        const username = this.value;
+        const validUsername = /^[a-zA-Z0-9_]{3,20}$/.test(username);
+        
+        if (username && !validUsername) {
+            this.classList.add('is-invalid');
+        } else {
+            this.classList.remove('is-invalid');
+        }
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const terms = document.getElementById('terms').checked;
+        
+        let isValid = true;
+        
+        // Username validation
+        if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+            alert('Please enter a valid username (3-20 characters, letters, numbers, and underscores only)');
+            isValid = false;
+        }
+        
+        // Email validation
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert('Please enter a valid email address');
+            isValid = false;
+        }
+        
+        // Password validation
+        if (!password || password.length < 6) {
+            alert('Password must be at least 6 characters long');
+            isValid = false;
+        }
+        
+        // Password confirmation
+        if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            isValid = false;
+        }
+        
+        // Terms acceptance
+        if (!terms) {
+            alert('Please accept the Terms of Service and Privacy Policy');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            return;
+        }
+        
+        // Add loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+        submitBtn.disabled = true;
+    });
+    
+    // Auto-focus on username field
+    document.getElementById('username').focus();
+});
+
+// Profile picture preview function
+function previewProfileImage(input) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file (JPG, PNG, GIF)');
+            input.value = '';
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Image file must be less than 5MB');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('profile-preview');
+            if (preview) {
+                preview.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+{% endblock %}

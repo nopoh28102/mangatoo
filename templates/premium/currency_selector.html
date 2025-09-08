@@ -1,0 +1,110 @@
+<!-- Currency and Region Selector Component -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-globe me-2"></i>اختر العملة والمنطقة
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="currency-select" class="form-label">العملة</label>
+                <select class="form-select" id="currency-select" onchange="updatePrices()">
+                    <option value="USD" data-symbol="$">دولار أمريكي (USD)</option>
+                    <option value="SAR" data-symbol="﷼">ريال سعودي (SAR)</option>
+                    <option value="AED" data-symbol="د.إ">درهم إماراتي (AED)</option>
+                    <option value="EGP" data-symbol="ج.م">جنيه مصري (EGP)</option>
+                    <option value="EUR" data-symbol="€">يورو (EUR)</option>
+                    <option value="GBP" data-symbol="£">جنيه استرليني (GBP)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="region-select" class="form-label">المنطقة</label>
+                <select class="form-select" id="region-select" onchange="filterPaymentMethods()">
+                    <option value="global">جميع أنحاء العالم</option>
+                    <option value="MENA">الشرق الأوسط وشمال أفريقيا</option>
+                    <option value="SA">المملكة العربية السعودية</option>
+                    <option value="AE">الإمارات العربية المتحدة</option>
+                    <option value="EG">مصر</option>
+                    <option value="US">الولايات المتحدة</option>
+                    <option value="EU">الاتحاد الأوروبي</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Currency exchange rates (you would fetch these from an API in production)
+const exchangeRates = {
+    'USD': 1.0,
+    'SAR': 3.75,
+    'AED': 3.67,
+    'EGP': 30.5,
+    'EUR': 0.85,
+    'GBP': 0.73
+};
+
+// Currency symbols
+const currencySymbols = {
+    'USD': '$',
+    'SAR': '﷼',
+    'AED': 'د.إ',
+    'EGP': 'ج.م',
+    'EUR': '€',
+    'GBP': '£'
+};
+
+// Payment methods available by region
+const regionPaymentMethods = {
+    'SA': ['paypal', 'stripe', 'paytabs', 'visa_direct', 'mastercard', 'apple_pay', 'google_pay'],
+    'AE': ['paypal', 'stripe', 'paytabs', 'visa_direct', 'mastercard', 'apple_pay', 'google_pay'],
+    'EG': ['paypal', 'stripe', 'fawry', 'paymob', 'bank_transfer', 'visa_direct', 'mastercard'],
+    'US': ['paypal', 'stripe', 'apple_pay', 'google_pay', 'visa_direct', 'mastercard'],
+    'EU': ['paypal', 'stripe', 'apple_pay', 'google_pay', 'visa_direct', 'mastercard'],
+    'global': ['paypal', 'stripe', 'bank_transfer']
+};
+
+function updatePrices() {
+    const selectedCurrency = document.getElementById('currency-select').value;
+    const rate = exchangeRates[selectedCurrency];
+    const symbol = currencySymbols[selectedCurrency];
+    
+    // Update all price displays
+    document.querySelectorAll('[data-price]').forEach(element => {
+        const basePrice = parseFloat(element.getAttribute('data-price'));
+        const convertedPrice = (basePrice * rate).toFixed(2);
+        element.textContent = symbol + convertedPrice;
+    });
+    
+    // Update form currency inputs
+    document.querySelectorAll('input[name="currency"]').forEach(input => {
+        input.value = selectedCurrency;
+    });
+}
+
+function filterPaymentMethods() {
+    const selectedRegion = document.getElementById('region-select').value;
+    const availableMethods = regionPaymentMethods[selectedRegion] || regionPaymentMethods['global'];
+    
+    // Show/hide payment method buttons
+    document.querySelectorAll('[data-gateway-type]').forEach(button => {
+        const gatewayType = button.getAttribute('data-gateway-type');
+        const buttonContainer = button.closest('.mb-2') || button.closest('.btn-group-vertical > *');
+        
+        if (availableMethods.includes(gatewayType)) {
+            if (buttonContainer) buttonContainer.style.display = 'block';
+            button.style.display = 'inline-block';
+        } else {
+            if (buttonContainer) buttonContainer.style.display = 'none';
+            button.style.display = 'none';
+        }
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updatePrices();
+    filterPaymentMethods();
+});
+</script>

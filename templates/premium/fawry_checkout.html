@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}الدفع عبر فوري - المنصة{% endblock %}
+
+{% block content %}
+<div class="container mt-4" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-store me-2"></i>
+                        تم إنشاء كود فوري بنجاح
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Payment Details -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>
+                            تفاصيل الدفع
+                        </h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <strong>الخطة:</strong> {{ plan.name_ar or plan.name }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>المبلغ:</strong> {{ amount }} جنيه مصري
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>رقم الدفع:</strong> {{ payment.gateway_payment_id }}
+                            </div>
+                            <div class="col-sm-6">
+                                <strong>انتهاء الصلاحية:</strong> {{ expiry_date.strftime('%Y-%m-%d %H:%M') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fawry Code Display -->
+                    <div class="card border-warning mb-4">
+                        <div class="card-header bg-warning text-dark text-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-qrcode me-2"></i>
+                                كود فوري الخاص بك
+                            </h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="display-3 text-primary fw-bold mb-3" style="font-family: monospace;">
+                                {{ fawry_code }}
+                            </div>
+                            <p class="text-muted">استخدم هذا الكود في أي منفذ فوري أو ماكينة فوري</p>
+                            
+                            <!-- Copy Button -->
+                            <button class="btn btn-outline-primary mb-3" onclick="copyFawryCode()">
+                                <i class="fas fa-copy me-2"></i>
+                                نسخ الكود
+                            </button>
+                            
+                            <div class="alert alert-warning">
+                                <strong>تنبيه:</strong> الكود صالح حتى {{ expiry_date.strftime('%d/%m/%Y %H:%M') }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Status Check -->
+                    <div class="card border-primary mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-sync-alt me-2"></i>
+                                حالة الدفع
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="payment-status" class="text-center">
+                                <div class="spinner-border text-primary me-2" role="status">
+                                    <span class="visually-hidden">جاري التحقق...</span>
+                                </div>
+                                <span class="text-muted">في انتظار الدفع...</span>
+                            </div>
+                            
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn btn-outline-primary" onclick="checkPaymentStatus()">
+                                    <i class="fas fa-refresh me-2"></i>
+                                    تحديث حالة الدفع
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions Steps -->
+                    <div class="card border-success">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list-ol me-2"></i>
+                                خطوات الدفع عبر فوري
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <ol class="list-group list-group-numbered">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">اذهب لأقرب منفذ فوري</div>
+                                        ستجد منافذ فوري في الصيدليات والمتاجر والمولات
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">1</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">أخبر الكاشير بأنك تريد دفع فاتورة</div>
+                                        قل أنك تريد دفع فاتورة أونلاين عبر فوري
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">أعطِ كود الدفع</div>
+                                        اعط الكاشير الكود: <code>{{ fawry_code }}</code>
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">3</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">ادفع المبلغ واحصل على الإيصال</div>
+                                        ادفع {{ amount }} جنيه واحتفظ بالإيصال
+                                    </div>
+                                    <span class="badge bg-primary rounded-pill">4</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div class="ms-2 me-auto">
+                                        <div class="fw-bold">سيتم تفعيل اشتراكك تلقائياً</div>
+                                        عادة خلال 10-30 دقيقة من الدفع
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">5</span>
+                                </li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button class="btn btn-outline-secondary" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i>
+                            طباعة الكود
+                        </button>
+                        <a href="{{ url_for('premium_plans') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            العودة للباقات
+                        </a>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i>
+                            العودة للصفحة الرئيسية
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Copy Fawry code to clipboard
+function copyFawryCode() {
+    const code = "{{ fawry_code }}";
+    navigator.clipboard.writeText(code).then(function() {
+        // Show success message
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>تم النسخ!';
+        btn.classList.remove('btn-outline-primary');
+        btn.classList.add('btn-success');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-primary');
+        }, 2000);
+    });
+}
+
+// Check payment status
+function checkPaymentStatus() {
+    const statusDiv = document.getElementById('payment-status');
+    const paymentId = {{ payment.id }};
+    
+    // Show loading
+    statusDiv.innerHTML = `
+        <div class="spinner-border text-primary me-2" role="status">
+            <span class="visually-hidden">جاري التحقق...</span>
+        </div>
+        <span class="text-muted">جاري التحقق من حالة الدفع...</span>
+    `;
+    
+    // Redirect to check payment
+    window.location.href = "{{ url_for('fawry_check_payment', payment_id=payment.id) }}";
+}
+
+// Auto-check payment status every 30 seconds
+let statusCheckInterval = setInterval(function() {
+    fetch("{{ url_for('payment_success', payment_id=payment.id) }}")
+        .then(response => {
+            if (response.redirected && response.url.includes('success')) {
+                clearInterval(statusCheckInterval);
+                window.location.href = response.url;
+            }
+        })
+        .catch(error => {
+            console.log('Status check error:', error);
+        });
+}, 30000);
+
+// Clear interval when page is hidden
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        clearInterval(statusCheckInterval);
+    } else {
+        // Restart interval when page becomes visible again
+        statusCheckInterval = setInterval(function() {
+            fetch("{{ url_for('payment_success', payment_id=payment.id) }}")
+                .then(response => {
+                    if (response.redirected && response.url.includes('success')) {
+                        clearInterval(statusCheckInterval);
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(error => {
+                    console.log('Status check error:', error);
+                });
+        }, 30000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Gateway Logs - Payment {{ payment.transaction_id }}{% endblock %}
+
+{% block admin_content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <span data-lang="en">Gateway Logs</span>
+            <span data-lang="ar">سجلات البوابة</span>
+            - {{ payment.transaction_id }}
+        </h2>
+        <a href="{{ url_for('admin_payments') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-lang="en">Back to Payments</span>
+            <span data-lang="ar">العودة للمدفوعات</span>
+        </a>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <span data-lang="en">Payment Summary</span>
+                <span data-lang="ar">ملخص الدفع</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>
+                        <span data-lang="en">Transaction ID:</span>
+                        <span data-lang="ar">معرف المعاملة:</span>
+                    </strong><br>
+                    <code>{{ payment.transaction_id }}</code>
+                </div>
+                <div class="col-md-3">
+                    <strong>
+                        <span data-lang="en">Amount:</span>
+                        <span data-lang="ar">المبلغ:</span>
+                    </strong><br>
+                    ${{ payment.amount }} {{ payment.currency }}
+                </div>
+                <div class="col-md-3">
+                    <strong>
+                        <span data-lang="en">Gateway:</span>
+                        <span data-lang="ar">البوابة:</span>
+                    </strong><br>
+                    <span class="badge bg-info">{{ payment.gateway }}</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>
+                        <span data-lang="en">Status:</span>
+                        <span data-lang="ar">الحالة:</span>
+                    </strong><br>
+                    {% if payment.status == 'completed' %}
+                        <span class="badge bg-success">
+                            <span data-lang="en">Completed</span>
+                            <span data-lang="ar">مكتمل</span>
+                        </span>
+                    {% elif payment.status == 'pending' %}
+                        <span class="badge bg-warning">
+                            <span data-lang="en">Pending</span>
+                            <span data-lang="ar">معلق</span>
+                        </span>
+                    {% elif payment.status == 'failed' %}
+                        <span class="badge bg-danger">
+                            <span data-lang="en">Failed</span>
+                            <span data-lang="ar">فاشل</span>
+                        </span>
+                    {% elif payment.status == 'refunded' %}
+                        <span class="badge bg-secondary">
+                            <span data-lang="en">Refunded</span>
+                            <span data-lang="ar">مرجع</span>
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gateway Logs -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <span data-lang="en">Gateway Processing Logs</span>
+                <span data-lang="ar">سجلات معالجة البوابة</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if logs %}
+            <div class="timeline">
+                {% for log in logs %}
+                <div class="timeline-item">
+                    <div class="timeline-marker 
+                        {% if log.status == 'success' %}bg-success
+                        {% elif log.status == 'error' %}bg-danger
+                        {% elif log.status == 'processing' %}bg-warning
+                        {% else %}bg-info{% endif %}">
+                        {% if log.status == 'success' %}
+                            <i class="fas fa-check text-white"></i>
+                        {% elif log.status == 'error' %}
+                            <i class="fas fa-times text-white"></i>
+                        {% elif log.status == 'processing' %}
+                            <i class="fas fa-clock text-white"></i>
+                        {% else %}
+                            <i class="fas fa-info text-white"></i>
+                        {% endif %}
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <h6 class="mb-1">{{ log.action }}</h6>
+                            <small class="text-muted">
+                                {{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} UTC
+                            </small>
+                        </div>
+                        <div class="timeline-body">
+                            <p class="mb-0">{{ log.message }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">
+                    <span data-lang="en">No logs available</span>
+                    <span data-lang="ar">لا توجد سجلات متاحة</span>
+                </h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if payment.gateway_response %}
+    <!-- Raw Gateway Response -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <span data-lang="en">Raw Gateway Response</span>
+                <span data-lang="ar">استجابة البوابة الخام</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <pre class="bg-secondary p-3 rounded small text-light" style="max-height: 400px; overflow-y: auto;">{{ payment.gateway_response | tojsonpretty }}</pre>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding-left: 50px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: -35px;
+    top: 30px;
+    height: calc(100% + 10px);
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -45px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.timeline-content {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.timeline-header h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+.timeline-body {
+    color: #6c757d;
+}
+</style>
+{% endblock %}

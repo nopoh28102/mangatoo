@@ -1,0 +1,1553 @@
+{% extends "base.html" %}
+
+{% block title %}منصة المانجا - اكتشف أفضل المانجا والمانهوا{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Featured Content -->
+<div class="hero-section-modern hero-section">
+    <!-- Animated Dragon Background -->
+    <div class="dragon-animation-container">
+        <!-- First Dragon -->
+        <svg class="flying-dragon dragon-primary" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="dragonGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#dc3545;stop-opacity:0.8" />
+                    <stop offset="50%" style="stop-color:#ffd700;stop-opacity:0.6" />
+                    <stop offset="100%" style="stop-color:#dc3545;stop-opacity:0.4" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                    <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <g class="dragon-body" filter="url(#glow)">
+                <!-- Dragon Body -->
+                <ellipse cx="100" cy="60" rx="30" ry="12" fill="url(#dragonGradient)" opacity="0.9">
+                    <animateTransform attributeName="transform" type="rotate" values="0 100 60;2 100 60;-2 100 60;0 100 60" dur="4s" repeatCount="indefinite"/>
+                </ellipse>
+                
+                <!-- Dragon Head -->
+                <ellipse cx="130" cy="55" rx="18" ry="10" fill="url(#dragonGradient)">
+                    <animateTransform attributeName="transform" type="rotate" values="0 130 55;3 130 55;-1 130 55;0 130 55" dur="3.5s" repeatCount="indefinite"/>
+                </ellipse>
+                
+                <!-- Dragon Wings -->
+                <path d="M85 45 Q75 35 85 30 Q95 35 85 45 Z" fill="url(#dragonGradient)" opacity="0.7">
+                    <animateTransform attributeName="transform" type="rotate" values="0 85 40;-15 85 40;5 85 40;0 85 40" dur="2s" repeatCount="indefinite"/>
+                </path>
+                <path d="M115 45 Q125 35 115 30 Q105 35 115 45 Z" fill="url(#dragonGradient)" opacity="0.7">
+                    <animateTransform attributeName="transform" type="rotate" values="0 115 40;15 115 40;-5 115 40;0 115 40" dur="2.2s" repeatCount="indefinite"/>
+                </path>
+                
+                <!-- Dragon Tail -->
+                <path d="M70 60 Q50 65 45 75 Q50 70 70 65 Z" fill="url(#dragonGradient)" opacity="0.8">
+                    <animateTransform attributeName="transform" type="rotate" values="0 60 65;-10 60 65;5 60 65;0 60 65" dur="3s" repeatCount="indefinite"/>
+                </path>
+                
+                <!-- Dragon Eyes -->
+                <circle cx="135" cy="52" r="2" fill="#ffd700">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="135" cy="58" r="2" fill="#ffd700">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="4.2s" repeatCount="indefinite"/>
+                </circle>
+                
+                <!-- Fire Breath Effect -->
+                <path d="M148 55 Q155 50 160 55 Q155 60 148 55" fill="#ff6b6b" opacity="0.6">
+                    <animate attributeName="opacity" values="0;0.8;0" dur="5s" repeatCount="indefinite"/>
+                    <animateTransform attributeName="transform" type="scale" values="0.5;1.2;0.5" dur="5s" repeatCount="indefinite"/>
+                </path>
+            </g>
+        </svg>
+        
+        <!-- Second Dragon (Smaller, Golden) -->
+        <svg class="flying-dragon dragon-secondary" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="dragonGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.6" />
+                    <stop offset="50%" style="stop-color:#ff8c00;stop-opacity:0.4" />
+                    <stop offset="100%" style="stop-color:#ffd700;stop-opacity:0.3" />
+                </linearGradient>
+            </defs>
+            <g class="dragon-body" filter="url(#glow)">
+                <ellipse cx="100" cy="60" rx="25" ry="10" fill="url(#dragonGradient2)" opacity="0.8">
+                    <animateTransform attributeName="transform" type="rotate" values="0 100 60;-2 100 60;2 100 60;0 100 60" dur="3.5s" repeatCount="indefinite"/>
+                </ellipse>
+                <ellipse cx="125" cy="56" rx="15" ry="8" fill="url(#dragonGradient2)">
+                    <animateTransform attributeName="transform" type="rotate" values="0 125 56;-3 125 56;1 125 56;0 125 56" dur="3s" repeatCount="indefinite"/>
+                </ellipse>
+                <path d="M88 48 Q80 40 88 35 Q96 40 88 48 Z" fill="url(#dragonGradient2)" opacity="0.6">
+                    <animateTransform attributeName="transform" type="rotate" values="0 88 42;12 88 42;-8 88 42;0 88 42" dur="1.8s" repeatCount="indefinite"/>
+                </path>
+                <path d="M112 48 Q120 40 112 35 Q104 40 112 48 Z" fill="url(#dragonGradient2)" opacity="0.6">
+                    <animateTransform attributeName="transform" type="rotate" values="0 112 42;-12 112 42;8 112 42;0 112 42" dur="2s" repeatCount="indefinite"/>
+                </path>
+                <circle cx="130" cy="54" r="1.5" fill="#fff">
+                    <animate attributeName="opacity" values="1;0.2;1" dur="3.8s" repeatCount="indefinite"/>
+                </circle>
+            </g>
+        </svg>
+        
+        <!-- Third Dragon (Distant, Blue-tinted) -->
+        <svg class="flying-dragon dragon-tertiary" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="dragonGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4ecdc4;stop-opacity:0.5" />
+                    <stop offset="50%" style="stop-color:#45b7d1;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#4ecdc4;stop-opacity:0.2" />
+                </linearGradient>
+            </defs>
+            <g class="dragon-body">
+                <ellipse cx="100" cy="60" rx="20" ry="8" fill="url(#dragonGradient3)" opacity="0.7">
+                    <animateTransform attributeName="transform" type="rotate" values="0 100 60;3 100 60;-3 100 60;0 100 60" dur="4.5s" repeatCount="indefinite"/>
+                </ellipse>
+                <ellipse cx="120" cy="57" rx="12" ry="6" fill="url(#dragonGradient3)"/>
+                <path d="M90 50 Q85 45 90 42 Q95 45 90 50 Z" fill="url(#dragonGradient3)" opacity="0.5">
+                    <animateTransform attributeName="transform" type="rotate" values="0 90 46;-10 90 46;6 90 46;0 90 46" dur="2.5s" repeatCount="indefinite"/>
+                </path>
+                <path d="M110 50 Q115 45 110 42 Q105 45 110 50 Z" fill="url(#dragonGradient3)" opacity="0.5">
+                    <animateTransform attributeName="transform" type="rotate" values="0 110 46;10 110 46;-6 110 46;0 110 46" dur="2.3s" repeatCount="indefinite"/>
+                </path>
+            </g>
+        </svg>
+    </div>
+    
+    <!-- Light Golden Vapor Animation -->
+    <div class="golden-halos-container">
+        <div class="golden-vapor vapor-1"></div>
+        <div class="golden-vapor vapor-2"></div>
+        <div class="golden-vapor vapor-3"></div>
+        <div class="sparkle">✨</div>
+        <div class="sparkle">⭐</div>
+        <div class="sparkle">✨</div>
+    </div>
+    
+    <div class="container-fluid px-4">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <span class="hero-badge">
+                        <i class="fas fa-star text-warning me-2"></i>
+                        <span data-lang="en">{{ get_setting('homepage_hero_subtitle_en', "World's Largest Manga & Manhwa Platform") }}</span>
+                        <span data-lang="ar">{{ get_setting('homepage_hero_subtitle_ar', 'أكبر منصة للمانجا والمانهوا في العالم') }}</span>
+                    </span>
+                    <h1 class="hero-title">
+                        <span class="gradient-text" data-lang="en">{{ get_setting('homepage_hero_title_en', 'Discover Unlimited Manga & Manhwa') }}</span>
+                        <span class="gradient-text" data-lang="ar">{{ get_setting('homepage_hero_title_ar', 'اكتشف اللامحدود من المانجا والمانهوا') }}</span>
+                    </h1>
+                    <p class="hero-description">
+                        <span data-lang="en">{{ get_setting('homepage_hero_description_en', 'Read thousands of high-quality manga, manhwa, and manhua series. Track your progress, bookmark favorites, and enjoy an ad-free premium experience.') }}</span>
+                        <span data-lang="ar">{{ get_setting('homepage_hero_description_ar', 'اقرأ آلاف المانجا والمانهوا والمانهوا عالية الجودة. تتبع تقدمك، احفظ المفضلة، واستمتع بتجربة مميزة خالية من الإعلانات.') }}</span>
+                    </p>
+                    <div class="hero-stats mb-4">
+                        <div class="stat-item">
+                            <span class="stat-number">{{ get_setting('homepage_stats_manga_count', '10K+') }}</span>
+                            <span class="stat-label">
+                                <span data-lang="en">{{ get_setting('homepage_stats_manga_label_en', 'Manga Series') }}</span>
+                                <span data-lang="ar">{{ get_setting('homepage_stats_manga_label_ar', 'سلسلة مانجا') }}</span>
+                            </span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ get_setting('homepage_stats_readers_count', '1M+') }}</span>
+                            <span class="stat-label">
+                                <span data-lang="en">{{ get_setting('homepage_stats_readers_label_en', 'Monthly Readers') }}</span>
+                                <span data-lang="ar">{{ get_setting('homepage_stats_readers_label_ar', 'قارئ شهرياً') }}</span>
+                            </span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">{{ get_setting('homepage_stats_languages_count', '50+') }}</span>
+                            <span class="stat-label">
+                                <span data-lang="en">{{ get_setting('homepage_stats_languages_label_en', 'Languages') }}</span>
+                                <span data-lang="ar">{{ get_setting('homepage_stats_languages_label_ar', 'لغة') }}</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="hero-actions">
+                        <a href="{{ url_for('library') }}" class="btn btn-hero-primary">
+                            <i class="fas fa-play me-2"></i>
+                            <span data-lang="en">{{ get_setting('homepage_cta_primary_en', 'Start Reading') }}</span>
+                            <span data-lang="ar">{{ get_setting('homepage_cta_primary_ar', 'ابدأ القراءة') }}</span>
+                        </a>
+                        {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('register') }}" class="btn btn-hero-outline">
+                                <i class="fas fa-user-plus me-2"></i>
+                                <span data-lang="en">{{ get_setting('homepage_cta_secondary_en', 'Join Free') }}</span>
+                                <span data-lang="ar">{{ get_setting('homepage_cta_secondary_ar', 'انضم مجاناً') }}</span>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual">
+                    {% if latest_manga[:5] %}
+                        <!-- Modern Manga Slider -->
+                        <div class="manga-slider-container">
+                            <div class="manga-slider" id="mangaSlider">
+                                {% for manga in latest_manga[:5] %}
+                                    <div class="manga-slide {{ 'active' if loop.index == 1 else '' }}" data-slide="{{ loop.index0 }}">
+                                        {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                        {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                        {% endif %}
+                                            <div class="slide-content">
+                                                <div class="slide-image">
+                                                    {% if manga.cover_image %}
+                                                        <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" alt="{{ manga.title }}" loading="lazy">
+                                                    {% else %}
+                                                        <div class="slide-placeholder">
+                                                            <i class="fas fa-book fa-4x"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                    <div class="slide-overlay">
+                                                        <div class="slide-badge">
+                                                            <span data-lang="en">New</span>
+                                                            <span data-lang="ar">جديد</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="slide-info">
+                                                    <h5 class="slide-title">{{ manga.title }}</h5>
+                                                    <p class="slide-author">{{ manga.author or 'Unknown Author' }}</p>
+                                                    <div class="slide-meta">
+                                                        <span class="meta-item">
+                                                            <i class="fas fa-star text-warning me-1"></i>
+                                                            {{ "%.1f"|format(manga.average_rating) }}
+                                                        </span>
+                                                        <span class="meta-item">
+                                                            <i class="fas fa-eye me-1"></i>
+                                                            {{ manga.views }}
+                                                        </span>
+                                                        <span class="meta-item type-badge">
+                                                            {{ manga.type.title() }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Slider Navigation -->
+                            <div class="slider-navigation">
+                                <button class="nav-btn nav-prev" id="navPrev">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="nav-btn nav-next" id="navNext">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Slider Indicators -->
+                            <div class="slider-indicators">
+                                {% for manga in latest_manga[:5] %}
+                                    <button class="indicator {{ 'active' if loop.index == 1 else '' }}" data-slide="{{ loop.index0 }}"></button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="hero-placeholder">
+                            <i class="fas fa-book-open fa-5x text-primary opacity-25"></i>
+                            <p class="text-muted mt-3">
+                                <span data-lang="en">Featured content will appear here</span>
+                                <span data-lang="ar">المحتوى المميز سيظهر هنا</span>
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Categories Bar -->
+<section class="categories-quick-bar py-2 row align-items-center">
+        <div class="row">
+            <div class="col-lg-2 col-md-3">
+                <h6 class="mb-0 fw-bold text-muted-modern">
+                    <span data-lang="en">Browse by Genre</span>
+                    <span data-lang="ar">تصفح حسب النوع</span>
+                </h6>
+            </div>
+            <div class="col-lg-10 col-md-9">
+                <div class="categories-scroll d-flex gap-1 overflow-auto">
+                    {% for category in categories[:12] %}
+                        <a href="{{ url_for('library', category=category.id) }}" class="category-chip">
+                            <span data-lang="en">{{ category.name }}</span>
+                            <span data-lang="ar">{{ category.name_ar or category.name }}</span>
+                        </a>
+                    {% endfor %}
+                    <a href="{{ url_for('library') }}" class="category-chip-more">
+                        <i class="fas fa-plus me-1"></i>
+                        <span data-lang="en">View All</span>
+                        <span data-lang="ar">عرض الكل</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+</section>
+
+<!-- Recently Updated Section -->
+<section class="content-section py-5">
+    <div class="container">
+        <div class="section-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="section-title-group">
+                    <h2 class="section-title">
+                        <i class="fas fa-clock text-primary me-3"></i>
+                        <span data-lang="en">Recently Updated</span>
+                        <span data-lang="ar">المحدثة حديثاً</span>
+                    </h2>
+                    <p class="section-subtitle">
+                        <span data-lang="en">Fresh chapters and new releases</span>
+                        <span data-lang="ar">فصول جديدة وإصدارات حديثة</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('library', sort='latest') }}" class="btn btn-modern-outline">
+                    <span data-lang="en">View All</span>
+                    <span data-lang="ar">عرض الكل</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        {% if latest_manga %}
+            <div class="manga-grid">
+                {% for manga in latest_manga %}
+                    <div class="manga-card-modern" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+                        {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                        {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                        {% endif %}
+                            <div class="manga-cover-container">
+                                {% if manga.cover_image %}
+                                    <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" 
+                                         class="manga-cover-img" alt="{{ manga.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="manga-cover-placeholder">
+                                        <i class="fas fa-book fa-2x"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <!-- Status Badges -->
+                                <div class="status-badges">
+                                    {% if manga.is_premium %}
+                                        <span class="badge badge-premium"><i class="fas fa-crown"></i></span>
+                                    {% endif %}
+                                    {% if manga.status == 'completed' %}
+                                        <span class="badge badge-completed">Complete</span>
+                                    {% elif manga.status == 'ongoing' %}
+                                        <span class="badge badge-ongoing">Ongoing</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Hover Overlay -->
+                                <div class="manga-hover-overlay">
+                                    <div class="manga-quick-info">
+                                        <div class="rating-display">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <span>{{ "%.1f"|format(manga.average_rating) }}</span>
+                                        </div>
+                                        <div class="views-display">
+                                            <i class="fas fa-eye"></i>
+                                            <span>{{ "{:,}".format(manga.views) }}</span>
+                                        </div>
+                                        <div class="type-display">
+                                            <span class="type-badge type-{{ manga.type }}">{{ manga.type.title() }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="quick-actions">
+                                        <button class="btn btn-quick-action" title="Add to Bookmarks">
+                                            <i class="fas fa-bookmark"></i>
+                                        </button>
+                                        <button class="btn btn-quick-action" title="Read First Chapter">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="manga-info">
+                                <h6 class="manga-title" title="{{ manga.title }}">
+                                    <span data-lang="en">{{ manga.title }}</span>
+                                    <span data-lang="ar">{{ manga.title_ar or manga.title }}</span>
+                                </h6>
+                                <p class="manga-author">{{ manga.author or 'Unknown Author' }}</p>
+                                <div class="manga-meta">
+                                    <span class="chapters-count">
+                                        <i class="fas fa-book-open"></i>
+                                        {{ manga.total_chapters }} 
+                                        <span data-lang="en">Ch.</span>
+                                        <span data-lang="ar">فصل</span>
+                                    </span>
+                                    <span class="update-time text-muted">
+                                        {{ manga.updated_at.strftime('%m/%d') if manga.updated_at else 'N/A' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No manga available yet</h4>
+                <p class="text-muted">Check back soon for new content!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Trending & Popular Section -->
+<section class="content-section py-5 bg-gradient-light">
+    <div class="container">
+        <div class="section-header">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="section-title-group">
+                    <h2 class="section-title">
+                        <i class="fas fa-fire text-danger me-3"></i>
+                        <span data-lang="en">Trending Now</span>
+                        <span data-lang="ar">المتداولة الآن</span>
+                    </h2>
+                    <p class="section-subtitle">
+                        <span data-lang="en">Most popular and highly rated series</span>
+                        <span data-lang="ar">الأكثر شعبية وتقييماً</span>
+                    </p>
+                </div>
+                <a href="{{ url_for('library', sort='popular') }}" class="btn btn-modern-outline">
+                    <span data-lang="en">View All</span>
+                    <span data-lang="ar">عرض الكل</span>
+                    <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+        
+        {% if popular_manga %}
+            <div class="trending-showcase">
+                <!-- Featured Top 3 -->
+                <div class="top-three-grid mb-5">
+                    {% for manga in popular_manga[:3] %}
+                        <div class="top-manga-card rank-{{ loop.index }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 150 }}">
+                            <div class="rank-badge">
+                                <span class="rank-number">#{{ loop.index }}</span>
+                            </div>
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                        {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                        {% endif %}
+                                <div class="top-manga-cover">
+                                    {% if manga.cover_image %}
+                                        <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" alt="{{ manga.title }}">
+                                    {% else %}
+                                        <div class="placeholder-top">
+                                            <i class="fas fa-book fa-3x"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="top-manga-gradient"></div>
+                                </div>
+                                <div class="top-manga-info">
+                                    <h5 class="top-manga-title">{{ manga.title }}</h5>
+                                    <p class="top-manga-author">{{ manga.author or 'Unknown' }}</p>
+                                    <div class="top-manga-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-star text-warning"></i>
+                                            <span>{{ "%.1f"|format(manga.average_rating) }}</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-eye"></i>
+                                            <span>{{ "{:,}".format(manga.views) }}</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="type-badge-small type-{{ manga.type }}">{{ manga.type.title() }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Rest of Popular Manga -->
+                <div class="manga-grid">
+                    {% for manga in popular_manga[3:] %}
+                        <div class="manga-card-modern" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+                            {% if manga.slug %}
+                            <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                        {% else %}
+                            <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                        {% endif %}
+                                <div class="manga-cover-container">
+                                    {% if manga.cover_image %}
+                                        <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" 
+                                             class="manga-cover-img" alt="{{ manga.title }}" loading="lazy">
+                                    {% else %}
+                                        <div class="manga-cover-placeholder">
+                                            <i class="fas fa-book fa-2x"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="status-badges">
+                                        {% if manga.is_premium %}
+                                            <span class="badge badge-premium"><i class="fas fa-crown"></i></span>
+                                        {% endif %}
+                                        <span class="badge badge-popular">
+                                            <i class="fas fa-fire"></i> Popular
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="manga-hover-overlay">
+                                        <div class="manga-quick-info">
+                                            <div class="rating-display">
+                                                <i class="fas fa-star text-warning"></i>
+                                                <span>{{ "%.1f"|format(manga.average_rating) }}</span>
+                                            </div>
+                                            <div class="views-display">
+                                                <i class="fas fa-eye"></i>
+                                                <span>{{ "{:,}".format(manga.views) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="quick-actions">
+                                            <button class="btn btn-quick-action" title="Add to Bookmarks">
+                                                <i class="fas fa-bookmark"></i>
+                                            </button>
+                                            <button class="btn btn-quick-action" title="Read Now">
+                                                <i class="fas fa-play"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="manga-info">
+                                    <h6 class="manga-title">{{ manga.title }}</h6>
+                                    <p class="manga-author">{{ manga.author or 'Unknown Author' }}</p>
+                                    <div class="manga-meta">
+                                        <span class="chapters-count">
+                                            <i class="fas fa-book-open"></i>
+                                            {{ manga.total_chapters }} Ch.
+                                        </span>
+                                        <span class="type-badge-small type-{{ manga.type }}">{{ manga.type.title() }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-fire fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No trending manga yet</h4>
+                <p class="text-muted">Popular content will appear here soon!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Additional Sections: New & Completed -->
+<div class="dual-sections py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- New Releases -->
+            <div class="col-lg-6">
+                <div class="mini-section">
+                    <div class="mini-section-header">
+                        <h4 class="mini-section-title">
+                            <i class="fas fa-plus-circle text-success me-2"></i>
+                            <span data-lang="en">New Releases</span>
+                            <span data-lang="ar">إصدارات جديدة</span>
+                        </h4>
+                        <a href="{{ url_for('library', sort='latest') }}" class="btn btn-sm btn-outline-success">
+                            <span data-lang="en">View All</span>
+                            <span data-lang="ar">عرض الكل</span>
+                        </a>
+                    </div>
+                    <div class="row g-3">
+                        {% for manga in latest_manga %}
+                            <div class="col-6 col-md-3">
+                                <div class="compact-manga-card">
+                                    {% if manga.slug %}
+                                    <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                                    {% else %}
+                                    <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                                    {% endif %}
+                                        <div class="compact-cover">
+                                            {% if manga.cover_image %}
+                                                <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" alt="{{ manga.title }}">
+                                            {% else %}
+                                                <div class="compact-placeholder"><i class="fas fa-book"></i></div>
+                                            {% endif %}
+                                            {% if manga.is_premium %}
+                                                <span class="compact-badge premium"><i class="fas fa-crown"></i></span>
+                                            {% endif %}
+                                            <span class="compact-badge new">NEW</span>
+                                        </div>
+                                        <div class="compact-info">
+                                            <h6 class="compact-title">{{ manga.title[:20] }}{% if manga.title|length > 20 %}...{% endif %}</h6>
+                                            <small class="compact-author text-muted">{{ manga.author or 'Unknown' }}</small>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Completed Series -->
+            <div class="col-lg-6">
+                <div class="mini-section">
+                    <div class="mini-section-header">
+                        <h4 class="mini-section-title">
+                            <i class="fas fa-check-circle text-primary me-2"></i>
+                            <span data-lang="en">Completed Series</span>
+                            <span data-lang="ar">السلاسل المكتملة</span>
+                        </h4>
+                        <a href="{{ url_for('library', status='completed') }}" class="btn btn-sm btn-outline-primary">
+                            <span data-lang="en">View All</span>
+                            <span data-lang="ar">عرض الكل</span>
+                        </a>
+                    </div>
+                    {% if completed_manga %}
+                        <div class="row g-3">
+                            {% for manga in completed_manga %}
+                                <div class="col-6 col-md-3">
+                                    <div class="compact-manga-card">
+                                        {% if manga.slug %}
+                                        <a href="{{ url_for('manga_detail', slug=manga.slug) }}" class="text-decoration-none">
+                                        {% else %}
+                                        <a href="{{ url_for('manga_detail_by_id', manga_id=manga.id) }}" class="text-decoration-none">
+                                        {% endif %}
+                                            <div class="compact-cover">
+                                                {% if manga.cover_image %}
+                                                    <img src="{{ url_for('static', filename=manga.cover_image.replace('static/', '')) }}" alt="{{ manga.title }}">
+                                                {% else %}
+                                                    <div class="compact-placeholder"><i class="fas fa-book"></i></div>
+                                                {% endif %}
+                                                <span class="compact-badge completed">مكتملة</span>
+                                            </div>
+                                            <div class="compact-info">
+                                                <h6 class="compact-title">{{ manga.title[:20] }}{% if manga.title|length > 20 %}...{% endif %}</h6>
+                                                <small class="compact-chapters text-muted">{{ manga.total_chapters or 0 }} فصل</small>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-book-open fa-2x mb-2 opacity-50"></i>
+                            <p class="mb-0 small">
+                                <span data-lang="en">No completed series available yet</span>
+                                <span data-lang="ar">لا توجد سلاسل مكتملة متاحة حالياً</span>
+                            </p>
+                        </div>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Latest News Section -->
+{% if latest_news %}
+<section class="latest-news-section py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-6 fw-bold mb-3">
+                <i class="fas fa-newspaper text-primary me-3"></i>
+                <span data-lang="en">Latest News</span>
+                <span data-lang="ar">آخر الأخبار</span>
+            </h2>
+            <p class="lead text-muted">
+                <span data-lang="en">Stay updated with the latest articles and announcements</span>
+                <span data-lang="ar">ابق على اطلاع بآخر المقالات والإعلانات</span>
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            {% for post in latest_news %}
+            <div class="col-lg-3 col-md-6">
+                <div class="news-card h-100 shadow-sm">
+                    {% if post.featured_image %}
+                    <div class="news-image">
+                        <img src="{{ post.featured_image }}" alt="{{ post.title }}" class="img-fluid">
+                        {% if post.is_featured %}
+                        <span class="featured-badge">
+                            <i class="fas fa-star"></i>
+                            <span data-lang="en">Featured</span>
+                            <span data-lang="ar">مميز</span>
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="news-content">
+                        {% if post.category %}
+                        <div class="news-category">
+                            <span class="badge bg-primary">
+                                <span data-lang="en">{{ post.category }}</span>
+                                <span data-lang="ar">{{ post.category_ar or post.category }}</span>
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <h5 class="news-title">
+                            <a href="{{ url_for('blog_post', slug=post.slug) }}" class="text-decoration-none text-dark">
+                                <span data-lang="en">{{ post.title[:60] }}{% if post.title|length > 60 %}...{% endif %}</span>
+                                <span data-lang="ar">{{ (post.title_ar or post.title)[:60] }}{% if (post.title_ar or post.title)|length > 60 %}...{% endif %}</span>
+                            </a>
+                        </h5>
+                        
+                        {% if post.excerpt %}
+                        <p class="news-excerpt text-muted">
+                            <span data-lang="en">{{ post.excerpt[:100] }}{% if post.excerpt|length > 100 %}...{% endif %}</span>
+                            <span data-lang="ar">{{ (post.excerpt_ar or post.excerpt)[:100] }}{% if (post.excerpt_ar or post.excerpt)|length > 100 %}...{% endif %}</span>
+                        </p>
+                        {% endif %}
+                        
+                        <div class="news-meta">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ post.published_at.strftime('%Y-%m-%d') if post.published_at else post.created_at.strftime('%Y-%m-%d') }}
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{ post.reading_time }} 
+                                    <span data-lang="en">min</span>
+                                    <span data-lang="ar">دقيقة</span>
+                                </small>
+                            </div>
+                            <div class="mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-eye me-1"></i>
+                                    {{ post.views }} 
+                                    <span data-lang="en">views</span>
+                                    <span data-lang="ar">مشاهدة</span>
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div class="news-action mt-3">
+                            <a href="{{ url_for('blog_post', slug=post.slug) }}" class="btn btn-outline-primary btn-sm w-100">
+                                <span data-lang="en">Read More</span>
+                                <span data-lang="ar">قراءة المزيد</span>
+                                <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('blog') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-blog me-2"></i>
+                <span data-lang="en">View All Articles</span>
+                <span data-lang="ar">عرض جميع المقالات</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- News Section Custom Styles -->
+<style>
+.latest-news-section {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.latest-news-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(220, 53, 69, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 193, 7, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 123, 255, 0.06) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.latest-news-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.latest-news-section h2 {
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.latest-news-section .lead {
+    color: rgba(255,255,255,0.8);
+}
+
+.news-card {
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 1px solid rgba(255,255,255,0.1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.news-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(220, 53, 69, 0.2), 
+                0 8px 16px rgba(0,0,0,0.4) !important;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+.news-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.news-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(220, 53, 69, 0.1) 0%, 
+        rgba(255, 193, 7, 0.05) 50%, 
+        rgba(0, 123, 255, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.news-card:hover .news-image::after {
+    opacity: 1;
+}
+
+.news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+    filter: brightness(0.9);
+}
+
+.news-card:hover .news-image img {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+    color: #1a1a1a;
+    padding: 6px 12px;
+    border-radius: 25px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+    z-index: 2;
+}
+
+.featured-badge i {
+    margin-right: 4px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+}
+
+.news-content {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(145deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+.news-category .badge {
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.news-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    flex-grow: 1;
+}
+
+.news-title a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.news-title a:hover {
+    color: #dc3545 !important;
+    text-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+}
+
+.news-excerpt {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: rgba(255,255,255,0.7);
+}
+
+.news-meta {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.news-meta small {
+    color: rgba(255,255,255,0.6);
+    font-size: 0.8rem;
+}
+
+.news-meta i {
+    color: #dc3545;
+    margin-right: 4px;
+}
+
+.news-action {
+    margin-top: 15px;
+}
+
+.news-card .btn-outline-primary {
+    background: transparent;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.news-card .btn-outline-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.news-card .btn-outline-primary:hover {
+    color: white;
+    border-color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+}
+
+.news-card .btn-outline-primary:hover::before {
+    left: 0;
+}
+
+.latest-news-section .btn-primary {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+}
+
+.latest-news-section .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(220, 53, 69, 0.4);
+    background: linear-gradient(135deg, #e74c3c 0%, #dc3545 100%);
+}
+
+@media (max-width: 768px) {
+    .news-image {
+        height: 150px;
+    }
+    
+    .news-content {
+        padding: 15px;
+    }
+    
+    .news-title {
+        font-size: 1rem;
+    }
+    
+    .news-card:hover {
+        transform: translateY(-4px) scale(1.01);
+    }
+}
+
+/* Sparkle animation for news cards */
+.news-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), 
+        rgba(255, 255, 255, 0.1) 0%, 
+        transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.news-card:hover::after {
+    opacity: 1;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+</style>
+{% endif %}
+
+<!-- Platform Features -->
+<section class="features-showcase py-5 bg-dark text-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">
+                <span data-lang="en">Why Choose Our Platform?</span>
+                <span data-lang="ar">لماذا تختار منصتنا؟</span>
+            </h2>
+            <p class="lead">
+                <span data-lang="en">Experience the best manga reading platform with premium features</span>
+                <span data-lang="ar">استمتع بأفضل منصة قراءة المانجا مع الميزات المتقدمة</span>
+            </p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Mobile Optimized</span>
+                        <span data-lang="ar">محسن للهواتف</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Perfect reading experience on all devices with touch gestures and responsive design.</span>
+                        <span data-lang="ar">تجربة قراءة مثالية على جميع الأجهزة مع الإيماءات اللمسية والتصميم المتجاوب.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Lightning Fast</span>
+                        <span data-lang="ar">سريع البرق</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Optimized images and lazy loading for lightning-fast page loading times.</span>
+                        <span data-lang="ar">صور محسنة وتحميل تدريجي لأوقات تحميل سريعة كالبرق.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-bookmark"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Progress Tracking</span>
+                        <span data-lang="ar">تتبع التقدم</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Never lose your place with automatic reading progress tracking and bookmarks.</span>
+                        <span data-lang="ar">لن تفقد مكانك أبداً مع تتبع التقدم التلقائي والإشارات المرجعية.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Multi-Language</span>
+                        <span data-lang="ar">متعدد اللغات</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Support for multiple languages including Arabic, English, and many more.</span>
+                        <span data-lang="ar">دعم لعدة لغات بما في ذلك العربية والإنجليزية والكثير غيرها.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Premium Content</span>
+                        <span data-lang="ar">محتوى مميز</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Access exclusive premium manga and early releases with our subscription.</span>
+                        <span data-lang="ar">الوصول للمانجا المميزة الحصرية والإصدارات المبكرة مع اشتراكنا.</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card-modern">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h5 class="feature-title">
+                        <span data-lang="en">Community</span>
+                        <span data-lang="ar">المجتمع</span>
+                    </h5>
+                    <p class="feature-description">
+                        <span data-lang="en">Join discussions, rate manga, and connect with fellow readers worldwide.</span>
+                        <span data-lang="ar">انضم للنقاشات، قيم المانجا، وتواصل مع القراء حول العالم.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom CSS for Manga Slider -->
+<style>
+.manga-slider-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #dc3545 0%, #ff6b35 50%, #f7931e 100%);
+}
+
+.manga-slider {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.manga-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.manga-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.manga-slide.prev {
+    transform: translateX(-100%);
+}
+
+.slide-content {
+    display: flex;
+    height: 100%;
+    color: white;
+    text-decoration: none;
+}
+
+.slide-image {
+    position: relative;
+    width: 60%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.slide-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.manga-slide:hover .slide-image img {
+    transform: scale(1.05);
+}
+
+.slide-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.5);
+}
+
+.slide-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+.slide-badge {
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.slide-info {
+    padding: 30px;
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+}
+
+.slide-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    max-height: 2.6em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.slide-author {
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 15px;
+}
+
+.slide-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.type-badge {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: fit-content;
+}
+
+.slider-navigation {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+}
+
+.nav-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    backdrop-filter: blur(10px);
+}
+
+.nav-btn:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.1);
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
+}
+
+.slider-indicators {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+.indicator:hover {
+    background: rgba(255,255,255,0.7);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .manga-slider-container {
+        height: 300px;
+    }
+    
+    .slide-content {
+        flex-direction: column;
+    }
+    
+    .slide-image {
+        width: 100%;
+        height: 60%;
+    }
+    
+    .slide-info {
+        width: 100%;
+        height: 40%;
+        padding: 20px;
+    }
+    
+    .slide-title {
+        font-size: 1.3rem;
+    }
+    
+    .slide-meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .manga-slide {
+    transform: translateX(-100%);
+}
+
+[dir="rtl"] .manga-slide.active {
+    transform: translateX(0);
+}
+
+[dir="rtl"] .manga-slide.prev {
+    transform: translateX(100%);
+}
+
+[dir="rtl"] .slide-overlay {
+    right: auto;
+    left: 20px;
+}
+</style>
+
+<!-- Custom JavaScript for Manga Slider -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('mangaSlider');
+    if (!slider) return;
+    
+    const slides = slider.querySelectorAll('.manga-slide');
+    const indicators = document.querySelectorAll('.indicator');
+    const navPrev = document.getElementById('navPrev');
+    const navNext = document.getElementById('navNext');
+    
+    let currentSlide = 0;
+    let isAnimating = false;
+    
+    // Auto-slide interval
+    let autoSlideInterval;
+    
+    function updateSlider(slideIndex) {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Remove active classes
+        slides.forEach(slide => {
+            slide.classList.remove('active', 'prev');
+        });
+        indicators.forEach(indicator => {
+            indicator.classList.remove('active');
+        });
+        
+        // Add active classes
+        slides[slideIndex].classList.add('active');
+        indicators[slideIndex].classList.add('active');
+        
+        // Add prev class to previous slide for smooth transition
+        if (slideIndex > 0) {
+            slides[slideIndex - 1].classList.add('prev');
+        } else {
+            slides[slides.length - 1].classList.add('prev');
+        }
+        
+        currentSlide = slideIndex;
+        
+        setTimeout(() => {
+            isAnimating = false;
+        }, 600);
+    }
+    
+    function nextSlide() {
+        const nextIndex = (currentSlide + 1) % slides.length;
+        updateSlider(nextIndex);
+    }
+    
+    function prevSlide() {
+        const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+        updateSlider(prevIndex);
+    }
+    
+    function startAutoSlide() {
+        autoSlideInterval = setInterval(nextSlide, 4000);
+    }
+    
+    function stopAutoSlide() {
+        clearInterval(autoSlideInterval);
+    }
+    
+    // Event listeners
+    if (navNext) {
+        navNext.addEventListener('click', () => {
+            nextSlide();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 8000);
+        });
+    }
+    
+    if (navPrev) {
+        navPrev.addEventListener('click', () => {
+            prevSlide();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 8000);
+        });
+    }
+    
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            updateSlider(index);
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 8000);
+        });
+    });
+    
+    // Pause auto-slide on hover
+    slider.addEventListener('mouseenter', stopAutoSlide);
+    slider.addEventListener('mouseleave', startAutoSlide);
+    
+    // Touch support for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    slider.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoSlide();
+    });
+    
+    slider.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const swipeThreshold = 50;
+        
+        if (touchStartX - touchEndX > swipeThreshold) {
+            // Swipe left - next slide
+            nextSlide();
+        } else if (touchEndX - touchStartX > swipeThreshold) {
+            // Swipe right - previous slide
+            prevSlide();
+        }
+        
+        setTimeout(startAutoSlide, 8000);
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            prevSlide();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 8000);
+        } else if (e.key === 'ArrowRight') {
+            nextSlide();
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 8000);
+        }
+    });
+    
+    // Start auto-slide
+    startAutoSlide();
+    
+    // Initialize first slide
+    updateSlider(0);
+});
+</script>
+{% endblock %}
